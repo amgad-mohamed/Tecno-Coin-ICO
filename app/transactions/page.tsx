@@ -75,7 +75,7 @@ export default function TransactionsPage() {
               your tokens.
             </p>
             <motion.button
-              className="w-full px-6 py-4 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl hover:from-red-600 hover:to-red-700 transition-all duration-300 flex items-center justify-center gap-3 text-lg font-medium shadow-lg hover:shadow-xl"
+              className="w-full px-6 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-300 flex items-center justify-center gap-3 text-lg font-medium shadow-lg hover:shadow-xl"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
@@ -104,7 +104,9 @@ export default function TransactionsPage() {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
             <div className="flex items-center gap-3 mt-10">
               <FiList className="text-2xl text-primary" />
-              <h1 className="text-2xl font-bold">Transaction History</h1>
+              <h1 className="text-2xl font-bold">
+                Your PLT Token Transactions
+              </h1>
             </div>
           </div>
 
@@ -166,7 +168,7 @@ export default function TransactionsPage() {
                       <td className="px-6 py-4">
                         <button
                           onClick={() => viewOnSepolia(transaction.hash)}
-                          className="bg-[#178440] text-white px-4 py-2 rounded-full text-xs font-medium hover:bg-green-700 transition-colors"
+                          className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2 rounded-full text-xs font-medium hover:from-purple-700 hover:to-blue-700 transition-all duration-300"
                         >
                           View on Sepolia
                         </button>

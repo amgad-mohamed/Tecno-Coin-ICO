@@ -9,18 +9,18 @@ const TokenSale = () => {
     },
     {
       title: "Presale Allocation",
-      value: "41,000,000 PLT",
-      description: "41% of total supply",
+      value: "50,000,000 PLT",
+      description: "50% of total supply available",
     },
     {
       title: "Token Price",
-      value: "$0.10 USD",
-      description: "Early investor price",
+      value: "$0.10 USDT",
+      description: "Presale price in USDT",
     },
     {
-      title: "Listing Price",
-      value: "$0.20 USD",
-      description: "100% upside potential",
+      title: "Payment Method",
+      value: "USDT Only",
+      description: "Simple USDT payments",
     },
   ];
 
@@ -34,12 +34,12 @@ const TokenSale = () => {
       value: "May 1, 2024 12:00 UTC",
     },
     {
-      label: "Soft Cap",
-      value: "$1,000,000",
+      label: "Target Raise",
+      value: "$2,500,000",
     },
     {
-      label: "Hard Cap",
-      value: "$4,000,000",
+      label: "Maximum Raise",
+      value: "$5,000,000",
     },
     {
       label: "Minimum Purchase",
@@ -75,12 +75,11 @@ const TokenSale = () => {
     <div id="token-sale" className="container px-4 sm:px-6 lg:px-8">
       <div className="text-center m-16 pt-20">
         <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-          Token Sale Details
+          PLT Token Information
         </h2>
         <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-          Join our presale to secure PLT tokens at the best possible price. Our
-          transparent tokenomics and vesting schedule ensure long-term value for
-          all holders.
+          Discover the details of our PLT token presale. Secure, transparent,
+          and designed for long-term success with USDT-only purchases.
         </p>
       </div>
 
@@ -93,7 +92,7 @@ const TokenSale = () => {
             <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
               {detail.title}
             </h3>
-            <p className="text-xl sm:text-2xl font-bold text-emerald-600 dark:text-emerald-400 mb-2">
+            <p className="text-xl sm:text-2xl font-bold text-purple-600 dark:text-purple-400 mb-2">
               {detail.value}
             </p>
             <p className="text-gray-600 dark:text-gray-300">
@@ -138,7 +137,7 @@ const TokenSale = () => {
                 <div className="flex items-center gap-4">
                   <div className="w-40 sm:w-48 h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-emerald-600 dark:bg-emerald-500"
+                      className="h-full bg-purple-600 dark:bg-purple-500"
                       style={{ width: `${item.percentage}%` }}
                     />
                   </div>
@@ -161,7 +160,7 @@ const TokenSale = () => {
             {vestingInfo.map((info, index) => (
               <div key={index} className="flex items-start gap-3">
                 <svg
-                  className="w-5 h-5 flex-shrink-0 text-emerald-600 dark:text-emerald-400 mt-1"
+                  className="w-5 h-5 flex-shrink-0 text-purple-600 dark:text-purple-400 mt-1"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -186,7 +185,7 @@ const TokenSale = () => {
                 <span className="text-gray-600 dark:text-gray-300">
                   Contract Address
                 </span>
-                <code className="text-emerald-600 dark:text-emerald-400 font-mono break-all">
+                <code className="text-purple-600 dark:text-purple-400 font-mono break-all">
                   0x1234...5678
                 </code>
               </div>
@@ -202,7 +201,7 @@ const TokenSale = () => {
                 <span className="text-gray-600 dark:text-gray-300">
                   Audit Status
                 </span>
-                <span className="text-emerald-600 dark:text-emerald-400">
+                <span className="text-purple-600 dark:text-purple-400">
                   Verified by CertiK
                 </span>
               </div>
@@ -217,20 +216,20 @@ const TokenSale = () => {
         </h3>
         <ul className="space-y-3">
           <li className="flex items-start gap-3">
-            <span className="text-emerald-600 dark:text-emerald-400">•</span>
+            <span className="text-purple-600 dark:text-purple-400">•</span>
             <span className="text-gray-600 dark:text-gray-300">
               Always verify the contract address before sending any funds
             </span>
           </li>
           <li className="flex items-start gap-3">
-            <span className="text-emerald-600 dark:text-emerald-400">•</span>
+            <span className="text-purple-600 dark:text-purple-400">•</span>
             <span className="text-gray-600 dark:text-gray-300">
               Do not send funds from an exchange wallet; use a personal
               ERC-20-compatible wallet
             </span>
           </li>
           <li className="flex items-start gap-3">
-            <span className="text-emerald-600 dark:text-emerald-400">•</span>
+            <span className="text-purple-600 dark:text-purple-400">•</span>
             <span className="text-gray-600 dark:text-gray-300">
               The team is not responsible for transactions sent to the wrong
               address

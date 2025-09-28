@@ -377,7 +377,7 @@ export default function AdminManagement() {
                     </span>
                     <button
                       onClick={() => handleCopy(admin)}
-                      className="flex items-center gap-1 text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300"
+                      className="flex items-center gap-1 text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300"
                     >
                       <FiCopy className="w-4 h-4" />
                     </button>{" "}

@@ -214,8 +214,8 @@ export default function StakingManagement() {
                 stakingAvailable === BigInt(0))
             }
             onClick={handleReleaseTokens}
-            className="mt-6 w-full px-4 py-2 bg-emerald-600 text-white rounded-lg 
-                       hover:bg-emerald-700 transition-colors 
+            className="mt-6 w-full px-4 py-2 bg-purple-600 text-white rounded-lg 
+                       hover:bg-purple-700 transition-colors 
                        disabled:opacity-50 disabled:cursor-not-allowed 
                        text-sm sm:text-base"
             whileHover={{ scale: 1.05 }}

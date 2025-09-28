@@ -103,7 +103,7 @@ const Footer = () => {
           <motion.div variants={itemVariants}>
             <a
               href="#"
-              className="text-2xl font-bold text-emerald-600 dark:text-emerald-400"
+              className="text-2xl font-bold text-purple-600 dark:text-purple-400"
             >
               Platireum
             </a>
@@ -116,7 +116,7 @@ const Footer = () => {
                 <motion.a
                   key={item.name}
                   href={item.href}
-                  className="text-gray-500 hover:text-emerald-600 dark:text-gray-400 dark:hover:text-emerald-400 transition-colors"
+                  className="text-gray-500 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-400 transition-colors"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
@@ -136,7 +136,7 @@ const Footer = () => {
                   <li key={link.name}>
                     <motion.a
                       href={link.href}
-                      className="text-gray-600 hover:text-emerald-600 dark:text-gray-400 dark:hover:text-emerald-400 transition-colors text-sm sm:text-base"
+                      className="text-gray-600 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-400 transition-colors text-sm sm:text-base"
                       whileHover={{ x: 5 }}
                     >
                       {link.name}

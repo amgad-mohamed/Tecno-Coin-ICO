@@ -9,26 +9,29 @@
   }
 
   body {
-    @apply bg-white text-gray-800;
-    background-image: linear-gradient(
-      120deg,
-      rgba(106, 168, 72, 0.08) 0%,
-      rgba(106, 168, 72, 0.03) 100%
-    );
+    @apply bg-slate-900 text-white;
+    background-image: 
+      radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 30%),
+      radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
   }
 
   input[type="range"] {
-    @apply w-full h-2 bg-gray-100 appearance-none cursor-pointer rounded-lg;
+    @apply w-full h-2 bg-white/10 appearance-none cursor-pointer rounded-lg;
   }
 
   input[type="range"]::-webkit-slider-thumb {
-    @apply w-5 h-5 bg-primary appearance-none cursor-pointer rounded-full shadow-lg;
+    @apply w-6 h-6 bg-gradient-to-r from-purple-500 to-blue-500 appearance-none cursor-pointer rounded-full shadow-lg;
     border: 2px solid white;
   }
 
   input[type="range"]::-moz-range-thumb {
-    @apply w-5 h-5 bg-primary cursor-pointer rounded-full shadow-lg;
+    @apply w-6 h-6 bg-gradient-to-r from-purple-500 to-blue-500 cursor-pointer rounded-full shadow-lg;
     border: 2px solid white;
+  }
+
+  .slider {
+    background: linear-gradient(to right, rgba(139, 92, 246, 0.3), rgba(59, 130, 246, 0.3));
   }
   :root {
     --background: 0 0% 100%;
@@ -140,10 +143,10 @@
 
   .bg-grid-pattern {
     background-image: linear-gradient(
-        rgba(106, 168, 72, 0.1) 1px,
+        rgba(139, 92, 246, 0.1) 1px,
         transparent 1px
       ),
-      linear-gradient(90deg, rgba(106, 168, 72, 0.1) 1px, transparent 1px);
+      linear-gradient(90deg, rgba(139, 92, 246, 0.1) 1px, transparent 1px);
     background-size: 40px 40px;
   }
 
@@ -166,7 +169,7 @@
   .highlight-box {
     @apply relative bg-white/50 rounded-xl p-6 backdrop-blur-sm;
     box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.05),
-      0 0 1px rgba(106, 168, 72, 0.1);
+      0 0 1px rgba(139, 92, 246, 0.1);
   }
 
   .currency-btn {
@@ -181,6 +184,49 @@
     &:not(.active) {
       @apply border-gray-200 text-gray-600 hover:border-primary hover:text-primary;
     }
+  }
+
+  /* New Dashboard Styles */
+  .glass-card {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10;
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent;
+  }
+
+  .glow-effect {
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+  }
+
+  .animated-bg {
+    background: linear-gradient(-45deg, #1e1b4b, #312e81, #1e40af, #1d4ed8);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+  }
+
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .floating-animation {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+  }
+
+  .pulse-glow {
+    animation: pulseGlow 2s ease-in-out infinite alternate;
+  }
+
+  @keyframes pulseGlow {
+    from { box-shadow: 0 0 20px rgba(139, 92, 246, 0.4); }
+    to { box-shadow: 0 0 40px rgba(139, 92, 246, 0.8); }
   }
 }
 

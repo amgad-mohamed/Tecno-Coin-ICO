@@ -26,14 +26,13 @@ import { useMockUSDTContract } from "../services/useMockUSDTContract";
 import { postTransaction, type NewTransactionBody } from "@/lib/api";
 import { useTimers } from "../hooks/useTimers";
 import { useToastContext } from "../context/ToastContext";
+import CircuitBreakerGuide from "./CircuitBreakerGuide";
 
 // Constants
 
 const Hero = () => {
   const [mounted, setMounted] = useState(false);
-  const [selectedCurrency, setSelectedCurrency] = useState<"ETH" | "USDT">(
-    "ETH"
-  );
+  const [selectedCurrency, setSelectedCurrency] = useState<"USDT">("USDT");
   const [tokenAmount, setTokenAmount] = useState<number>(100);
   const [submitting, setSubmitting] = useState(false);
   const [pendingUSDTAmount, setPendingUSDTAmount] = useState<bigint | null>(
@@ -44,6 +43,7 @@ const Hero = () => {
     "hash"
   > | null>(null);
   const [hasPosted, setHasPosted] = useState(false);
+  const [showCircuitBreakerGuide, setShowCircuitBreakerGuide] = useState(false);
 
   const router = useRouter();
   const { showSuccess, showError, showInfo } = useToastContext();
@@ -65,12 +65,9 @@ const Hero = () => {
 
   // ICO Contract hooks
   const {
-    useGetLatestETHPrice,
     useGetTokenBalance,
     useGetUSDTBalance,
-    useGetETHBalance,
     buyTokens,
-    buyTokensWithETH,
     useGgetTokenPrice,
     useGetTotalTokensSold,
     isPending: isICOPending,
@@ -103,25 +100,9 @@ const Hero = () => {
     ? Number(formatUnits(tokenPrice as bigint, 6))
     : 0.1;
 
-  type LatestEthPrice = [bigint, number];
-
-  // لو انت متأكد إن الـ hook بيرجع tuple
-  const { data: latestEthPrice } = useGetLatestETHPrice() as {
-    data: LatestEthPrice;
-  };
-  if (latestEthPrice) {
-    console.log(
-      "latestEthPrice",
-      formatUnits(latestEthPrice[0], latestEthPrice[1])
-    );
-  }
-
   const { data: totalSupply } = useTotalSupply();
   const { data: totalTokensSold } = useGetTotalTokensSold();
   // Wallet balances (only meaningful when connected)
-  const { data: ethBalance } = useBalance({
-    address,
-  });
   const { data: usdtBalance } = useBalance({
     address,
     token: CONTRACT_ADDRESS.MOCK_USDT as `0x${string}`,
@@ -133,8 +114,9 @@ const Hero = () => {
   );
 
   const SOLD_TOKENS = Number(
-    typeof totalTokensSold === "bigint" ? formatEther(totalTokensSold) : 0);
-  
+    typeof totalTokensSold === "bigint" ? formatEther(totalTokensSold) : 0
+  );
+
   const AVAILABLE_TOKENS = TOTAL_SUPPLY - SOLD_TOKENS;
   const SALE_PROGRESS =
     TOTAL_SUPPLY > 0 ? (SOLD_TOKENS / TOTAL_SUPPLY) * 100 : 0;
@@ -143,28 +125,14 @@ const Hero = () => {
 
   // Required payment amounts for current selection
   const usdAmount = tokenAmount * TOKEN_PRICE_USD;
-  const ethPriceValue = Number(
-    latestEthPrice ? formatUnits(latestEthPrice[0], latestEthPrice[1]) : 0
-  );
-  const requiredEthWei =
-    ethPriceValue > 0
-      ? parseEther((usdAmount / ethPriceValue).toFixed(18))
-      : null;
   const requiredUsdtUnits = parseUnits(usdAmount.toFixed(6), 6);
 
-  const hasSufficientEth = Boolean(
-    isConnected &&
-      requiredEthWei !== null &&
-      ethBalance?.value !== undefined &&
-      ethBalance.value >= (requiredEthWei as bigint)
-  );
   const hasSufficientUsdt = Boolean(
     isConnected &&
       usdtBalance?.value !== undefined &&
       usdtBalance.value >= requiredUsdtUnits
   );
-  const hasSufficientFunds =
-    selectedCurrency === "ETH" ? hasSufficientEth : hasSufficientUsdt;
+  const hasSufficientFunds = hasSufficientUsdt;
 
   // Effects
   useEffect(() => {
@@ -241,30 +209,30 @@ const Hero = () => {
     showInfo("Wallet Disconnected", "Your wallet has been disconnected");
   }, [disconnect, showInfo]);
 
-  const calculatePaymentAmount = useCallback(() => {
-    if (selectedCurrency === "USDT") {
-      return (tokenAmount * TOKEN_PRICE_USD).toFixed(2);
-    } else {
-      // Ensure we have valid ETH price data
-      const ethPriceValue = Number(
-        latestEthPrice ? formatUnits(latestEthPrice[0], latestEthPrice[1]) : 1
+  const resetCircuitBreaker = useCallback(async () => {
+    try {
+      if (typeof window !== "undefined" && window.ethereum) {
+        // Request account access to reset circuit breaker
+        await (window.ethereum as any).request({
+          method: "eth_requestAccounts",
+        });
+        showInfo(
+          "Circuit Breaker Reset",
+          "MetaMask circuit breaker has been reset. You can now try the transaction again."
+        );
+      }
+    } catch (error) {
+      console.error("Circuit breaker reset failed:", error);
+      showError(
+        "Reset Failed",
+        "Could not reset circuit breaker. Please restart MetaMask manually."
       );
-
-      // Validate that we have a valid number
-      if (isNaN(ethPriceValue) || ethPriceValue <= 0) {
-        return "0";
-      }
-
-      const calculatedAmount = (tokenAmount * TOKEN_PRICE_USD) / ethPriceValue;
-
-      // Validate the final calculation
-      if (isNaN(calculatedAmount) || calculatedAmount <= 0) {
-        return "0";
-      }
-
-      return calculatedAmount.toFixed(18);
     }
-  }, [selectedCurrency, tokenAmount, latestEthPrice]);
+  }, [showInfo, showError]);
+
+  const calculatePaymentAmount = useCallback(() => {
+    return (tokenAmount * TOKEN_PRICE_USD).toFixed(2);
+  }, [tokenAmount, TOKEN_PRICE_USD]);
 
   const handleBuyTokens = useCallback(async () => {
     if (!isConnected || !address) {
@@ -272,89 +240,48 @@ const Hero = () => {
       return;
     }
 
-    // Validate that we have the required data for the selected currency
-    if (selectedCurrency === "ETH") {
-      if (!latestEthPrice) {
-        showError(
-          "ETH Price Unavailable",
-          "ETH price data is not available. Please try again."
-        );
-        return;
-      }
-    }
-
     try {
       setSubmitting(true);
 
-      if (selectedCurrency === "ETH") {
-        await handleETHPurchase();
-      } else if (selectedCurrency === "USDT") {
-        await handleUSDTPurchase();
+      // Check if MetaMask is available and connected
+      if (typeof window !== "undefined" && window.ethereum) {
+        const chainId = await (window.ethereum as any).request({
+          method: "eth_chainId",
+        });
+        if (chainId !== "0xaa36a7") {
+          // Sepolia testnet
+          showError(
+            "Wrong Network",
+            "Please switch to Sepolia testnet in MetaMask"
+          );
+          return;
+        }
       }
+
+      await handleUSDTPurchase();
     } catch (error) {
       console.error("Error buying tokens:", error);
-      showError(
-        "Purchase Failed",
-        error instanceof Error
-          ? error.message
-          : "Failed to complete token purchase"
-      );
+
+      let errorMessage = "Failed to complete token purchase";
+      if (error instanceof Error) {
+        if (error.message.includes("circuit breaker")) {
+          errorMessage =
+            "MetaMask circuit breaker is active. Please wait a moment and try again, or restart MetaMask.";
+          setShowCircuitBreakerGuide(true);
+        } else if (error.message.includes("insufficient funds")) {
+          errorMessage = "Insufficient USDT balance for this transaction.";
+        } else if (error.message.includes("user rejected")) {
+          errorMessage = "Transaction was cancelled by user.";
+        } else {
+          errorMessage = error.message;
+        }
+      }
+
+      showError("Purchase Failed", errorMessage);
     } finally {
       setSubmitting(false);
     }
-  }, [
-    isConnected,
-    address,
-    selectedCurrency,
-    connectWallet,
-    showError,
-    latestEthPrice,
-    tokenAmount,
-  ]);
-
-  const handleETHPurchase = async () => {
-    // Validate required data
-    if (!latestEthPrice) {
-      throw new Error("ETH price data not available. Please try again.");
-    }
-
-    const usdAmount = tokenAmount * TOKEN_PRICE_USD;
-    const ethPriceValue = Number(
-      latestEthPrice ? formatUnits(latestEthPrice[0], latestEthPrice[1]) : 1
-    );
-
-    // Validate ETH price
-    if (isNaN(ethPriceValue) || ethPriceValue <= 0) {
-      throw new Error("Invalid ETH price. Please try again.");
-    }
-
-    const ethAmount = usdAmount / ethPriceValue;
-
-    // Validate calculated amount
-    if (isNaN(ethAmount) || ethAmount <= 0) {
-      throw new Error("Invalid calculation. Please check your input.");
-    }
-
-    const valueWei = parseEther(ethAmount.toFixed(18));
-
-    // Ensure user has enough ETH to cover payment
-    if (ethBalance?.value !== undefined && ethBalance.value < valueWei) {
-      throw new Error("Insufficient ETH balance for this purchase");
-    }
-
-    if (valueWei <= 0n) throw new Error("ETH amount must be greater than 0");
-
-    await buyTokensWithETH(valueWei);
-    setQueuedTxBody({
-      type: "BUY",
-      amount: tokenAmount,
-      price: Number(ethAmount),
-      currency: "ETH",
-      status: "COMPLETED",
-      date: new Date().toISOString(),
-    });
-    setHasPosted(false);
-  };
+  }, [isConnected, address, connectWallet, showError, tokenAmount]);
 
   const handleUSDTPurchase = async () => {
     const usdtAmount = tokenAmount * TOKEN_PRICE_USD;
@@ -381,11 +308,22 @@ const Hero = () => {
     // 🔹 خزّن القيمة عشان نستخدمها بعد الـ confirm
     setPendingUSDTAmount(usdtInSmallest);
 
+    // Add delay to prevent circuit breaker issues
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     // 🔹 approve فقط
-    await approveUSDT(
-      CONTRACT_ADDRESS.ICO_CONTRACT as `0x${string}`,
-      usdtInSmallest
-    );
+    try {
+      await approveUSDT(
+        CONTRACT_ADDRESS.ICO_CONTRACT as `0x${string}`,
+        usdtInSmallest
+      );
+    } catch (error) {
+      console.error("USDT Approval Error:", error);
+      setPendingUSDTAmount(null);
+      throw new Error(
+        "Failed to approve USDT. Please try again or check your wallet connection."
+      );
+    }
   };
 
   useEffect(() => {
@@ -397,7 +335,14 @@ const Hero = () => {
             "Approval confirmed, proceeding with purchase"
           );
 
-          await buyTokens(pendingUSDTAmount);
+          try {
+            await buyTokens(pendingUSDTAmount);
+          } catch (buyError) {
+            console.error("Buy Tokens Error:", buyError);
+            throw new Error(
+              "Failed to complete token purchase. Please try again."
+            );
+          }
 
           setQueuedTxBody({
             type: "BUY",
@@ -464,8 +409,8 @@ const Hero = () => {
                   transition={{ delay: 0.3 }}
                   className="inline-flex items-center gap-3 mb-4 md:mb-6"
                 >
-                  <FiTrendingUp className="text-emerald-600 text-xl animate-pulse" />
-                  <span className="text-emerald-600 font-semibold">
+                  <FiTrendingUp className="text-purple-600 text-xl animate-pulse" />
+                  <span className="text-purple-600 font-semibold">
                     Presale is Live
                   </span>
                 </motion.div>
@@ -476,9 +421,9 @@ const Hero = () => {
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.4 }}
                 >
-                  The Future of{" "}
-                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-blue-600">
-                    Digital Assets
+                  Welcome to{" "}
+                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600">
+                    PLT Token Presale
                   </span>
                 </motion.h1>
 
@@ -488,8 +433,8 @@ const Hero = () => {
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.5 }}
                 >
-                  Join our exclusive presale phase and be among the first to
-                  acquire PLT tokens at the best possible price.
+                  Secure your PLT tokens now with USDT payments. Limited time
+                  offer with special bonuses for early participants.
                 </motion.p>
               </div>
 
@@ -501,24 +446,24 @@ const Hero = () => {
               >
                 <div className="stat-card p-3 md:p-4 bg-white dark:bg-gray-800 shadow-lg rounded-xl">
                   <div className="flex items-center gap-2 mb-2">
-                    <FiBarChart2 className="text-emerald-600 text-lg md:text-xl" />
+                    <FiBarChart2 className="text-purple-600 text-lg md:text-xl" />
                     <h3 className="text-gray-700 dark:text-gray-300 text-sm md:text-base font-medium">
-                      Soft Cap
+                      Target Raised
                     </h3>
                   </div>
-                  <p className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-blue-600 text-xl md:text-2xl lg:text-3xl font-bold">
-                    $1,000,000
+                  <p className="bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600 text-xl md:text-2xl lg:text-3xl font-bold">
+                    $2,500,000
                   </p>
                 </div>
                 <div className="stat-card p-3 md:p-4 bg-white dark:bg-gray-800 shadow-lg rounded-xl">
                   <div className="flex items-center gap-2 mb-2">
-                    <FiTrendingUp className="text-emerald-600 text-lg md:text-xl" />
+                    <FiTrendingUp className="text-purple-600 text-lg md:text-xl" />
                     <h3 className="text-gray-700 dark:text-gray-300 text-sm md:text-base font-medium">
-                      Hard Cap
+                      Maximum Raise
                     </h3>
                   </div>
-                  <p className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-blue-600 text-xl md:text-2xl lg:text-3xl font-bold">
-                    $4,000,000
+                  <p className="bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600 text-xl md:text-2xl lg:text-3xl font-bold">
+                    $5,000,000
                   </p>
                 </div>
               </motion.div>
@@ -539,18 +484,18 @@ const Hero = () => {
               transition={{ delay: 0.8 }}
               className="mt-4 md:mt-6"
             >
-              <div className="rounded-2xl p-4 md:p-6 bg-gradient-to-r from-emerald-600 to-emerald-600 text-white shadow-lg">
+              <div className="rounded-2xl p-4 md:p-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                   <div className="space-y-3 py-3">
                     <p className="text-sm uppercase tracking-wide/loose opacity-90">
-                      Limited-time presale bonus
+                      Special USDT-only presale
                     </p>
                     <h3 className="text-2xl md:text-xl font-semibold">
-                      Early buyers get the best price on PLT
+                      Buy PLT tokens with USDT at presale price
                     </h3>
                     <p className="text-sm opacity-95">
-                      Secure your allocation today before the next price
-                      increase.
+                      Simple USDT payments with instant token delivery and
+                      secure smart contracts.
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
@@ -580,7 +525,7 @@ const Hero = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                   <div className="feature-card p-2 sm:p-3 bg-gray-50 dark:bg-gray-700 rounded-xl">
                     <div className="flex items-center gap-1.5 mb-1">
-                      <FiDollarSign className="text-emerald-600 text-base sm:text-lg md:text-xl" />
+                      <FiDollarSign className="text-purple-600 text-base sm:text-lg md:text-xl" />
                       <h3 className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm font-medium">
                         Token Price
                       </h3>
@@ -591,19 +536,13 @@ const Hero = () => {
                   </div>
                   <div className="feature-card p-2 sm:p-3 bg-gray-50 dark:bg-gray-700 rounded-xl">
                     <div className="flex items-center gap-1.5 mb-1">
-                      <FiTrendingUp className="text-emerald-600 text-base sm:text-lg md:text-xl" />
+                      <FiTrendingUp className="text-purple-600 text-base sm:text-lg md:text-xl" />
                       <h3 className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm font-medium">
-                        ETH Price
+                        USDT Price
                       </h3>
                     </div>
                     <p className="text-gray-900 dark:text-white text-xs sm:text-sm md:text-base font-bold">
-                      {latestEthPrice ? (
-                        `$${formatUnits(latestEthPrice[0], latestEthPrice[1])}`
-                      ) : (
-                        <span className="text-amber-600 dark:text-amber-400">
-                          Loading...
-                        </span>
-                      )}
+                      $1.00 USD
                     </p>
                   </div>
                 </div>
@@ -611,7 +550,7 @@ const Hero = () => {
                 {/* Token Analysis */}
                 <div className="feature-card space-y-2 p-2 sm:p-3 bg-gray-50 dark:bg-gray-700 rounded-xl">
                   <div className="flex items-center gap-1.5 mb-2">
-                    <FiBox className="text-emerald-600 text-base sm:text-lg md:text-xl" />
+                    <FiBox className="text-purple-600 text-base sm:text-lg md:text-xl" />
                     <h3 className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm font-medium">
                       Token Analysis
                     </h3>
@@ -629,7 +568,7 @@ const Hero = () => {
                       <span className="text-gray-600 dark:text-gray-400 block">
                         Sold
                       </span>
-                      <span className="text-emerald-600 dark:text-emerald-500 font-bold">
+                      <span className="text-purple-600 dark:text-purple-500 font-bold">
                         {SOLD_TOKENS.toLocaleString()}
                       </span>
                     </div>
@@ -647,13 +586,13 @@ const Hero = () => {
                       <span className="text-gray-600 dark:text-gray-400">
                         Sale Progress
                       </span>
-                      <span className="font-medium text-emerald-600 dark:text-emerald-500">
+                      <span className="font-medium text-purple-600 dark:text-purple-500">
                         {SALE_PROGRESS.toFixed(1)}%
                       </span>
                     </div>
                     <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-emerald-600 rounded-full"
+                        className="h-full bg-purple-600 rounded-full"
                         style={{ width: `${SALE_PROGRESS}%` }}
                       />
                     </div>
@@ -664,7 +603,7 @@ const Hero = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                   <div className="feature-card p-2 sm:p-3 bg-gray-50 dark:bg-gray-700 rounded-xl">
                     <div className="flex items-center gap-1.5 mb-1">
-                      <FiAlertCircle className="text-emerald-600 text-base sm:text-lg md:text-xl" />
+                      <FiAlertCircle className="text-purple-600 text-base sm:text-lg md:text-xl" />
                       <h3 className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm font-medium">
                         Min Purchase
                       </h3>
@@ -675,7 +614,7 @@ const Hero = () => {
                   </div>
                   <div className="feature-card p-2 sm:p-3 bg-gray-50 dark:bg-gray-700 rounded-xl">
                     <div className="flex items-center gap-1.5 mb-1">
-                      <FiCheckCircle className="text-emerald-600 text-base sm:text-lg md:text-xl" />
+                      <FiCheckCircle className="text-purple-600 text-base sm:text-lg md:text-xl" />
                       <h3 className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm font-medium">
                         Max Purchase
                       </h3>
@@ -686,43 +625,19 @@ const Hero = () => {
                   </div>
                 </div>
 
-                {/* Currency Selection */}
+                {/* Payment Method */}
                 <div className="space-y-2">
                   <div className="flex items-center gap-1.5">
                     <FiCreditCard className="text-gray-500 text-xs sm:text-sm" />
                     <label className="text-gray-500 text-xs sm:text-sm font-medium">
-                      Select Currency
+                      Payment Method
                     </label>
                   </div>
-                  <div className="bg-gray-100 p-1 rounded-lg flex gap-1">
-                    <button
-                      type="button"
-                      onClick={() => setSelectedCurrency("ETH")}
-                      className={`flex-1 relative rounded-md transition-all duration-200 py-1.5 sm:py-2 md:py-2.5 px-2 sm:px-3 md:px-4 text-xs sm:text-sm md:text-base ${
-                        selectedCurrency === "ETH"
-                          ? "text-white"
-                          : "text-gray-500 hover:text-gray-700"
-                      }`}
-                    >
-                      <span className="relative z-10">ETH</span>
-                      {selectedCurrency === "ETH" && (
-                        <div className="absolute inset-0 bg-emerald-600 rounded-md" />
-                      )}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedCurrency("USDT")}
-                      className={`flex-1 relative rounded-md transition-all duration-200 py-1.5 sm:py-2 md:py-2.5 px-2 sm:px-3 md:px-4 text-xs sm:text-sm md:text-base ${
-                        selectedCurrency === "USDT"
-                          ? "text-white"
-                          : "text-gray-500 hover:text-gray-700"
-                      }`}
-                    >
-                      <span className="relative z-10">USDT</span>
-                      {selectedCurrency === "USDT" && (
-                        <div className="absolute inset-0 bg-emerald-600 rounded-md" />
-                      )}
-                    </button>
+                  <div className="bg-purple-100 p-1 rounded-lg">
+                    <div className="flex-1 relative rounded-md transition-all duration-200 py-1.5 sm:py-2 md:py-2.5 px-2 sm:px-3 md:px-4 text-xs sm:text-sm md:text-base text-white">
+                      <span className="relative z-10">USDT (Tether)</span>
+                      <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 rounded-md" />
+                    </div>
                   </div>
                 </div>
 
@@ -730,12 +645,12 @@ const Hero = () => {
                 <div className="space-y-2 sm:space-y-3">
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-1.5">
-                      <FiShoppingCart className="text-emerald-600 text-base sm:text-lg md:text-xl" />
+                      <FiShoppingCart className="text-purple-600 text-base sm:text-lg md:text-xl" />
                       <label className="text-gray-500 text-xs sm:text-sm font-medium">
                         Amount of PLT
                       </label>
                     </div>
-                    <span className="text-sm sm:text-base md:text-lg font-bold text-emerald-600">
+                    <span className="text-sm sm:text-base md:text-lg font-bold text-purple-600">
                       {tokenAmount.toLocaleString()} PLT
                     </span>
                   </div>
@@ -749,11 +664,22 @@ const Hero = () => {
                         step="100"
                         value={tokenAmount}
                         onChange={(e) => setTokenAmount(Number(e.target.value))}
-                        className="w-full h-1.5 sm:h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer 
-                          [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 sm:[&::-webkit-slider-thumb]:h-4 sm:[&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-emerald-600 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:border-0 [&::-webkit-slider-thumb]:transition-all [&::-webkit-slider-thumb]:shadow-md hover:[&::-webkit-slider-thumb]:shadow-lg
-                          [&::-moz-range-thumb]:h-3 [&::-moz-range-thumb]:w-3 sm:[&::-moz-range-thumb]:h-4 sm:[&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-emerald-600 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:transition-all [&::-moz-range-thumb]:shadow-md hover:[&::-moz-range-thumb]:shadow-lg
-                          [&::-ms-thumb]:h-3 [&::-ms-thumb]:w-3 sm:[&::-ms-thumb]:h-4 sm:[&::-ms-thumb]:w-4 [&::-ms-thumb]:rounded-full [&::-ms-thumb]:bg-emerald-600 [&::-ms-thumb]:cursor-pointer [&::-ms-thumb]:border-0 [&::-ms-thumb]:transition-all [&::-ms-thumb]:shadow-md hover:[&::-ms-thumb]:shadow-lg"
+                        style={{
+                          background: `linear-gradient(to right, #9333ea, #2563eb ${
+                            ((tokenAmount - MIN_PURCHASE) /
+                              (MAX_PURCHASE - MIN_PURCHASE)) *
+                            100
+                          }%, #e5e7eb ${
+                            ((tokenAmount - MIN_PURCHASE) /
+                              (MAX_PURCHASE - MIN_PURCHASE)) *
+                            100
+                          }%)`,
+                        }}
+                        className="w-full h-2 appearance-none rounded-lg cursor-pointer
+                                   [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-purple-600 [&::-webkit-slider-thumb]:cursor-pointer
+                                   [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-purple-600"
                       />
+
                       <div className="flex justify-between mt-1 sm:mt-2">
                         <div className="flex flex-col items-center">
                           <span className="text-xs font-medium text-gray-500">
@@ -779,7 +705,7 @@ const Hero = () => {
                 {/* Payment Summary */}
                 <div className="feature-card space-y-2 sm:space-y-3 p-2 sm:p-3 bg-gray-50 dark:bg-gray-700 rounded-xl">
                   <div className="flex items-center gap-1.5 mb-1">
-                    <FiDollarSign className="text-emerald-600 text-base sm:text-lg md:text-xl" />
+                    <FiDollarSign className="text-purple-600 text-base sm:text-lg md:text-xl" />
                     <h3 className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm font-medium">
                       Payment Summary
                     </h3>
@@ -788,14 +714,8 @@ const Hero = () => {
                     <span className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm font-medium">
                       You Pay
                     </span>
-                    <span className="text-emerald-600 dark:text-emerald-500 text-xs sm:text-sm md:text-base font-bold">
-                      {selectedCurrency === "ETH" && !latestEthPrice ? (
-                        <span className="text-amber-600 dark:text-amber-400">
-                          Calculating...
-                        </span>
-                      ) : (
-                        `${calculatePaymentAmount()} ${selectedCurrency}`
-                      )}
+                    <span className="text-purple-600 dark:text-purple-500 text-xs sm:text-sm md:text-base font-bold">
+                      {calculatePaymentAmount()} USDT
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
@@ -812,35 +732,17 @@ const Hero = () => {
                 <motion.button
                   type="button"
                   onClick={isConnected ? handleBuyTokens : connectWallet}
-                  disabled={
-                    (isConnected &&
-                      selectedCurrency === "ETH" &&
-                      !latestEthPrice) ||
-                    (isConnected && !hasSufficientFunds)
-                  }
+                  disabled={isConnected && !hasSufficientFunds}
                   className={`btn-primary relative z-50 cursor-pointer w-full flex items-center justify-center gap-2 py-2 sm:py-2.5 md:py-3 text-xs sm:text-sm md:text-base ${
-                    (isConnected &&
-                      selectedCurrency === "ETH" &&
-                      !latestEthPrice) ||
-                    (isConnected && !hasSufficientFunds)
+                    isConnected && !hasSufficientFunds
                       ? "opacity-50 cursor-not-allowed"
                       : ""
                   }`}
                   whileHover={
-                    (isConnected &&
-                      selectedCurrency === "ETH" &&
-                      !latestEthPrice) ||
-                    (isConnected && !hasSufficientFunds)
-                      ? {}
-                      : { scale: 1.02 }
+                    isConnected && !hasSufficientFunds ? {} : { scale: 1.02 }
                   }
                   whileTap={
-                    (isConnected &&
-                      selectedCurrency === "ETH" &&
-                      !latestEthPrice) ||
-                    (isConnected && !hasSufficientFunds)
-                      ? {}
-                      : { scale: 0.98 }
+                    isConnected && !hasSufficientFunds ? {} : { scale: 0.98 }
                   }
                 >
                   {isPending ? (
@@ -852,10 +754,8 @@ const Hero = () => {
                     {isPending
                       ? "Processing..."
                       : isConnected
-                      ? selectedCurrency === "ETH" && !latestEthPrice
-                        ? "Waiting for ETH Price..."
-                        : !hasSufficientFunds
-                        ? `Insufficient ${selectedCurrency}`
+                      ? !hasSufficientFunds
+                        ? "Insufficient USDT"
                         : "Buy Tokens Now"
                       : "Connect Wallet to Buy"}
                   </span>
@@ -867,30 +767,45 @@ const Hero = () => {
                   Do not send from an exchange.
                 </p>
 
-                {/* ETH Price Status Message */}
-                {isConnected &&
-                  selectedCurrency === "ETH" &&
-                  !latestEthPrice && (
-                    <div className="text-center">
-                      <p className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-3 py-2 rounded-lg">
-                        ⏳ ETH price data is loading. Please wait before
-                        purchasing with ETH.
-                      </p>
-                    </div>
-                  )}
+                {/* USDT Balance Status Message */}
                 {isConnected && !hasSufficientFunds && (
                   <div className="text-center">
                     <p className="text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 px-3 py-2 rounded-lg">
-                      Insufficient {selectedCurrency} balance for the selected
-                      amount.
+                      Insufficient USDT balance for the selected amount.
                     </p>
                   </div>
                 )}
+
+                {/* Circuit Breaker Help */}
+                <div className="text-center">
+                  <p className="text-xs text-gray-500 mb-2">
+                    Having issues? Try these solutions:
+                  </p>
+                  <div className="text-xs text-gray-400 space-y-1 mb-3">
+                    <p>• Ensure you're on Sepolia testnet</p>
+                    <p>• Wait 30 seconds between transactions</p>
+                    <p>• Restart MetaMask if circuit breaker is active</p>
+                    <p>• Check you have enough ETH for gas fees</p>
+                  </div>
+                  <button
+                    onClick={() => setShowCircuitBreakerGuide(true)}
+                    className="text-xs text-purple-600 hover:text-purple-700 underline"
+                  >
+                    Get Help with Circuit Breaker
+                  </button>
+                </div>
               </div>
             </div>
           </motion.div>
         </div>
       </div>
+
+      {/* Circuit Breaker Guide Modal */}
+      <CircuitBreakerGuide
+        isOpen={showCircuitBreakerGuide}
+        onClose={() => setShowCircuitBreakerGuide(false)}
+        onReset={resetCircuitBreaker}
+      />
     </div>
   );
 };
