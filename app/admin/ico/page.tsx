@@ -8,20 +8,21 @@ import {
   useAppKitProvider,
 } from "@reown/appkit/react";
 import { ethers } from "ethers";
-import { 
-  FiDollarSign, 
-  FiAlertCircle, 
-  FiRefreshCw, 
-  FiPause, 
+import {
+  FiDollarSign,
+  FiAlertCircle,
+  FiRefreshCw,
+  FiPause,
   FiPlay,
   FiArrowUp,
   FiArrowDown,
   FiInfo,
-  FiExternalLink
+  FiExternalLink,
 } from "react-icons/fi";
 import { useICOContract } from "../../services/useICOContract";
 import { fromTokenUnits } from "../../helpers/format";
 import { useToastContext } from "../../context/ToastContext";
+import { postPriceChange } from "@/lib/api";
 import { CONTRACT_ADDRESS } from "../../utils/web3intraction/constants/contract_address";
 
 export default function ICOManagement() {
@@ -37,9 +38,11 @@ export default function ICOManagement() {
     pauseToggle: false,
     withdrawETH: false,
     withdrawUSDT: false,
-    refreshing: false
+    refreshing: false,
   });
-  const [priceHistory, setPriceHistory] = useState<{timestamp: number, price: string}[]>([]);
+  const [priceHistory, setPriceHistory] = useState<
+    { timestamp: number; price: string }[]
+  >([]);
   const [showPriceInput, setShowPriceInput] = useState(false);
 
   // Contract hooks
@@ -58,9 +61,12 @@ export default function ICOManagement() {
     isConfirmed: ICOConfirmed,
   } = useICOContract();
 
-  const { data: tokenPriceData, refetch: refetchTokenPrice } = useGgetTokenPrice();
-  const { data: pauseStatusData, refetch: refetchPauseStatus } = useGetPauseStatus();
-  const { data: icoTokenBal, refetch: refetchTokenBalance } = useGetTokenBalance();
+  const { data: tokenPriceData, refetch: refetchTokenPrice } =
+    useGgetTokenPrice();
+  const { data: pauseStatusData, refetch: refetchPauseStatus } =
+    useGetPauseStatus();
+  const { data: icoTokenBal, refetch: refetchTokenBalance } =
+    useGetTokenBalance();
   const { data: icoUSDTBal, refetch: refetchUSDTBalance } = useGetUSDTBalance();
   const { data: icoETHBal, refetch: refetchETHBalance } = useGetETHBalance();
 
@@ -72,9 +78,9 @@ export default function ICOManagement() {
   useEffect(() => {
     if (TOKEN_PRICE_USD && TOKEN_PRICE_USD !== tokenPrice) {
       setTokenPrice(TOKEN_PRICE_USD);
-      setPriceHistory(prev => [
+      setPriceHistory((prev) => [
         { timestamp: Date.now(), price: TOKEN_PRICE_USD },
-        ...prev.slice(0, 4)
+        ...prev.slice(0, 4),
       ]);
     }
   }, [TOKEN_PRICE_USD, tokenPrice]);
@@ -115,31 +121,56 @@ export default function ICOManagement() {
     }
   }, [ICOConfirmed, showSuccess, showWarning]);
 
+  const [pendingPriceToPersist, setPendingPriceToPersist] = useState<
+    string | null
+  >(null);
+  const [hasPostedPrice, setHasPostedPrice] = useState(false);
+
+  useEffect(() => {
+    const persistPriceIfConfirmed = async () => {
+      if (ICOConfirmed && pendingPriceToPersist && !hasPostedPrice) {
+        try {
+          await postPriceChange({
+            token: "MEM",
+            price: parseFloat(pendingPriceToPersist),
+          });
+          setHasPostedPrice(true);
+          showSuccess("Price Saved", "New price was saved to the database");
+        } catch (e) {
+          console.error("Failed to persist price change:", e);
+        } finally {
+          setPendingPriceToPersist(null);
+        }
+      }
+    };
+    void persistPriceIfConfirmed();
+  }, [ICOConfirmed, pendingPriceToPersist, hasPostedPrice, showSuccess]);
+
   const refreshAllData = useCallback(async () => {
-    setLoading(prev => ({ ...prev, refreshing: true }));
+    setLoading((prev) => ({ ...prev, refreshing: true }));
     try {
       await Promise.all([
         refetchTokenPrice(),
         refetchPauseStatus(),
         refetchTokenBalance(),
         refetchUSDTBalance(),
-        refetchETHBalance()
+        refetchETHBalance(),
       ]);
       showSuccess("Data Refreshed", "All data has been updated");
     } catch (error) {
       console.error("Failed to refresh data:", error);
       showError("Refresh Failed", "Failed to refresh data");
     } finally {
-      setLoading(prev => ({ ...prev, refreshing: false }));
+      setLoading((prev) => ({ ...prev, refreshing: false }));
     }
   }, [
-    refetchTokenPrice, 
-    refetchPauseStatus, 
-    refetchTokenBalance, 
-    refetchUSDTBalance, 
+    refetchTokenPrice,
+    refetchPauseStatus,
+    refetchTokenBalance,
+    refetchUSDTBalance,
     refetchETHBalance,
     showSuccess,
-    showError
+    showError,
   ]);
 
   const handleUpdateTokenPrice = useCallback(async () => {
@@ -148,16 +179,18 @@ export default function ICOManagement() {
       return;
     }
 
-    setLoading(prev => ({ ...prev, priceUpdate: true }));
+    setLoading((prev) => ({ ...prev, priceUpdate: true }));
     try {
       await updateICOPrice(ethers.parseUnits(tokenPrice, 6));
       showInfo("Price Update", "Token price update transaction submitted");
+      setPendingPriceToPersist(tokenPrice);
+      setHasPostedPrice(false);
       setShowPriceInput(false);
     } catch (error) {
       console.error("Error updating token price:", error);
       showError("Price Update Failed", "Failed to update token price");
     } finally {
-      setLoading(prev => ({ ...prev, priceUpdate: false }));
+      setLoading((prev) => ({ ...prev, priceUpdate: false }));
     }
   }, [
     isConnected,
@@ -175,7 +208,7 @@ export default function ICOManagement() {
       return;
     }
 
-    setLoading(prev => ({ ...prev, pauseToggle: true }));
+    setLoading((prev) => ({ ...prev, pauseToggle: true }));
     try {
       await pause(!isPaused);
       showInfo("Pause Toggle", `${isPaused ? "Resuming" : "Pausing"} ICO...`);
@@ -183,7 +216,7 @@ export default function ICOManagement() {
       console.error("Error toggling pause status:", error);
       showError("Pause Toggle Failed", "Failed to toggle ICO pause status");
     } finally {
-      setLoading(prev => ({ ...prev, pauseToggle: false }));
+      setLoading((prev) => ({ ...prev, pauseToggle: false }));
     }
   }, [isConnected, address, isPaused, pause, open, showInfo, showError]);
 
@@ -193,7 +226,7 @@ export default function ICOManagement() {
       return;
     }
 
-    setLoading(prev => ({ ...prev, withdrawETH: true }));
+    setLoading((prev) => ({ ...prev, withdrawETH: true }));
     try {
       if (icoETHBal && Number(icoETHBal) > 0) {
         await withdrawETH(icoETHBal);
@@ -209,7 +242,7 @@ export default function ICOManagement() {
         "Failed to withdraw ETH from contract"
       );
     } finally {
-      setLoading(prev => ({ ...prev, withdrawETH: false }));
+      setLoading((prev) => ({ ...prev, withdrawETH: false }));
     }
   }, [
     withdrawETH,
@@ -220,7 +253,7 @@ export default function ICOManagement() {
     showSuccess,
     showError,
     showWarning,
-    refetchETHBalance
+    refetchETHBalance,
   ]);
 
   const handleWithdrawUSDT = useCallback(async () => {
@@ -229,7 +262,7 @@ export default function ICOManagement() {
       return;
     }
 
-    setLoading(prev => ({ ...prev, withdrawUSDT: true }));
+    setLoading((prev) => ({ ...prev, withdrawUSDT: true }));
     try {
       if (icoUSDTBal && Number(icoUSDTBal) > 0) {
         await withdrawFunds(icoUSDTBal);
@@ -245,7 +278,7 @@ export default function ICOManagement() {
         "Failed to withdraw USDT from contract"
       );
     } finally {
-      setLoading(prev => ({ ...prev, withdrawUSDT: false }));
+      setLoading((prev) => ({ ...prev, withdrawUSDT: false }));
     }
   }, [
     withdrawFunds,
@@ -256,20 +289,27 @@ export default function ICOManagement() {
     showSuccess,
     showError,
     showWarning,
-    refetchUSDTBalance
+    refetchUSDTBalance,
   ]);
 
-  const formatBalance = (balance: bigint | undefined, decimals: number = 18) => {
+  const formatBalance = (
+    balance: bigint | undefined,
+    decimals: number = 18
+  ) => {
     if (!balance) return "0";
     return (Number(balance) / 10 ** decimals).toLocaleString(undefined, {
       minimumFractionDigits: 2,
-      maximumFractionDigits: decimals === 6 ? 2 : 4
+      maximumFractionDigits: decimals === 6 ? 2 : 4,
     });
   };
 
-  const priceChangePercentage = priceHistory.length > 1 
-    ? ((parseFloat(priceHistory[0].price) - parseFloat(priceHistory[1].price)) / parseFloat(priceHistory[1].price)) * 100
-    : 0;
+  const priceChangePercentage =
+    priceHistory.length > 1
+      ? ((parseFloat(priceHistory[0].price) -
+          parseFloat(priceHistory[1].price)) /
+          parseFloat(priceHistory[1].price)) *
+        100
+      : 0;
 
   return (
     <div className="p-4 sm:p-6 md:p-8">
@@ -284,7 +324,7 @@ export default function ICOManagement() {
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
             ICO Management
           </h1>
-          
+
           <motion.button
             onClick={refreshAllData}
             onTouchStart={refreshAllData}
@@ -293,7 +333,9 @@ export default function ICOManagement() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <FiRefreshCw className={`${loading.refreshing ? "animate-spin" : ""} text-lg`} />
+            <FiRefreshCw
+              className={`${loading.refreshing ? "animate-spin" : ""} text-lg`}
+            />
             Refresh Data
           </motion.button>
         </div>
@@ -307,20 +349,27 @@ export default function ICOManagement() {
                 <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
                   Token Price
                 </h3>
-                
+
                 <div className="flex items-center gap-3">
                   {priceHistory.length > 1 && (
-                    <span className={`flex items-center text-sm font-medium ${
-                      priceChangePercentage >= 0 ? "text-green-600" : "text-red-600"
-                    }`}>
-                      {priceChangePercentage >= 0 ? <FiArrowUp /> : <FiArrowDown />}
+                    <span
+                      className={`flex items-center text-sm font-medium ${
+                        priceChangePercentage >= 0
+                          ? "text-green-600"
+                          : "text-red-600"
+                      }`}
+                    >
+                      {priceChangePercentage >= 0 ? (
+                        <FiArrowUp />
+                      ) : (
+                        <FiArrowDown />
+                      )}
                       {Math.abs(priceChangePercentage).toFixed(2)}%
                     </span>
                   )}
-               
                 </div>
               </div>
-              
+
               <AnimatePresence mode="wait">
                 {showPriceInput ? (
                   <motion.div
@@ -361,11 +410,13 @@ export default function ICOManagement() {
                     <span className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
                       ${tokenPrice}
                     </span>
-                    <span className="text-gray-500 dark:text-gray-400 text-sm mb-1">per token</span>
+                    <span className="text-gray-500 dark:text-gray-400 text-sm mb-1">
+                      per token
+                    </span>
                   </motion.div>
                 )}
               </AnimatePresence>
-              
+
               {priceHistory.length > 0 && (
                 <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                   <h4 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
@@ -373,7 +424,10 @@ export default function ICOManagement() {
                   </h4>
                   <div className="space-y-2">
                     {priceHistory.slice(0, 3).map((entry, index) => (
-                      <div key={index} className="flex justify-between text-xs sm:text-sm">
+                      <div
+                        key={index}
+                        className="flex justify-between text-xs sm:text-sm"
+                      >
                         <span className="text-gray-500 dark:text-gray-400">
                           {new Date(entry.timestamp).toLocaleTimeString()}
                         </span>
@@ -390,10 +444,16 @@ export default function ICOManagement() {
               <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-4">
                 ICO Status
               </h3>
-              
+
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-full ${isPaused ? 'bg-red-100 dark:bg-red-900/20' : 'bg-green-100 dark:bg-green-900/20'}`}>
+                  <div
+                    className={`p-2 rounded-full ${
+                      isPaused
+                        ? "bg-red-100 dark:bg-red-900/20"
+                        : "bg-green-100 dark:bg-green-900/20"
+                    }`}
+                  >
                     {isPaused ? (
                       <FiPause className="text-red-600 dark:text-red-400 text-lg sm:text-xl" />
                     ) : (
@@ -415,7 +475,7 @@ export default function ICOManagement() {
                     </span>
                   </div>
                 </div>
-                
+
                 <motion.button
                   onClick={handleTogglePause}
                   onTouchStart={handleTogglePause}
@@ -442,13 +502,13 @@ export default function ICOManagement() {
                     : "Pause ICO"}
                 </motion.button>
               </div>
-              
+
               <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                 <div className="flex items-start gap-2">
                   <FiInfo className="text-blue-500 mt-0.5 flex-shrink-0 text-sm sm:text-base" />
                   <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
-                    {isPaused 
-                      ? "ICO is currently paused. No purchases can be made until resumed." 
+                    {isPaused
+                      ? "ICO is currently paused. No purchases can be made until resumed."
                       : "ICO is active. Users can purchase tokens using ETH or USDT."}
                   </p>
                 </div>
@@ -463,38 +523,44 @@ export default function ICOManagement() {
               <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-4">
                 Contract Balances
               </h3>
-              
+
               <div className="space-y-3">
                 <div className="p-3 sm:p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                   <div className="flex justify-between items-center mb-1">
                     <span className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm">
                       Token Balance
                     </span>
-                    <span className="text-xs text-gray-500 dark:text-gray-400">PLT</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      MEM
+                    </span>
                   </div>
                   <span className="font-semibold text-lg sm:text-xl text-gray-900 dark:text-white">
                     {formatBalance(icoTokenBal as bigint)}
                   </span>
                 </div>
-                
+
                 <div className="p-3 sm:p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                   <div className="flex justify-between items-center mb-1">
                     <span className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm">
                       ETH Balance
                     </span>
-                    <span className="text-xs text-gray-500 dark:text-gray-400">ETH</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      ETH
+                    </span>
                   </div>
                   <span className="font-semibold text-lg sm:text-xl text-gray-900 dark:text-white">
                     {formatBalance(icoETHBal as bigint)}
                   </span>
                 </div>
-                
+
                 <div className="p-3 sm:p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                   <div className="flex justify-between items-center mb-1">
                     <span className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm">
                       USDT Balance
                     </span>
-                    <span className="text-xs text-gray-500 dark:text-gray-400">USDT</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      USDT
+                    </span>
                   </div>
                   <span className="font-semibold text-lg sm:text-xl text-gray-900 dark:text-white">
                     {formatBalance(icoUSDTBal as bigint, 6)}
@@ -508,12 +574,14 @@ export default function ICOManagement() {
               <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-4">
                 Withdraw Funds
               </h3>
-              
+
               <div className="space-y-3">
                 <motion.button
                   onClick={handleWithdrawETH}
                   onTouchStart={handleWithdrawETH}
-                  disabled={loading.withdrawETH || !icoETHBal || Number(icoETHBal) === 0}
+                  disabled={
+                    loading.withdrawETH || !icoETHBal || Number(icoETHBal) === 0
+                  }
                   className="w-full flex items-center justify-between px-4 py-2.5 sm:py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base min-h-[44px] touch-manipulation"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -523,11 +591,15 @@ export default function ICOManagement() {
                     {formatBalance(icoETHBal as bigint)} ETH
                   </span>
                 </motion.button>
-                
+
                 <motion.button
                   onClick={handleWithdrawUSDT}
                   onTouchStart={handleWithdrawUSDT}
-                  disabled={loading.withdrawUSDT || !icoUSDTBal || Number(icoUSDTBal) === 0}
+                  disabled={
+                    loading.withdrawUSDT ||
+                    !icoUSDTBal ||
+                    Number(icoUSDTBal) === 0
+                  }
                   className="w-full flex items-center justify-between px-4 py-2.5 sm:py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base min-h-[44px] touch-manipulation"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -538,12 +610,13 @@ export default function ICOManagement() {
                   </span>
                 </motion.button>
               </div>
-              
+
               <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
                 <div className="flex items-start gap-2">
                   <FiAlertCircle className="text-yellow-500 mt-0.5 flex-shrink-0 text-sm sm:text-base" />
                   <p className="text-xs sm:text-sm text-yellow-700 dark:text-yellow-300">
-                    Withdrawals will transfer funds to the contract owner's wallet. This action is irreversible.
+                    Withdrawals will transfer funds to the contract owner's
+                    wallet. This action is irreversible.
                   </p>
                 </div>
               </div>

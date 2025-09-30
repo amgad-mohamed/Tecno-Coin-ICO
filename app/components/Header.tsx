@@ -134,7 +134,7 @@ const Header = () => {
             >
               <div className="flex items-center gap-4">
                 <Image
-                  src="/logo.webp"
+                  src="/logo.png"
                   alt="Platireum Logo"
                   width={150}
                   height={50}

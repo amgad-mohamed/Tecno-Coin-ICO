@@ -7,6 +7,7 @@ import { ethers } from "ethers";
 import { useTokenContract } from "../../services/useTokenContract";
 import { useICOContract } from "../../services/useICOContract";
 import { useToastContext } from "../../context/ToastContext";
+import { postPriceChange } from "@/lib/api";
 
 interface TokenStats {
   totalMinted: number;
@@ -36,6 +37,7 @@ export default function TokenManagement() {
     updateTokenPrice: updateICOPrice,
     error: updateTokenPriceError,
     isPending: updateTokenPending,
+    isConfirmed,
   } = useICOContract();
 
   const { data: tokenStatsData } = useGetTokenStats();
@@ -52,6 +54,30 @@ export default function TokenManagement() {
   }, [tokenStatsData]);
 
   // Event handlers
+  const [pendingPriceToPersist, setPendingPriceToPersist] = useState<
+    string | null
+  >(null);
+  const [hasPostedPrice, setHasPostedPrice] = useState(false);
+
+  useEffect(() => {
+    const persistPriceIfConfirmed = async () => {
+      if (isConfirmed && pendingPriceToPersist && !hasPostedPrice) {
+        try {
+          await postPriceChange({
+            token: "MEM",
+            price: parseFloat(pendingPriceToPersist),
+          });
+          setHasPostedPrice(true);
+          showSuccess("Price Saved", "New price was saved to the database");
+        } catch (e) {
+          console.error("Failed to persist price change:", e);
+        } finally {
+          setPendingPriceToPersist(null);
+        }
+      }
+    };
+    void persistPriceIfConfirmed();
+  }, [isConfirmed, pendingPriceToPersist, hasPostedPrice, showSuccess]);
   const handleUpdateTokenPrice = useCallback(async () => {
     if (!isConnected || !address) {
       open();
@@ -62,6 +88,8 @@ export default function TokenManagement() {
     try {
       await updateICOPrice(ethers.parseUnits(tokenPrice, 6));
       showInfo("Price Update", "Token price update transaction submitted");
+      setPendingPriceToPersist(tokenPrice);
+      setHasPostedPrice(false);
     } catch (error) {
       console.error("Error updating token price:", error);
       showError("Price Update Failed", "Failed to update token price");
@@ -101,7 +129,7 @@ export default function TokenManagement() {
                   Total Minted
                 </span>
                 <span className="font-semibold text-lg">
-                  {tokenStats.totalMinted.toLocaleString()} PLT
+                  {tokenStats.totalMinted.toLocaleString()} MEM
                 </span>
               </div>
               <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
@@ -109,7 +137,7 @@ export default function TokenManagement() {
                   Current Supply
                 </span>
                 <span className="font-semibold text-lg">
-                  {tokenStats.currentSupply.toLocaleString()} PLT
+                  {tokenStats.currentSupply.toLocaleString()} MEM
                 </span>
               </div>
               <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
@@ -117,7 +145,7 @@ export default function TokenManagement() {
                   Total Burned
                 </span>
                 <span className="font-semibold text-lg">
-                  {tokenStats.totalBurned.toLocaleString()} PLT
+                  {tokenStats.totalBurned.toLocaleString()} MEM
                 </span>
               </div>
             </div>

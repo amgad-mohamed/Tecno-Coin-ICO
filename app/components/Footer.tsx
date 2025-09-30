@@ -105,11 +105,11 @@ const Footer = () => {
               href="#"
               className="text-2xl font-bold text-purple-600 dark:text-purple-400"
             >
-              Platireum
+              MemCoin
             </a>
             <p className="mt-4 text-gray-600 dark:text-gray-400 text-sm sm:text-base">
               Join our exclusive presale phase and be among the first to acquire
-              PLT tokens.
+              MEM tokens.
             </p>
             <div className="flex space-x-4 mt-6">
               {socialLinks.map((item) => (

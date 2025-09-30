@@ -138,7 +138,7 @@ export default function StakingManagement() {
                 {typeof stakingAvailable === "bigint"
                   ? (Number(stakingAvailable) / 1e18).toLocaleString()
                   : "0"}{" "}
-                PLT
+                MEM
               </span>
             </div>
 
@@ -150,7 +150,7 @@ export default function StakingManagement() {
                 {typeof stakingTotalReleased === "bigint"
                   ? (Number(stakingTotalReleased) / 1e18).toLocaleString()
                   : "0"}{" "}
-                PLT
+                MEM
               </span>
             </div>
           </div>
@@ -187,7 +187,7 @@ export default function StakingManagement() {
                       {status}
                     </span>
                     <span className="font-medium text-sm sm:text-base truncate">
-                      {Number(item.amt).toLocaleString()} PLT •{" "}
+                      {Number(item.amt).toLocaleString()} MEM •{" "}
                       {ts ? new Date(ts * 1000).toLocaleString() : "-"}
                     </span>
                   </div>

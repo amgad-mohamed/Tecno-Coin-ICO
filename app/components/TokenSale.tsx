@@ -4,12 +4,12 @@ const TokenSale = () => {
   const tokenDetails = [
     {
       title: "Total Supply",
-      value: "100,000,000 PLT",
+      value: "100,000,000 MEM",
       description: "Fixed supply, no additional minting",
     },
     {
       title: "Presale Allocation",
-      value: "50,000,000 PLT",
+      value: "50,000,000 MEM",
       description: "50% of total supply available",
     },
     {
@@ -43,11 +43,11 @@ const TokenSale = () => {
     },
     {
       label: "Minimum Purchase",
-      value: "1,000 PLT",
+      value: "1,000 MEM",
     },
     {
       label: "Maximum Purchase",
-      value: "500,000 PLT",
+      value: "500,000 MEM",
     },
   ];
 
@@ -75,10 +75,10 @@ const TokenSale = () => {
     <div id="token-sale" className="container px-4 sm:px-6 lg:px-8">
       <div className="text-center m-16 pt-20">
         <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-          PLT Token Information
+          MEM Token Information
         </h2>
         <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-          Discover the details of our PLT token presale. Secure, transparent,
+          Discover the details of our MEM token presale. Secure, transparent,
           and designed for long-term success with USDT-only purchases.
         </p>
       </div>

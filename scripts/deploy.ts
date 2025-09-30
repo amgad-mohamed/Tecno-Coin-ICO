@@ -21,7 +21,7 @@ async function main() {
   const Token = await ethers.getContractFactory("Token");
   const token = await Token.deploy(
     "Platireum", // name
-    "PLT", // symbol
+    "MEM", // symbol
     18, // decimals
     ethers.parseEther("1000000") // 1 million tokens initial supply
   );

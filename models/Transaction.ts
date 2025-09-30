@@ -8,6 +8,8 @@ export interface Transaction extends Document {
   status: "COMPLETED" | "PENDING";
   date: Date;
   hash: `0x${string}`;
+  walletAddress?: `0x${string}`;
+  priceId?: mongoose.Types.ObjectId;
 }
 
 const transactionSchema = new Schema<Transaction>({
@@ -41,6 +43,17 @@ const transactionSchema = new Schema<Transaction>({
   hash: {
     type: String,
     required: true,
+  },
+  walletAddress: {
+    type: String,
+    required: false,
+    index: true,
+  },
+  priceId: {
+    type: Schema.Types.ObjectId,
+    ref: "Price",
+    required: false,
+    index: true,
   },
 });
 

@@ -23,7 +23,11 @@ import { injected } from "wagmi/connectors";
 import { CONTRACT_ADDRESS } from "../utils/web3intraction/constants/contract_address";
 import { useRouter } from "next/navigation";
 import { useMockUSDTContract } from "../services/useMockUSDTContract";
-import { postTransaction, type NewTransactionBody } from "@/lib/api";
+import {
+  postTransaction,
+  type NewTransactionBody,
+  getActivePrice,
+} from "@/lib/api";
 import { useTimers } from "../hooks/useTimers";
 import { useToastContext } from "../context/ToastContext";
 import CircuitBreakerGuide from "./CircuitBreakerGuide";
@@ -44,6 +48,7 @@ const Hero = () => {
   > | null>(null);
   const [hasPosted, setHasPosted] = useState(false);
   const [showCircuitBreakerGuide, setShowCircuitBreakerGuide] = useState(false);
+  const [purchaseQueued, setPurchaseQueued] = useState(false);
 
   const router = useRouter();
   const { showSuccess, showError, showInfo } = useToastContext();
@@ -326,9 +331,21 @@ const Hero = () => {
     }
   };
 
+  // useEffect(() => {
+  //   let priceId: string | undefined = undefined;
+  //   const fetchActivePrice = async () => {
+  //     try {
+  //       const activePrice = await getActivePrice("MEM");
+  //       priceId = activePrice?._id as string | undefined;
+  //     } catch {}
+  //   };
+  //   fetchActivePrice();
+  //   console.log(priceId);
+  // }, []);
+
   useEffect(() => {
     const proceed = async () => {
-      if (isUSDTConfirmed && pendingUSDTAmount) {
+      if (isUSDTConfirmed && pendingUSDTAmount && !purchaseQueued) {
         try {
           showInfo(
             "USDT Approved",
@@ -336,6 +353,7 @@ const Hero = () => {
           );
 
           try {
+            setPurchaseQueued(true);
             await buyTokens(pendingUSDTAmount);
           } catch (buyError) {
             console.error("Buy Tokens Error:", buyError);
@@ -344,6 +362,13 @@ const Hero = () => {
             );
           }
 
+          // Lookup active priceId
+          let priceId: string | undefined = undefined;
+          try {
+            const activePrice = await getActivePrice("MEM");
+            priceId = activePrice?._id as string | undefined;
+          } catch {}
+
           setQueuedTxBody({
             type: "BUY",
             amount: tokenAmount,
@@ -351,11 +376,14 @@ const Hero = () => {
             currency: "USDT",
             status: "COMPLETED",
             date: new Date().toISOString(),
+            walletAddress: address as `0x${string}`,
+            priceId,
           });
           setHasPosted(false);
         } catch (err) {
           console.error("Buy failed:", err);
           showError("Purchase Failed", "Unable to complete purchase with USDT");
+          setPurchaseQueued(false);
         } finally {
           setPendingUSDTAmount(null);
         }
@@ -371,6 +399,7 @@ const Hero = () => {
     buyTokens,
     showInfo,
     showError,
+    purchaseQueued,
   ]);
 
   // Loading states
@@ -387,19 +416,29 @@ const Hero = () => {
   if (!mounted) return null;
 
   return (
-    <div className="relative min-h-screen overflow-hidden flex items-center">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 bg-grid-pattern opacity-10" />
+    <div className="relative min-h-screen overflow-hidden flex items-center bg-gradient-to-br from-white via-purple-50/30 to-blue-50/50 dark:from-gray-900 dark:via-purple-900/10 dark:to-blue-900/20">
+      {/* Enhanced Background Elements */}
+      <div className="absolute inset-0 bg-grid-pattern opacity-5" />
+
+      {/* Animated gradient orbs */}
+      <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-br from-purple-400/20 to-blue-400/20 rounded-full blur-3xl animate-pulse"></div>
+      <div className="absolute bottom-20 right-10 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-indigo-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-purple-300/10 to-blue-300/10 rounded-full blur-3xl animate-pulse delay-500"></div>
+
+      {/* Floating particles */}
+      <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-purple-400 rounded-full animate-bounce delay-300"></div>
+      <div className="absolute top-3/4 right-1/4 w-3 h-3 bg-blue-400 rounded-full animate-bounce delay-700"></div>
+      <div className="absolute top-1/2 right-1/3 w-1 h-1 bg-indigo-400 rounded-full animate-bounce delay-1000"></div>
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8 md:py-0">
-        <div className="grid lg:grid-cols-[1.2fr,0.8fr] gap-8 lg:gap-16 items-stretch">
-          {/* Left Column */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1.2fr,0.8fr] gap-8 lg:gap-16 items-stretch">
+          {/* Left Column - Hero Content (Order 2 on mobile, 1 on desktop) */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="flex flex-col space-y-6 md:space-y-9"
+            className="flex flex-col justify-center space-y-6 md:space-y-9 text-white order-2 lg:order-1"
           >
             <div className="space-y-6 md:space-y-8">
               <div className="highlight-box">
@@ -407,151 +446,112 @@ const Hero = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
-                  className="inline-flex items-center gap-3 mb-4 md:mb-6"
+                  className="inline-flex items-center gap-3 mb-6 md:mb-8 px-4 py-2 bg-gradient-to-r from-blue-100/80 to-purple-100/80 dark:from-blue-900/30 dark:to-purple-900/30 rounded-full backdrop-blur-sm border border-blue-200/50 dark:border-blue-700/50"
                 >
-                  <FiTrendingUp className="text-purple-600 text-xl animate-pulse" />
-                  <span className="text-purple-600 font-semibold">
-                    Presale is Live
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <FiTrendingUp className="text-blue-600 dark:text-blue-400 text-lg" />
+                  <span className="text-blue-700 dark:text-blue-300 font-semibold text-sm">
+                    Pre Sale Phase Active
                   </span>
                 </motion.div>
 
                 <motion.h1
-                  className="heading-1 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.4 }}
+                  className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight text-gray-900 dark:text-white mb-6"
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4, duration: 0.8 }}
                 >
-                  Welcome to{" "}
-                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600">
-                    PLT Token Presale
+                  Embrace what's{" "}
+                  <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                    NEXT
                   </span>
+                  , <br className="hidden sm:block" />
+                  and make it{" "}
+                  <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent">
+                    YOURS
+                  </span>
+                  .
                 </motion.h1>
 
                 <motion.p
-                  className="text-sm sm:text-base md:text-xl text-gray-700 dark:text-gray-300 mt-4 md:mt-6"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.5 }}
+                  className="text-lg md:text-xl text-gray-600 dark:text-gray-300 leading-relaxed max-w-2xl mb-8"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5, duration: 0.8 }}
                 >
-                  Secure your PLT tokens now with USDT payments. Limited time
-                  offer with special bonuses for early participants.
+                  Easily acquire and trade your tokens directly within our
+                  platform. Our secure marketplace facilitates seamless
+                  transactions, allowing you to manage your portfolio with
+                  confidence. Whether you're looking to invest, diversify, or
+                  liquidate, our intuitive interface makes the process
+                  straightforward and efficient.
                 </motion.p>
               </div>
 
               <motion.div
-                className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-6"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.6 }}
+                className="flex flex-col sm:flex-row gap-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6, duration: 0.8 }}
               >
-                <div className="stat-card p-3 md:p-4 bg-white dark:bg-gray-800 shadow-lg rounded-xl">
-                  <div className="flex items-center gap-2 mb-2">
-                    <FiBarChart2 className="text-purple-600 text-lg md:text-xl" />
-                    <h3 className="text-gray-700 dark:text-gray-300 text-sm md:text-base font-medium">
-                      Target Raised
-                    </h3>
-                  </div>
-                  <p className="bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600 text-xl md:text-2xl lg:text-3xl font-bold">
-                    $2,500,000
-                  </p>
-                </div>
-                <div className="stat-card p-3 md:p-4 bg-white dark:bg-gray-800 shadow-lg rounded-xl">
-                  <div className="flex items-center gap-2 mb-2">
-                    <FiTrendingUp className="text-purple-600 text-lg md:text-xl" />
-                    <h3 className="text-gray-700 dark:text-gray-300 text-sm md:text-base font-medium">
-                      Maximum Raise
-                    </h3>
-                  </div>
-                  <p className="bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600 text-xl md:text-2xl lg:text-3xl font-bold">
-                    $5,000,000
-                  </p>
-                </div>
+                <button className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+                  Read More
+                </button>
+                <button className="px-8 py-4 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-lg hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300">
+                  Join Our Community
+                </button>
               </motion.div>
             </div>
-
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.7 }}
-              className="mt-4 md:mt-6"
-            >
-              <CountdownTimer endDate={endDateString} title="Presale Ends In" />
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.8 }}
-              className="mt-4 md:mt-6"
-            >
-              <div className="rounded-2xl p-4 md:p-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg">
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                  <div className="space-y-3 py-3">
-                    <p className="text-sm uppercase tracking-wide/loose opacity-90">
-                      Special USDT-only presale
-                    </p>
-                    <h3 className="text-2xl md:text-xl font-semibold">
-                      Buy PLT tokens with USDT at presale price
-                    </h3>
-                    <p className="text-sm opacity-95">
-                      Simple USDT payments with instant token delivery and
-                      secure smart contracts.
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="hidden md:block h-10 w-px bg-white/20" />
-                    <div className="text-right">
-                      <p className="text-xs opacity-90">Current price</p>
-                      <p className="text-lg md:text-xl font-bold">
-                        ${TOKEN_PRICE_USD} / PLT
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
           </motion.div>
 
-          {/* Right Column - Purchase Card */}
+          {/* Right Column - Purchase Card (Order 1 on mobile, 2 on desktop) */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="h-full"
+            className="h-full order-1 lg:order-2"
           >
-            <div className="card h-full p-3 sm:p-4 md:p-6 bg-white dark:bg-gray-800 shadow-xl rounded-2xl">
+            <div className="card h-full p-4 sm:p-6 md:p-8 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm shadow-2xl rounded-3xl border border-gray-100/50 dark:border-gray-700/50 hover:shadow-purple-500/10 transition-all duration-500 relative overflow-hidden group">
+              {/* Background gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-50/50 via-transparent to-blue-50/50 dark:from-purple-900/10 dark:via-transparent dark:to-blue-900/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
               <div className="space-y-3 sm:space-y-4">
                 {/* Token Info */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-                  <div className="feature-card p-2 sm:p-3 bg-gray-50 dark:bg-gray-700 rounded-xl">
-                    <div className="flex items-center gap-1.5 mb-1">
-                      <FiDollarSign className="text-purple-600 text-base sm:text-lg md:text-xl" />
-                      <h3 className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm font-medium">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 relative z-10">
+                  <div className="feature-card p-3 sm:p-4 bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-900/20 dark:to-purple-800/20 rounded-xl border border-purple-100 dark:border-purple-700/30 hover:border-purple-200 dark:hover:border-purple-600 transition-all duration-300 group">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="p-1.5 bg-purple-100 dark:bg-purple-900/30 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                        <FiDollarSign className="text-purple-600 dark:text-purple-400 text-base sm:text-lg" />
+                      </div>
+                      <h3 className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm font-semibold">
                         Token Price
                       </h3>
                     </div>
-                    <p className="text-gray-900 dark:text-white text-xs sm:text-sm md:text-base font-bold">
+                    <p className="text-gray-900 dark:text-white text-sm sm:text-base font-bold">
                       ${TOKEN_PRICE_USD} USD
                     </p>
                   </div>
-                  <div className="feature-card p-2 sm:p-3 bg-gray-50 dark:bg-gray-700 rounded-xl">
-                    <div className="flex items-center gap-1.5 mb-1">
-                      <FiTrendingUp className="text-purple-600 text-base sm:text-lg md:text-xl" />
-                      <h3 className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm font-medium">
+                  <div className="feature-card p-3 sm:p-4 bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-900/20 dark:to-blue-800/20 rounded-xl border border-blue-100 dark:border-blue-700/30 hover:border-blue-200 dark:hover:border-blue-600 transition-all duration-300 group">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="p-1.5 bg-blue-100 dark:bg-blue-900/30 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                        <FiTrendingUp className="text-blue-600 dark:text-blue-400 text-base sm:text-lg" />
+                      </div>
+                      <h3 className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm font-semibold">
                         USDT Price
                       </h3>
                     </div>
-                    <p className="text-gray-900 dark:text-white text-xs sm:text-sm md:text-base font-bold">
+                    <p className="text-gray-900 dark:text-white text-sm sm:text-base font-bold">
                       $1.00 USD
                     </p>
                   </div>
                 </div>
 
                 {/* Token Analysis */}
-                <div className="feature-card space-y-2 p-2 sm:p-3 bg-gray-50 dark:bg-gray-700 rounded-xl">
-                  <div className="flex items-center gap-1.5 mb-2">
-                    <FiBox className="text-purple-600 text-base sm:text-lg md:text-xl" />
-                    <h3 className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm font-medium">
+                <div className="feature-card space-y-3 p-4 sm:p-5 bg-gradient-to-br from-indigo-50 to-indigo-100/50 dark:from-indigo-900/20 dark:to-indigo-800/20 rounded-xl border border-indigo-100 dark:border-indigo-700/30 hover:border-indigo-200 dark:hover:border-indigo-600 transition-all duration-300 group relative z-10">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="p-1.5 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                      <FiBox className="text-indigo-600 dark:text-indigo-400 text-base sm:text-lg" />
+                    </div>
+                    <h3 className="text-gray-700 dark:text-gray-300 text-sm font-semibold">
                       Token Analysis
                     </h3>
                   </div>
@@ -609,7 +609,7 @@ const Hero = () => {
                       </h3>
                     </div>
                     <p className="text-gray-900 dark:text-white text-xs sm:text-sm font-bold">
-                      {MIN_PURCHASE.toLocaleString()} PLT
+                      {MIN_PURCHASE.toLocaleString()} MEM
                     </p>
                   </div>
                   <div className="feature-card p-2 sm:p-3 bg-gray-50 dark:bg-gray-700 rounded-xl">
@@ -620,7 +620,7 @@ const Hero = () => {
                       </h3>
                     </div>
                     <p className="text-gray-900 dark:text-white text-xs sm:text-sm font-bold">
-                      {MAX_PURCHASE.toLocaleString()} PLT
+                      {MAX_PURCHASE.toLocaleString()} MEM
                     </p>
                   </div>
                 </div>
@@ -647,11 +647,11 @@ const Hero = () => {
                     <div className="flex items-center gap-1.5">
                       <FiShoppingCart className="text-purple-600 text-base sm:text-lg md:text-xl" />
                       <label className="text-gray-500 text-xs sm:text-sm font-medium">
-                        Amount of PLT
+                        Amount of MEM
                       </label>
                     </div>
                     <span className="text-sm sm:text-base md:text-lg font-bold text-purple-600">
-                      {tokenAmount.toLocaleString()} PLT
+                      {tokenAmount.toLocaleString()} MEM
                     </span>
                   </div>
 
@@ -777,7 +777,7 @@ const Hero = () => {
                 )}
 
                 {/* Circuit Breaker Help */}
-                <div className="text-center">
+                {/* <div className="text-center">
                   <p className="text-xs text-gray-500 mb-2">
                     Having issues? Try these solutions:
                   </p>
@@ -793,7 +793,7 @@ const Hero = () => {
                   >
                     Get Help with Circuit Breaker
                   </button>
-                </div>
+                </div> */}
               </div>
             </div>
           </motion.div>

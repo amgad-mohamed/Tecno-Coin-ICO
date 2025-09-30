@@ -82,6 +82,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       color: "from-orange-500 to-orange-600",
       hoverColor: "from-orange-600 to-orange-700",
     },
+    {
+      title: "Transactions Management",
+      description: "View and manage transactions",
+      icon: <FiList className="text-xl" />,
+      href: "/admin/transactions",
+      color: "from-orange-500 to-orange-600",
+      hoverColor: "from-orange-600 to-orange-700",
+    },
   ];
 
   // Function to handle navigation
@@ -159,20 +167,20 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:z-20 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed lg:static inset-y-0 left-0 z-50 w-[260px] sm:w-[280px] lg:w-[290px] bg-white dark:bg-gray-800 p-5 sm:p-6 border-r border-gray-200 dark:border-gray-700 transform transition-transform duration-300 ${
+        className={`fixed lg:static inset-y-0 left-0 z-50 md:z-20 w-[260px] sm:w-[280px] lg:w-[290px] bg-white dark:bg-gray-800 p-5 sm:p-6 border-r border-gray-200 dark:border-gray-700 transform transition-transform duration-300 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0`}
       >
         {/* Sidebar Header */}
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-xl font-bold text-purple-600 dark:text-white flex items-center gap-2">
+          <h2 className="text-base md:text-xl font-bold text-purple-600 dark:text-white flex items-center gap-2">
             <FiSettings className="text-purple-600" /> Admin Dashboard
           </h2>
           <button
