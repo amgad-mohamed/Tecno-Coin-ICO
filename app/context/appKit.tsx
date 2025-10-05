@@ -18,7 +18,7 @@ if (!projectId) throw new Error("Project ID is not defined");
 const metadata = {
   name: "Platireum Token Presale",
   description:
-    "Join our exclusive presale phase and be among the first to acquire MEM tokens.",
+    "Join our exclusive presale phase and be among the first to acquire NEFE tokens.",
   url: "https://platireum.com",
   icons: ["https://avatars.platireum.com/"],
 };

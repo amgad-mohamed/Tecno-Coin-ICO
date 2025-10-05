@@ -416,19 +416,19 @@ const Hero = () => {
   if (!mounted) return null;
 
   return (
-    <div className="relative min-h-screen overflow-hidden flex items-center bg-gradient-to-br from-white via-purple-50/30 to-blue-50/50 dark:from-gray-900 dark:via-purple-900/10 dark:to-blue-900/20">
+    <div className="relative pt-20 md:pt-32 pb-16 md:pb-20 min-h-screen overflow-hidden flex items-center bg-gradient-to-br from-[#0b0b0b] via-[#0a0a0a] to-[#0b0b0b]">
       {/* Enhanced Background Elements */}
       <div className="absolute inset-0 bg-grid-pattern opacity-5" />
 
       {/* Animated gradient orbs */}
-      <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-br from-purple-400/20 to-blue-400/20 rounded-full blur-3xl animate-pulse"></div>
-      <div className="absolute bottom-20 right-10 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-indigo-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-purple-300/10 to-blue-300/10 rounded-full blur-3xl animate-pulse delay-500"></div>
+      <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-br from-amber-400/15 to-yellow-500/15 rounded-full blur-3xl animate-pulse"></div>
+      <div className="absolute bottom-20 right-10 w-80 h-80 bg-gradient-to-br from-amber-300/15 to-yellow-400/15 rounded-full blur-3xl animate-pulse delay-1000"></div>
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-amber-300/10 to-yellow-300/10 rounded-full blur-3xl animate-pulse delay-500"></div>
 
       {/* Floating particles */}
-      <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-purple-400 rounded-full animate-bounce delay-300"></div>
-      <div className="absolute top-3/4 right-1/4 w-3 h-3 bg-blue-400 rounded-full animate-bounce delay-700"></div>
-      <div className="absolute top-1/2 right-1/3 w-1 h-1 bg-indigo-400 rounded-full animate-bounce delay-1000"></div>
+      <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-amber-400 rounded-full animate-bounce delay-300"></div>
+      <div className="absolute top-3/4 right-1/4 w-3 h-3 bg-yellow-400 rounded-full animate-bounce delay-700"></div>
+      <div className="absolute top-1/2 right-1/3 w-1 h-1 bg-amber-500 rounded-full animate-bounce delay-1000"></div>
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8 md:py-0">
@@ -446,11 +446,11 @@ const Hero = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
-                  className="inline-flex items-center gap-3 mb-6 md:mb-8 px-4 py-2 bg-gradient-to-r from-blue-100/80 to-purple-100/80 dark:from-blue-900/30 dark:to-purple-900/30 rounded-full backdrop-blur-sm border border-blue-200/50 dark:border-blue-700/50"
+                  className="inline-flex items-center gap-3 mb-6 md:mb-8 px-4 py-2 bg-black/30 rounded-full backdrop-blur-sm border border-amber-700/40"
                 >
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <FiTrendingUp className="text-blue-600 dark:text-blue-400 text-lg" />
-                  <span className="text-blue-700 dark:text-blue-300 font-semibold text-sm">
+                  <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
+                  <FiTrendingUp className="text-amber-600 dark:text-amber-400 text-lg" />
+                  <span className="text-amber-700 dark:text-amber-300 font-semibold text-sm">
                     Pre Sale Phase Active
                   </span>
                 </motion.div>
@@ -462,12 +462,12 @@ const Hero = () => {
                   transition={{ delay: 0.4, duration: 0.8 }}
                 >
                   Embrace what's{" "}
-                  <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                  <span className="bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 bg-clip-text text-transparent">
                     NEXT
                   </span>
                   , <br className="hidden sm:block" />
                   and make it{" "}
-                  <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent">
+                  <span className="bg-gradient-to-r from-yellow-500 via-amber-500 to-yellow-600 bg-clip-text text-transparent">
                     YOURS
                   </span>
                   .
@@ -494,10 +494,10 @@ const Hero = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6, duration: 0.8 }}
               >
-                <button className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+                <button className="px-8 py-4 bg-gradient-to-r from-amber-600 to-yellow-600 text-white font-semibold rounded-lg hover:from-amber-700 hover:to-yellow-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
                   Read More
                 </button>
-                <button className="px-8 py-4 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-lg hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300">
+                <button className="px-8 py-4 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-lg hover:border-amber-500 hover:text-amber-600 dark:hover:text-amber-400 transition-all duration-300">
                   Join Our Community
                 </button>
               </motion.div>
@@ -511,16 +511,16 @@ const Hero = () => {
             transition={{ duration: 0.6 }}
             className="h-full order-1 lg:order-2"
           >
-            <div className="card h-full p-4 sm:p-6 md:p-8 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm shadow-2xl rounded-3xl border border-gray-100/50 dark:border-gray-700/50 hover:shadow-purple-500/10 transition-all duration-500 relative overflow-hidden group">
+            <div className="card h-full p-4 sm:p-6 md:p-8 bg-white/90 dark:bg-black/70 backdrop-blur-sm shadow-2xl rounded-3xl border border-gray-100/50 dark:border-white/10 hover:shadow-amber-500/10 transition-all duration-500 relative overflow-hidden group">
               {/* Background gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-50/50 via-transparent to-blue-50/50 dark:from-purple-900/10 dark:via-transparent dark:to-blue-900/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-amber-50/40 via-transparent to-yellow-50/40 dark:from-amber-900/10 dark:via-transparent dark:to-yellow-900/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
               <div className="space-y-3 sm:space-y-4">
                 {/* Token Info */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 relative z-10">
-                  <div className="feature-card p-3 sm:p-4 bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-900/20 dark:to-purple-800/20 rounded-xl border border-purple-100 dark:border-purple-700/30 hover:border-purple-200 dark:hover:border-purple-600 transition-all duration-300 group">
+                  <div className="feature-card p-3 sm:p-4 bg-black/30 rounded-xl border border-amber-700/30 hover:border-amber-500/50 backdrop-blur-sm transition-all duration-300 group">
                     <div className="flex items-center gap-2 mb-2">
-                      <div className="p-1.5 bg-purple-100 dark:bg-purple-900/30 rounded-lg group-hover:scale-110 transition-transform duration-300">
-                        <FiDollarSign className="text-purple-600 dark:text-purple-400 text-base sm:text-lg" />
+                      <div className="p-1.5 bg-amber-100 dark:bg-amber-900/30 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                        <FiDollarSign className="text-amber-600 dark:text-amber-400 text-base sm:text-lg" />
                       </div>
                       <h3 className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm font-semibold">
                         Token Price
@@ -530,10 +530,10 @@ const Hero = () => {
                       ${TOKEN_PRICE_USD} USD
                     </p>
                   </div>
-                  <div className="feature-card p-3 sm:p-4 bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-900/20 dark:to-blue-800/20 rounded-xl border border-blue-100 dark:border-blue-700/30 hover:border-blue-200 dark:hover:border-blue-600 transition-all duration-300 group">
+                  <div className="feature-card p-3 sm:p-4 bg-black/30 rounded-xl border border-amber-700/30 hover:border-amber-500/50 backdrop-blur-sm transition-all duration-300 group">
                     <div className="flex items-center gap-2 mb-2">
-                      <div className="p-1.5 bg-blue-100 dark:bg-blue-900/30 rounded-lg group-hover:scale-110 transition-transform duration-300">
-                        <FiTrendingUp className="text-blue-600 dark:text-blue-400 text-base sm:text-lg" />
+                      <div className="p-1.5 bg-amber-100 dark:bg-amber-900/30 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                        <FiTrendingUp className="text-amber-600 dark:text-amber-400 text-base sm:text-lg" />
                       </div>
                       <h3 className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm font-semibold">
                         USDT Price
@@ -546,10 +546,10 @@ const Hero = () => {
                 </div>
 
                 {/* Token Analysis */}
-                <div className="feature-card space-y-3 p-4 sm:p-5 bg-gradient-to-br from-indigo-50 to-indigo-100/50 dark:from-indigo-900/20 dark:to-indigo-800/20 rounded-xl border border-indigo-100 dark:border-indigo-700/30 hover:border-indigo-200 dark:hover:border-indigo-600 transition-all duration-300 group relative z-10">
+                <div className="feature-card space-y-3 p-4 sm:p-5 bg-black/30 rounded-xl border border-amber-700/30 hover:border-amber-500/50 backdrop-blur-sm transition-all duration-300 group relative z-10">
                   <div className="flex items-center gap-2 mb-3">
-                    <div className="p-1.5 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg group-hover:scale-110 transition-transform duration-300">
-                      <FiBox className="text-indigo-600 dark:text-indigo-400 text-base sm:text-lg" />
+                    <div className="p-1.5 bg-amber-100 dark:bg-amber-900/30 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                      <FiBox className="text-amber-600 dark:text-amber-400 text-base sm:text-lg" />
                     </div>
                     <h3 className="text-gray-700 dark:text-gray-300 text-sm font-semibold">
                       Token Analysis
@@ -568,7 +568,7 @@ const Hero = () => {
                       <span className="text-gray-600 dark:text-gray-400 block">
                         Sold
                       </span>
-                      <span className="text-purple-600 dark:text-purple-500 font-bold">
+                      <span className="text-amber-600 dark:text-amber-500 font-bold">
                         {SOLD_TOKENS.toLocaleString()}
                       </span>
                     </div>
@@ -586,13 +586,13 @@ const Hero = () => {
                       <span className="text-gray-600 dark:text-gray-400">
                         Sale Progress
                       </span>
-                      <span className="font-medium text-purple-600 dark:text-purple-500">
+                      <span className="font-medium text-amber-600 dark:text-amber-500">
                         {SALE_PROGRESS.toFixed(1)}%
                       </span>
                     </div>
-                    <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                    <div className="w-full h-1.5 bg-gray-800 rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-purple-600 rounded-full"
+                        className="h-full bg-amber-600 rounded-full"
                         style={{ width: `${SALE_PROGRESS}%` }}
                       />
                     </div>
@@ -603,24 +603,24 @@ const Hero = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                   <div className="feature-card p-2 sm:p-3 bg-gray-50 dark:bg-gray-700 rounded-xl">
                     <div className="flex items-center gap-1.5 mb-1">
-                      <FiAlertCircle className="text-purple-600 text-base sm:text-lg md:text-xl" />
+                      <FiAlertCircle className="text-amber-600 text-base sm:text-lg md:text-xl" />
                       <h3 className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm font-medium">
                         Min Purchase
                       </h3>
                     </div>
                     <p className="text-gray-900 dark:text-white text-xs sm:text-sm font-bold">
-                      {MIN_PURCHASE.toLocaleString()} MEM
+                      {MIN_PURCHASE.toLocaleString()} NEFE
                     </p>
                   </div>
                   <div className="feature-card p-2 sm:p-3 bg-gray-50 dark:bg-gray-700 rounded-xl">
                     <div className="flex items-center gap-1.5 mb-1">
-                      <FiCheckCircle className="text-purple-600 text-base sm:text-lg md:text-xl" />
+                      <FiCheckCircle className="text-amber-600 text-base sm:text-lg md:text-xl" />
                       <h3 className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm font-medium">
                         Max Purchase
                       </h3>
                     </div>
                     <p className="text-gray-900 dark:text-white text-xs sm:text-sm font-bold">
-                      {MAX_PURCHASE.toLocaleString()} MEM
+                      {MAX_PURCHASE.toLocaleString()} NEFE
                     </p>
                   </div>
                 </div>
@@ -633,10 +633,10 @@ const Hero = () => {
                       Payment Method
                     </label>
                   </div>
-                  <div className="bg-purple-100 p-1 rounded-lg">
+                  <div className="bg-amber-100 p-1 rounded-lg">
                     <div className="flex-1 relative rounded-md transition-all duration-200 py-1.5 sm:py-2 md:py-2.5 px-2 sm:px-3 md:px-4 text-xs sm:text-sm md:text-base text-white">
                       <span className="relative z-10">USDT (Tether)</span>
-                      <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 rounded-md" />
+                      <div className="absolute inset-0 bg-gradient-to-r from-amber-600 to-yellow-600 rounded-md" />
                     </div>
                   </div>
                 </div>
@@ -645,13 +645,13 @@ const Hero = () => {
                 <div className="space-y-2 sm:space-y-3">
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-1.5">
-                      <FiShoppingCart className="text-purple-600 text-base sm:text-lg md:text-xl" />
+                      <FiShoppingCart className="text-amber-600 text-base sm:text-lg md:text-xl" />
                       <label className="text-gray-500 text-xs sm:text-sm font-medium">
-                        Amount of MEM
+                        Amount of NEFE
                       </label>
                     </div>
-                    <span className="text-sm sm:text-base md:text-lg font-bold text-purple-600">
-                      {tokenAmount.toLocaleString()} MEM
+                    <span className="text-sm sm:text-base md:text-lg font-bold text-amber-600">
+                      {tokenAmount.toLocaleString()} NEFE
                     </span>
                   </div>
 
@@ -665,7 +665,7 @@ const Hero = () => {
                         value={tokenAmount}
                         onChange={(e) => setTokenAmount(Number(e.target.value))}
                         style={{
-                          background: `linear-gradient(to right, #9333ea, #2563eb ${
+                          background: `linear-gradient(to right, #f59e0b, #fbbf24 ${
                             ((tokenAmount - MIN_PURCHASE) /
                               (MAX_PURCHASE - MIN_PURCHASE)) *
                             100
@@ -676,8 +676,8 @@ const Hero = () => {
                           }%)`,
                         }}
                         className="w-full h-2 appearance-none rounded-lg cursor-pointer
-                                   [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-purple-600 [&::-webkit-slider-thumb]:cursor-pointer
-                                   [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-purple-600"
+                                   [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:cursor-pointer
+                                   [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600"
                       />
 
                       <div className="flex justify-between mt-1 sm:mt-2">
@@ -705,7 +705,7 @@ const Hero = () => {
                 {/* Payment Summary */}
                 <div className="feature-card space-y-2 sm:space-y-3 p-2 sm:p-3 bg-gray-50 dark:bg-gray-700 rounded-xl">
                   <div className="flex items-center gap-1.5 mb-1">
-                    <FiDollarSign className="text-purple-600 text-base sm:text-lg md:text-xl" />
+                    <FiDollarSign className="text-amber-600 text-base sm:text-lg md:text-xl" />
                     <h3 className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm font-medium">
                       Payment Summary
                     </h3>
@@ -714,7 +714,7 @@ const Hero = () => {
                     <span className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm font-medium">
                       You Pay
                     </span>
-                    <span className="text-purple-600 dark:text-purple-500 text-xs sm:text-sm md:text-base font-bold">
+                    <span className="text-amber-600 dark:text-amber-500 text-xs sm:text-sm md:text-base font-bold">
                       {calculatePaymentAmount()} USDT
                     </span>
                   </div>
@@ -789,7 +789,7 @@ const Hero = () => {
                   </div>
                   <button
                     onClick={() => setShowCircuitBreakerGuide(true)}
-                    className="text-xs text-purple-600 hover:text-purple-700 underline"
+                            className="text-xs text-amber-600 hover:text-amber-700 underline"
                   >
                     Get Help with Circuit Breaker
                   </button>

@@ -132,7 +132,7 @@ export default function TransactionsPage() {
             <div className="flex items-center gap-3 mt-10">
               <FiList className="text-2xl text-primary" />
               <h1 className="text-base md:text-2xl font-bold">
-                Your MEM Token Transactions
+                Your NEFE Token Transactions
               </h1>
             </div>
           </div>
@@ -269,7 +269,7 @@ export default function TransactionsPage() {
                           </span>
                         </td>
                         <td className="px-6 py-4">
-                          {transaction.amount.toLocaleString()} MEM
+                          {transaction.amount.toLocaleString()} NEFE
                         </td>
                         <td className="px-6 py-4">
                           {transaction.currency === "ETH"

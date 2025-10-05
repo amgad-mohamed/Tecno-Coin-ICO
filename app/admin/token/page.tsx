@@ -129,7 +129,7 @@ export default function TokenManagement() {
                   Total Minted
                 </span>
                 <span className="font-semibold text-lg">
-                  {tokenStats.totalMinted.toLocaleString()} MEM
+                  {tokenStats.totalMinted.toLocaleString()} NEFE
                 </span>
               </div>
               <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
@@ -137,7 +137,7 @@ export default function TokenManagement() {
                   Current Supply
                 </span>
                 <span className="font-semibold text-lg">
-                  {tokenStats.currentSupply.toLocaleString()} MEM
+                  {tokenStats.currentSupply.toLocaleString()} NEFE
                 </span>
               </div>
               <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
@@ -145,7 +145,7 @@ export default function TokenManagement() {
                   Total Burned
                 </span>
                 <span className="font-semibold text-lg">
-                  {tokenStats.totalBurned.toLocaleString()} MEM
+                  {tokenStats.totalBurned.toLocaleString()} NEFE
                 </span>
               </div>
             </div>

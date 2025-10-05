@@ -40,10 +40,10 @@ const AnimatedBackground = () => {
       const particleCount = Math.floor((canvas.width * canvas.height) / 15000);
 
       const colors = [
-        "rgba(147, 51, 234, 0.1)", // purple
-        "rgba(59, 130, 246, 0.1)", // blue
-        "rgba(168, 85, 247, 0.1)", // violet
-        "rgba(99, 102, 241, 0.1)", // indigo
+        "rgba(245, 158, 11, 0.1)", // amber
+        "rgba(234, 179, 8, 0.1)", // yellow
+        "rgba(251, 146, 60, 0.1)", // orange
+        "rgba(217, 119, 6, 0.1)", // amber deeper
       ];
 
       for (let i = 0; i < particleCount; i++) {
@@ -93,7 +93,7 @@ const AnimatedBackground = () => {
             ctx.beginPath();
             ctx.moveTo(particle.x, particle.y);
             ctx.lineTo(otherParticle.x, otherParticle.y);
-            ctx.strokeStyle = `rgba(147, 51, 234, ${
+            ctx.strokeStyle = `rgba(245, 158, 11, ${
               0.1 * (1 - distance / 100)
             })`;
             ctx.lineWidth = 0.5;
@@ -163,10 +163,10 @@ const AnimatedBackground = () => {
               } 
                 ${
                   i % 3 === 0
-                    ? "bg-purple-500/5"
+                    ? "bg-amber-500/5"
                     : i % 3 === 1
-                    ? "bg-blue-500/5"
-                    : "bg-indigo-500/5"
+                    ? "bg-yellow-500/5"
+                    : "bg-orange-500/5"
                 }
                 ${i % 2 === 0 ? "rounded-full" : "rounded-lg rotate-45"}
                 backdrop-blur-sm`}

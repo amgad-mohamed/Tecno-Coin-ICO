@@ -531,7 +531,7 @@ export default function ICOManagement() {
                       Token Balance
                     </span>
                     <span className="text-xs text-gray-500 dark:text-gray-400">
-                      MEM
+                      NEFE
                     </span>
                   </div>
                   <span className="font-semibold text-lg sm:text-xl text-gray-900 dark:text-white">

@@ -109,7 +109,7 @@ export default function AdminTransactionsPage() {
                   <div className="space-y-2 mb-4">
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-gray-600 dark:text-gray-400">Amount:</span>
-                      <span className="font-medium">{transaction.amount.toLocaleString()} MEM</span>
+                      <span className="font-medium">{transaction.amount.toLocaleString()} NEFE</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-gray-600 dark:text-gray-400">Price:</span>
@@ -191,7 +191,7 @@ export default function AdminTransactionsPage() {
                       </span>
                     </td>
                     <td className="px-3 lg:px-6 py-3 lg:py-4">
-                      {transaction.amount.toLocaleString()} MEM
+                      {transaction.amount.toLocaleString()} NEFE
                     </td>
                     <td className="px-3 lg:px-6 py-3 lg:py-4">
                       {transaction.currency === "ETH"

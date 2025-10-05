@@ -64,7 +64,7 @@ const HowToBuy = () => {
       icon: <FiDollarSign className="text-2xl" />,
       title: "Select Amount",
       description:
-        "Choose the amount of MEM tokens you want to purchase (min 1,000 MEM).",
+        "Choose the amount of NEFE tokens you want to purchase (min 1,000 NEFE).",
       illustration: (
         <svg className="w-full h-40" viewBox="0 0 200 200" fill="none">
           <defs>
@@ -238,11 +238,11 @@ const HowToBuy = () => {
             <span>Secure Purchase Process</span>
           </span>
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 bg-gradient-to-r from-primary via-primary/80 to-primary/60 text-transparent bg-clip-text">
-            How to Buy MEM Tokens
+            How to Buy NEFE Tokens
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto text-sm sm:text-base md:text-lg">
             Follow these simple steps to participate in our presale and acquire
-            MEM tokens. The process is secure, transparent, and only takes a few
+            NEFE tokens. The process is secure, transparent, and only takes a few
             minutes.
           </p>
         </motion.div>

@@ -4,16 +4,8 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import {
-  FiHome,
-  FiDollarSign,
-  FiShoppingBag,
-  FiList,
-  FiMenu,
-  FiX,
-} from "react-icons/fi";
+import { FiMenu, FiX } from "react-icons/fi";
 import { BiWallet } from "react-icons/bi";
-import type { IconType } from "react-icons";
 import { useAppKitAccount, useAppKit } from "@reown/appkit/react";
 import { useAdminManagerContract } from "@/app/services/useAdminManagerContract";
 import { formatAddress } from "@/app/utils/formatAddress";
@@ -22,7 +14,6 @@ interface NavItem {
   name: string;
   href: string;
   id: string;
-  icon: React.ReactNode;
 }
 
 const Header = () => {
@@ -66,40 +57,11 @@ const Header = () => {
   }, [pathname]);
 
   const navItems: NavItem[] = [
-    {
-      name: "Home",
-      href: "/",
-      id: "home",
-      icon: <FiHome className="text-lg" />,
-    },
-    {
-      name: "Token Sale",
-      href: "/#token-sale",
-      id: "token-sale",
-      icon: <FiDollarSign className="text-lg" />,
-    },
-    {
-      name: "How to Buy",
-      href: "/#how-to-buy",
-      id: "how-to-buy",
-      icon: <FiShoppingBag className="text-lg" />,
-    },
-    {
-      name: "Transactions",
-      href: "/transactions",
-      id: "transactions",
-      icon: <FiList className="text-lg" />,
-    },
-    ...(isAdminUser
-      ? [
-          {
-            name: "Admin",
-            href: "/admin",
-            id: "admin",
-            icon: <FiList className="text-lg" />,
-          },
-        ]
-      : []),
+    { name: "Home", href: "/", id: "home" },
+    { name: "Token Sale", href: "/#token-sale", id: "token-sale" },
+    { name: "How to Buy", href: "/#how-to-buy", id: "how-to-buy" },
+    { name: "Transactions", href: "/transactions", id: "transactions" },
+    ...(isAdminUser ? [{ name: "Admin", href: "/admin", id: "admin" }] : []),
   ];
 
   const handleDisconnect = async () => {
@@ -112,8 +74,10 @@ const Header = () => {
 
   return (
     <motion.header
-      className={`fixed  top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? "bg-background/80 backdrop-blur-lg shadow-lg" : ""
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled
+          ? "bg-black/80 backdrop-blur-lg shadow-lg border-b border-white/10"
+          : "bg-black/70 border-b border-white/10"
       }`}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
@@ -132,14 +96,15 @@ const Header = () => {
               className="flex items-center"
               aria-label="Platireum home"
             >
-              <div className="flex items-center gap-4">
+              <div className="flex flex-col relative w-20 items-center">
                 <Image
                   src="/logo.png"
                   alt="Platireum Logo"
-                  width={150}
-                  height={50}
+                  width={40}
+                  height={20}
                   className="w-28 sm:w-32 md:w-auto h-auto"
                 />
+                <p className="absolute -bottom-1 text-[9px] font-normal">NEFE COIN</p>
               </div>
             </a>
           </motion.div>
@@ -152,9 +117,9 @@ const Header = () => {
                 href={item.href}
                 className={`flex items-center gap-2 transition-colors text-sm lg:text-base ${
                   (pathname === "/" && activeSection === item.id) ||
-                  pathname === item.href
-                    ? "text-green-500 font-medium"
-                    : "text-foreground/80 hover:text-foreground"
+                  (!item.href.includes("#") && pathname === item.href)
+                    ? "text-amber-400 font-medium"
+                    : "text-white/80 hover:text-white"
                 }`}
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -162,16 +127,6 @@ const Header = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <span
-                  className={`${
-                    (pathname === "/" && activeSection === item.id) ||
-                    pathname === item.href
-                      ? "text-green-500"
-                      : ""
-                  }`}
-                >
-                  {item.icon}
-                </span>
                 <span>{item.name}</span>
               </motion.a>
             ))}
@@ -185,7 +140,7 @@ const Header = () => {
           >
             {isConnected ? (
               <div className="hidden md:flex items-center space-x-3 lg:space-x-4">
-                <span className="text-xs lg:text-sm text-gray-600">
+                <span className="text-xs lg:text-sm text-white/70">
                   {address ? formatAddress(address) : ""}
                 </span>
                 <motion.button
@@ -212,7 +167,7 @@ const Header = () => {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              className="md:hidden p-2 rounded-lg hover:bg-white/10 transition-colors"
             >
               {isMobileMenuOpen ? (
                 <FiX className="text-2xl" />
@@ -226,7 +181,7 @@ const Header = () => {
         {/* Mobile Menu */}
         <AnimatePresence>
           {isMobileMenuOpen && (
-            <div className="md:hidden overflow-hidden bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 rounded-md p-4">
+            <div className="md:hidden overflow-hidden bg-black border-t border-white/10 rounded-md p-4">
               <div className="py-4 space-y-2">
                 {navItems.map((item) => (
                   <a
@@ -234,28 +189,18 @@ const Header = () => {
                     href={item.href}
                     className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                       (pathname === "/" && activeSection === item.id) ||
-                      pathname === item.href
-                        ? "bg-green-500/10 text-green-500"
-                        : "hover:bg-gray-100 dark:hover:bg-gray-800"
+                      (!item.href.includes("#") && pathname === item.href)
+                        ? "bg-amber-500/10 text-amber-400"
+                        : "hover:bg-white/10"
                     }`}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    <span
-                      className={`${
-                        (pathname === "/" && activeSection === item.id) ||
-                        pathname === item.href
-                          ? "text-green-500"
-                          : ""
-                      }`}
-                    >
-                      {item.icon}
-                    </span>
                     <span className="text-sm">{item.name}</span>
                   </a>
                 ))}
                 {isConnected ? (
                   <div className="flex items-center justify-between px-4 py-3">
-                    <span className="text-sm text-gray-600 dark:text-gray-300">
+                    <span className="text-sm text-white/80">
                       {address ? formatAddress(address) : ""}
                     </span>
                     <motion.button

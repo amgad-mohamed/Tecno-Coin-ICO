@@ -16,7 +16,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Platireum Token Presale",
   description:
-    "Join our exclusive presale phase and be among the first to acquire MEM tokens.",
+    "Join our exclusive presale phase and be among the first to acquire NEFE tokens.",
 };
 
 export default async function RootLayout({
@@ -25,7 +25,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <body className={`${inter.className} antialiased`}>
         <AppKitProvider>
           <ToastProvider>

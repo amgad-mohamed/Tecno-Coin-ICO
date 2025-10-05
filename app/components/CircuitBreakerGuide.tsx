@@ -110,8 +110,8 @@ const CircuitBreakerGuide = ({
                     key={index}
                     className="flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
                   >
-                    <div className="w-6 h-6 bg-purple-100 dark:bg-purple-900/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <span className="text-xs font-bold text-purple-600">
+                    <div className="w-6 h-6 bg-amber-100 dark:bg-amber-900/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-xs font-bold text-amber-600">
                         {index + 1}
                       </span>
                     </div>
@@ -122,7 +122,7 @@ const CircuitBreakerGuide = ({
                       <p className="text-xs text-gray-600 dark:text-gray-300">
                         {step.description}
                       </p>
-                      <p className="text-xs text-purple-600 dark:text-purple-400 mt-1">
+                      <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">
                         {step.action}
                       </p>
                     </div>
@@ -133,7 +133,7 @@ const CircuitBreakerGuide = ({
               <div className="flex gap-3 pt-4">
                 <button
                   onClick={handleReset}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-lg hover:from-purple-600 hover:to-blue-600 transition-all duration-300"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-amber-600 to-yellow-600 text-white rounded-lg hover:from-amber-700 hover:to-yellow-700 transition-all duration-300"
                 >
                   <FiRefreshCw className="text-sm" />
                   <span className="text-sm font-medium">Reset & Try Again</span>

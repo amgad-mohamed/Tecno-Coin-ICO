@@ -63,8 +63,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       description: "Manage staking contracts and release schedules",
       icon: <FiSettings className="text-xl" />,
       href: "/admin/staking",
-      color: "from-purple-500 to-purple-600",
-      hoverColor: "from-purple-600 to-purple-700",
+      color: "from-amber-600 to-yellow-600",
+      hoverColor: "from-amber-700 to-yellow-700",
     },
     {
       title: "Admin Management",

@@ -46,9 +46,9 @@ const ToastItem = ({ toast, onRemove }: ToastProps) => {
       case "warning":
         return <FiAlertCircle className="text-yellow-500" />;
       case "info":
-        return <FiInfo className="text-blue-500" />;
+        return <FiInfo className="text-amber-500" />;
       default:
-        return <FiInfo className="text-blue-500" />;
+        return <FiInfo className="text-amber-500" />;
     }
   };
 
@@ -61,9 +61,9 @@ const ToastItem = ({ toast, onRemove }: ToastProps) => {
       case "warning":
         return "bg-yellow-50 border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-800";
       case "info":
-        return "bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800";
+        return "bg-amber-50 border-amber-200 dark:bg-amber-900/20 dark:border-amber-800";
       default:
-        return "bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800";
+        return "bg-amber-50 border-amber-200 dark:bg-amber-900/20 dark:border-amber-800";
     }
   };
 
@@ -76,9 +76,9 @@ const ToastItem = ({ toast, onRemove }: ToastProps) => {
       case "warning":
         return "text-yellow-800 dark:text-yellow-200";
       case "info":
-        return "text-blue-800 dark:text-blue-200";
+        return "text-amber-800 dark:text-amber-200";
       default:
-        return "text-blue-800 dark:text-blue-200";
+        return "text-amber-800 dark:text-amber-200";
     }
   };
 

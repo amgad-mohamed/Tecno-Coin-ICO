@@ -346,7 +346,7 @@ export default function AdminManagement() {
               <motion.button
                 onClick={handleRefreshAdminList}
                 disabled={adminListLoading}
-                className="px-3 py-1 sm:px-4 sm:py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm disabled:opacity-50"
+                className="px-3 py-1 sm:px-4 sm:py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors text-sm disabled:opacity-50"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
