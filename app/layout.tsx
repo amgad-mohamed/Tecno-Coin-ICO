@@ -14,7 +14,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Platireum Token Presale",
+  title: "Nefe Token Presale",
   description:
     "Join our exclusive presale phase and be among the first to acquire NEFE tokens.",
 };

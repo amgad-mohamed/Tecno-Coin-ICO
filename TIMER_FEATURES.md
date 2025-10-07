@@ -1,7 +1,7 @@
 # Timer Management and ICO Pause Features
 
 ## Overview
-This document describes the new features added to the Platireum Presale Token Next.js App:
+This document describes the new features added to the Nefe Presale Token Next.js App:
 
 1. **ICO Contract Pause Status Management**
 2. **MongoDB Timer Management System**
@@ -108,4 +108,4 @@ interface Timer {
 - Verify pause/resume functionality with ICO contract
 - Test timer status updates and deletions
 - Validate form inputs and error handling
-- Test admin access restrictions 
+- Test admin access restrictions

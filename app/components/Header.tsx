@@ -94,12 +94,12 @@ const Header = () => {
             <a
               href="#"
               className="flex items-center"
-              aria-label="Platireum home"
+              aria-label="Nefe home"
             >
               <div className="flex flex-col relative w-20 items-center">
                 <Image
                   src="/logo.png"
-                  alt="Platireum Logo"
+                  alt="Nefe Logo"
                   width={40}
                   height={20}
                   className="w-28 sm:w-32 md:w-auto h-auto"

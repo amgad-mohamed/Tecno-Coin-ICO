@@ -152,7 +152,7 @@ const Footer = () => {
           className="mt-10 sm:mt-12 pt-6 sm:pt-8 border-t border-gray-200 dark:border-gray-800 text-center text-gray-500 dark:text-gray-400 text-sm sm:text-base"
           variants={itemVariants}
         >
-          <p>© {new Date().getFullYear()} Platireum. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} NefeCoin. All rights reserved.</p>
         </motion.div>
       </div>
     </motion.footer>

@@ -16,11 +16,11 @@ if (!projectId) throw new Error("Project ID is not defined");
 
 // 2. Create a metadata object
 const metadata = {
-  name: "Platireum Token Presale",
+  name: "Nefe Token Presale",
   description:
     "Join our exclusive presale phase and be among the first to acquire NEFE tokens.",
   url: "https://platireum.com",
-  icons: ["https://avatars.platireum.com/"],
+  icons: ["/logo.png"],
 };
 
 // 3. Create the ethers adapter

@@ -426,9 +426,9 @@ const Hero = () => {
       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-amber-300/10 to-yellow-300/10 rounded-full blur-3xl animate-pulse delay-500"></div>
 
       {/* Floating particles */}
-      <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-amber-400 rounded-full animate-bounce delay-300"></div>
-      <div className="absolute top-3/4 right-1/4 w-3 h-3 bg-yellow-400 rounded-full animate-bounce delay-700"></div>
-      <div className="absolute top-1/2 right-1/3 w-1 h-1 bg-amber-500 rounded-full animate-bounce delay-1000"></div>
+      <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-amber-400 rounded-full animate-bounce delay-100"></div>
+      <div className="absolute top-3/4 right-1/4 w-3 h-3 bg-yellow-400 rounded-full animate-bounce delay-200"></div>
+      <div className="absolute top-1/2 right-1/3 w-1 h-1 bg-amber-500 rounded-full animate-bounce delay-100"></div>
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8 md:py-0">
