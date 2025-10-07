@@ -15,12 +15,12 @@ const TokenSale = () => {
     {
       title: "Token Price",
       value: "$0.10 USDT",
-      description: "Presale price in USDT",
+      description: "Early investor price",
     },
     {
-      title: "Payment Method",
-      value: "USDT Only",
-      description: "Simple USDT payments",
+      title: "Listing Price",
+      value: "$0.20 USD",
+      description: "100% upside potential",
     },
   ];
 
@@ -72,14 +72,18 @@ const TokenSale = () => {
   ];
 
   return (
-    <div id="token-sale" className="container px-4 sm:px-6 lg:px-8 bg-black text-white">
+    <div
+      id="token-sale"
+      className="container px-4 sm:px-6 lg:px-8 text-white font-nunito"
+    >
       <div className="text-center pt-20">
-        <h2 className="text-3xl md:text-4xl font-bold mb-6 bg-gradient-to-r from-amber-500 to-yellow-500 bg-clip-text text-transparent">
-          NEFE Token Information
+        <h2 className="text-3xl md:text-4xl font-bold mb-3">
+          Token Sale Details
         </h2>
-        <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-          Discover the details of our NEFE token presale. Secure, transparent,
-          and designed for long-term success with USDT-only purchases.
+        <p className="text-sm sm:text-base md:text-lg text-white/70 max-w-3xl mx-auto">
+          Join our presale to secure NEFE tokens at the best possible price. Our
+          transparent tokenomics and vesting schedule ensure long-term value for
+          all holders.
         </p>
       </div>
 
@@ -87,15 +91,15 @@ const TokenSale = () => {
         {tokenDetails.map((detail, index) => (
           <div
             key={index}
-            className="bg-white dark:bg-black/70 shadow-lg rounded-xl p-5 sm:p-6 hover:shadow-xl transition-shadow border border-gray-200 dark:border-white/10"
+            className="bg-secondBgColor rounded-xl p-5 sm:p-6 border border-bgColor/60"
           >
-            <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
+            <h3 className="text-base md:text-xl font-medium text-white/80 mb-2">
               {detail.title}
             </h3>
-            <p className="text-xl sm:text-2xl font-bold text-amber-600 dark:text-amber-400 mb-2">
+            <p className="text-base sm:text-lg md:text-2xl font-bold bg-gradient-to-r from-[#F4AD30] to-[#CA6C2F] bg-clip-text text-transparent mb-1">
               {detail.value}
             </p>
-            <p className="text-gray-600 dark:text-gray-300">
+            <p className="text-white/70 text-sm md:text-base">
               {detail.description}
             </p>
           </div>
@@ -103,20 +107,20 @@ const TokenSale = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-16">
-        <div className="bg-white dark:bg-black/70 shadow-lg rounded-xl p-5 sm:p-6 border border-gray-200 dark:border-white/10">
-          <h3 className="text-xl font-semibold mb-6 text-gray-900 dark:text-white">
+        <div className="bg-black/60 rounded-xl p-5 sm:p-6 border border-bgColor/60">
+          <h3 className="text-base md:text-xl font-semibold mb-4 text-white/80">
             Presale Information
           </h3>
           <div className="space-y-4">
             {presaleInfo.map((info, index) => (
               <div
                 key={index}
-                className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 p-4 bg-gray-50 dark:bg-black/60 rounded-xl border border-gray-200 dark:border-white/10"
+                className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 p-4 bg-secondBgColor rounded-xl border border-bgColor/60"
               >
-                <span className="text-gray-600 dark:text-gray-300">
+                <span className=" text-xs sm:text-sm md:text-base">
                   {info.label}
                 </span>
-                <span className="font-semibold text-gray-900 dark:text-white break-words">
+                <span className="font-semibold text-xs sm:text-sm md:text-base break-words">
                   {info.value}
                 </span>
               </div>
@@ -124,24 +128,24 @@ const TokenSale = () => {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-black/70 shadow-lg rounded-xl p-5 sm:p-6 border border-gray-200 dark:border-white/10">
-          <h3 className="text-xl font-semibold mb-6 text-gray-900 dark:text-white">
+        <div className="bg-black/60 rounded-xl p-5 sm:p-6 border border-bgColor/60">
+          <h3 className="text-sm font-medium mb-4 text-white/80">
             Token Distribution
           </h3>
           <div className="space-y-4">
             {distribution.map((item, index) => (
               <div key={index} className="flex items-center justify-between">
-                <span className="text-lg text-gray-700 dark:text-gray-300">
+                <span className="text-xs sm:text-sm md:text-base ">
                   {item.category}
                 </span>
                 <div className="flex items-center gap-4">
-                  <div className="w-40 sm:w-48 h-2 bg-gray-100 dark:bg-white/10 rounded-full overflow-hidden">
+                  <div className="w-40 sm:w-52 h-1.5 bg-bgColor rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-amber-600 dark:bg-amber-500"
+                      className="h-full rounded-full bg-gradient-to-r from-[#F4AD30] to-[#CA6C2F]"
                       style={{ width: `${item.percentage}%` }}
                     />
                   </div>
-                  <span className="text-lg font-semibold text-gray-900 dark:text-white">
+                  <span className="text-xs font-medium text-amber-400">
                     {item.percentage}%
                   </span>
                 </div>
@@ -151,8 +155,8 @@ const TokenSale = () => {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-black/70 shadow-lg rounded-xl p-5 sm:p-6 border border-gray-200 dark:border-white/10">
-        <h3 className="text-xl font-semibold mb-6 text-gray-900 dark:text-white">
+      <div className="rounded-xl p-5 sm:p-6 border border-bgColor/60">
+        <h3 className="text-base md:text-xl font-semibold mb-4 text-white/80">
           Vesting Schedule
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
@@ -160,7 +164,7 @@ const TokenSale = () => {
             {vestingInfo.map((info, index) => (
               <div key={index} className="flex items-start gap-3">
                 <svg
-                  className="w-5 h-5 flex-shrink-0 text-amber-600 dark:text-amber-400 mt-1"
+                  className="w-4 h-4 flex-shrink-0 text-amber-500 mt-1"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -168,69 +172,59 @@ const TokenSale = () => {
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    strokeWidth={2}
+                    strokeWidth={4}
                     d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
-                <span className="text-gray-600 dark:text-gray-300">{info}</span>
+                <span className="text-sm md:base font-inter">{info}</span>
               </div>
             ))}
           </div>
-          <div className="bg-gray-50 dark:bg-black/60 p-5 sm:p-6 rounded-xl border border-gray-200 dark:border-white/10">
-            <h4 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+          <div className="bg-secondBgColor p-5 sm:p-6 rounded-xl border border-bgColor/60">
+            <h4 className="text-base md:text-xl font-semibold mb-3 text-white/80">
               Smart Contract Details
             </h4>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-gray-600 dark:text-gray-300">
-                  Contract Address
-                </span>
-                <code className="text-amber-600 dark:text-amber-400 font-mono break-all">
+                <span className="font-medium text-sm md:text-base">Contract Address</span>
+                <code className="text-primary font-mono break-all text-sm">
                   0x1234...5678
                 </code>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-gray-600 dark:text-gray-300">
-                  Network
-                </span>
-                <span className="text-gray-900 dark:text-white">
-                  Ethereum (ERC-20)
-                </span>
+                <span className="font-medium text-sm md:text-base">Network</span>
+                <span className="text-sm md:text-base">Ethereum (ERC-20)</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-gray-600 dark:text-gray-300">
-                  Audit Status
-                </span>
-                <span className="text-amber-600 dark:text-amber-400">
-                  Verified by CertiK
-                </span>
+                <span className="font-medium text-sm md:text-base">Audit Status</span>
+                <span className="text-sm md:text-base">Verified by CertiK</span>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="mt-16 p-5 sm:p-6 bg-gray-50 dark:bg-black/60 rounded-xl border border-gray-200 dark:border-white/10">
-        <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+      <div className="mt-16 p-5 sm:p-6 bg-thirdBgColor rounded-xl border border-bgColor/60">
+        <h3 className="text-base md:text-xl font-semibold mb-3 text-amber-400">
           Important Notes:
         </h3>
         <ul className="space-y-3">
           <li className="flex items-start gap-3">
-            <span className="text-amber-600 dark:text-amber-400">•</span>
-            <span className="text-gray-600 dark:text-gray-300">
+            <span className="text-amber-400">•</span>
+            <span>
               Always verify the contract address before sending any funds
             </span>
           </li>
           <li className="flex items-start gap-3">
-            <span className="text-amber-600 dark:text-amber-400">•</span>
-            <span className="text-gray-600 dark:text-gray-300">
+            <span className="text-amber-400">•</span>
+            <span>
               Do not send funds from an exchange wallet; use a personal
               ERC-20-compatible wallet
             </span>
           </li>
           <li className="flex items-start gap-3">
-            <span className="text-amber-600 dark:text-amber-400">•</span>
-            <span className="text-gray-600 dark:text-gray-300">
+            <span className="text-amber-400">•</span>
+            <span>
               The team is not responsible for transactions sent to the wrong
               address
             </span>

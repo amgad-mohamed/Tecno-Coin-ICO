@@ -416,22 +416,41 @@ const Hero = () => {
   if (!mounted) return null;
 
   return (
-    <div className="relative pt-20 md:pt-32 pb-16 md:pb-20 min-h-screen overflow-hidden flex items-center bg-gradient-to-br from-[#0b0b0b] via-[#0a0a0a] to-[#0b0b0b]">
-      {/* Enhanced Background Elements */}
-      <div className="absolute inset-0 bg-grid-pattern opacity-5" />
-
-      {/* Animated gradient orbs */}
-      <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-br from-amber-400/15 to-yellow-500/15 rounded-full blur-3xl animate-pulse"></div>
-      <div className="absolute bottom-20 right-10 w-80 h-80 bg-gradient-to-br from-amber-300/15 to-yellow-400/15 rounded-full blur-3xl animate-pulse delay-1000"></div>
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-amber-300/10 to-yellow-300/10 rounded-full blur-3xl animate-pulse delay-500"></div>
-
-      {/* Floating particles */}
-      <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-amber-400 rounded-full animate-bounce delay-100"></div>
-      <div className="absolute top-3/4 right-1/4 w-3 h-3 bg-yellow-400 rounded-full animate-bounce delay-200"></div>
-      <div className="absolute top-1/2 right-1/3 w-1 h-1 bg-amber-500 rounded-full animate-bounce delay-100"></div>
-
+    <div className="relative pt-20 md:pt-32 pb-16 md:pb-20 min-h-screen overflow-hidden flex items-center bg-bgColor">
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8 md:py-0">
+        {/* Upper part: coin icon and current price (neutral bg) */}
+        <div className="mb-6 md:mb-8 rounded-xl font-nunito  bg-secondBgColor border border-bgColor/60 p-4 md:p-5 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="rounded-lg  p-1 flex items-center justify-center">
+              <Image
+                src="/coin-icon.svg"
+                alt="NEFE coin"
+                width={160}
+                height={160}
+              />
+            </div>
+            <div className="leading-tight flex flex-col gap-3">
+              <p className="text-sm md:text-base uppercase font-medium font-inter">
+                Limited-time presale bonus
+              </p>
+              <p className="text-base md:text-4xl text-primary font-semibold">
+                Early buyers get the best price on NEFE
+              </p>
+              <p className="text-sm md:text-base font-medium font-nunito">
+                Secure your allocation today before the next price increase.{" "}
+              </p>
+            </div>
+          </div>
+          <div className="text-right">
+            <p className="text-base md:text-2xl uppercase font-medium">
+              Current price
+            </p>
+            <p className="text-lg md:text-5xl font-extrabold text-white">
+              ${TOKEN_PRICE_USD.toFixed(3)} / NEFE
+            </p>
+          </div>
+        </div>
         <div className="grid grid-cols-1 lg:grid-cols-[1.2fr,0.8fr] gap-8 lg:gap-16 items-stretch">
           {/* Left Column - Hero Content (Order 2 on mobile, 1 on desktop) */}
           <motion.div
@@ -440,67 +459,101 @@ const Hero = () => {
             transition={{ duration: 0.6 }}
             className="flex flex-col justify-center space-y-6 md:space-y-9 text-white order-2 lg:order-1"
           >
-            <div className="space-y-6 md:space-y-8">
-              <div className="highlight-box">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                  className="inline-flex items-center gap-3 mb-6 md:mb-8 px-4 py-2 bg-black/30 rounded-full backdrop-blur-sm border border-amber-700/40"
-                >
-                  <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
-                  <FiTrendingUp className="text-amber-600 dark:text-amber-400 text-lg" />
-                  <span className="text-amber-700 dark:text-amber-300 font-semibold text-sm">
-                    Pre Sale Phase Active
-                  </span>
-                </motion.div>
-
+            <div className="space-y-6 md:space-y-16">
+              <div>
+                <div className="flex items-center gap-2 mb-4 text-white/80">
+                  <FiBarChart2 className="text-sm" />
+                  <span className="text-sm font-nunito">Presale is Live</span>
+                </div>
                 <motion.h1
-                  className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight text-gray-900 dark:text-white mb-6"
+                  className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight text-white mb-6 font-inter"
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4, duration: 0.8 }}
                 >
-                  Embrace what's{" "}
-                  <span className="bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 bg-clip-text text-transparent">
-                    NEXT
+                  The Future of{" "}
+                  <span className="bg-gradient-to-r from-[#F4AD30] to-[#CA6C2F] bg-clip-text text-transparent ">
+                    Digital Assets
                   </span>
-                  , <br className="hidden sm:block" />
-                  and make it{" "}
-                  <span className="bg-gradient-to-r from-yellow-500 via-amber-500 to-yellow-600 bg-clip-text text-transparent">
-                    YOURS
-                  </span>
-                  .
                 </motion.h1>
 
                 <motion.p
-                  className="text-lg md:text-xl text-gray-600 dark:text-gray-300 leading-relaxed max-w-2xl mb-8"
+                  className="text-lg md:text-xl  leading-relaxed max-w-2xl mb-8 font-inter"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5, duration: 0.8 }}
                 >
-                  Easily acquire and trade your tokens directly within our
-                  platform. Our secure marketplace facilitates seamless
-                  transactions, allowing you to manage your portfolio with
-                  confidence. Whether you're looking to invest, diversify, or
-                  liquidate, our intuitive interface makes the process
-                  straightforward and efficient.
+                  Join our exclusive presale phase and be among the first to
+                  acquire NEFE tokens at the best possible price.
                 </motion.p>
               </div>
 
-              <motion.div
-                className="flex flex-col sm:flex-row gap-4"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6, duration: 0.8 }}
-              >
-                <button className="px-8 py-4 bg-gradient-to-r from-amber-600 to-yellow-600 text-white font-semibold rounded-lg hover:from-amber-700 hover:to-yellow-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
-                  Read More
-                </button>
-                <button className="px-8 py-4 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-lg hover:border-amber-500 hover:text-amber-600 dark:hover:text-amber-400 transition-all duration-300">
-                  Join Our Community
-                </button>
-              </motion.div>
+              {/* Token Analysis (moved from right card) */}
+              <div className="space-y-3 p-4 sm:p-5 bg-bgColor rounded-xl border border-bgColor/60 font-nunito">
+                <div className="flex items-center gap-4 mb-3">
+                  <div className="p-1.5 bg-bgColor/60 rounded-lg">
+                    <FiBarChart2 className="text-white text-base sm:text-lg" />
+                  </div>
+                  <h3 className="text-white/80 text-sm font-semibold">
+                    Token Analysis
+                  </h3>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+                  <div>
+                    <span className="block text-2xl mb-2">Total Supply</span>
+                    <span className="text-amber font-extrabold text-2xl md:text-3xl text-primary">
+                      {TOTAL_SUPPLY.toLocaleString()}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="block text-2xl mb-2">Sold</span>
+                    <span className="text-amber font-extrabold text-2xl md:text-3xl text-primary">
+                      {SOLD_TOKENS.toLocaleString()}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="block text-2xl mb-2">Available</span>
+                    <span className="text-amber font-extrabold text-2xl md:text-3xl text-primary">
+                      {AVAILABLE_TOKENS.toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+                <div className="mt-3">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-white/70">Sale Progress</span>
+                    <span className="text-white/70 font-medium">
+                      {SALE_PROGRESS.toFixed(1)}%
+                    </span>
+                  </div>
+                  <div className="w-full h-1.5 bg-secondBgColor rounded-full overflow-hidden mt-1">
+                    <div
+                      className="h-full bg-amber-500 rounded-full"
+                      style={{ width: `${SALE_PROGRESS}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+              {/* Soft and Hard Cap Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+                <div className="p-6 rounded-xl bg-secondBgColor border border-bgColor/60">
+                  <div className="flex items-center gap-2 mb-2 text-white/80">
+                    <FiBarChart2 className="text-white/70" />
+                    <span className="text-sm font-semibold">Soft Cap</span>
+                  </div>
+                  <span className="bg-gradient-to-r from-[#F4AD30] to-[#CA6C2F] bg-clip-text text-transparent font-bold text-2xl md:text-3xl">
+                    $1,000,000
+                  </span>
+                </div>
+                <div className="p-6 rounded-xl bg-secondBgColor border border-bgColor/60">
+                  <div className="flex items-center gap-2 mb-2 text-white/80">
+                    <FiBarChart2 className="text-white/70" />
+                    <span className="text-sm font-semibold">Hard Cap</span>
+                  </div>
+                  <span className="bg-gradient-to-r from-[#F4AD30] to-[#CA6C2F] bg-clip-text text-transparent font-bold text-2xl md:text-3xl">
+                    $4,000,000
+                  </span>
+                </div>
+              </div>
             </div>
           </motion.div>
 
@@ -511,133 +564,60 @@ const Hero = () => {
             transition={{ duration: 0.6 }}
             className="h-full order-1 lg:order-2"
           >
-            <div className="card h-full p-4 sm:p-6 md:p-8 bg-white/90 dark:bg-black/70 backdrop-blur-sm shadow-2xl rounded-3xl border border-gray-100/50 dark:border-white/10 hover:shadow-amber-500/10 transition-all duration-500 relative overflow-hidden group">
-              {/* Background gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-br from-amber-50/40 via-transparent to-yellow-50/40 dark:from-amber-900/10 dark:via-transparent dark:to-yellow-900/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+            <div className="card h-full p-4 sm:p-6 md:p-8 bg-secondBgColor rounded-3xl border border-bgColor/60 shadow-md text-white">
               <div className="space-y-3 sm:space-y-4">
                 {/* Token Info */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 relative z-10">
-                  <div className="feature-card p-3 sm:p-4 bg-black/30 rounded-xl border border-amber-700/30 hover:border-amber-500/50 backdrop-blur-sm transition-all duration-300 group">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                  <div className="p-3 sm:p-4 bg-bgColor rounded-xl border border-bgColor/60">
                     <div className="flex items-center gap-2 mb-2">
-                      <div className="p-1.5 bg-amber-100 dark:bg-amber-900/30 rounded-lg group-hover:scale-110 transition-transform duration-300">
-                        <FiDollarSign className="text-amber-600 dark:text-amber-400 text-base sm:text-lg" />
+                      <div className="p-1.5 bg-bgColor/60 rounded-lg">
+                        <FiBarChart2 className="text-white text-base sm:text-lg" />
                       </div>
-                      <h3 className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm font-semibold">
+                      <h3 className=" text-xs sm:text-sm font-semibold">
                         Token Price
                       </h3>
                     </div>
-                    <p className="text-gray-900 dark:text-white text-sm sm:text-base font-bold">
-                      ${TOKEN_PRICE_USD} USD
+                    <p className="text-amber-400 text-sm sm:text-base font-bold">
+                      ${TOKEN_PRICE_USD.toFixed(3)} USD
                     </p>
                   </div>
-                  <div className="feature-card p-3 sm:p-4 bg-black/30 rounded-xl border border-amber-700/30 hover:border-amber-500/50 backdrop-blur-sm transition-all duration-300 group">
+                  <div className="p-3 sm:p-4 bg-bgColor rounded-xl border border-bgColor/60">
                     <div className="flex items-center gap-2 mb-2">
-                      <div className="p-1.5 bg-amber-100 dark:bg-amber-900/30 rounded-lg group-hover:scale-110 transition-transform duration-300">
-                        <FiTrendingUp className="text-amber-600 dark:text-amber-400 text-base sm:text-lg" />
+                      <div className="p-1.5 bg-bgColor/60 rounded-lg">
+                        <FiTrendingUp className="text-white text-base sm:text-lg" />
                       </div>
-                      <h3 className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm font-semibold">
+                      <h3 className="text-white/80 text-xs sm:text-sm font-semibold">
                         USDT Price
                       </h3>
                     </div>
-                    <p className="text-gray-900 dark:text-white text-sm sm:text-base font-bold">
+                    <p className="text-amber-400 text-sm sm:text-base font-bold">
                       $1.00 USD
                     </p>
                   </div>
                 </div>
 
-                {/* Token Analysis */}
-                <div className="feature-card space-y-3 p-4 sm:p-5 bg-black/30 rounded-xl border border-amber-700/30 hover:border-amber-500/50 backdrop-blur-sm transition-all duration-300 group relative z-10">
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="p-1.5 bg-amber-100 dark:bg-amber-900/30 rounded-lg group-hover:scale-110 transition-transform duration-300">
-                      <FiBox className="text-amber-600 dark:text-amber-400 text-base sm:text-lg" />
-                    </div>
-                    <h3 className="text-gray-700 dark:text-gray-300 text-sm font-semibold">
-                      Token Analysis
-                    </h3>
-                  </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs sm:text-sm">
-                    <div>
-                      <span className="text-gray-600 dark:text-gray-400 block">
-                        Total Supply
-                      </span>
-                      <span className="text-gray-900 dark:text-white font-bold">
-                        {TOTAL_SUPPLY.toLocaleString()}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-gray-600 dark:text-gray-400 block">
-                        Sold
-                      </span>
-                      <span className="text-amber-600 dark:text-amber-500 font-bold">
-                        {SOLD_TOKENS.toLocaleString()}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-gray-600 dark:text-gray-400 block">
-                        Available
-                      </span>
-                      <span className="text-gray-900 dark:text-white font-bold">
-                        {AVAILABLE_TOKENS.toLocaleString()}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="space-y-1 mt-2">
-                    <div className="flex justify-between text-xs">
-                      <span className="text-gray-600 dark:text-gray-400">
-                        Sale Progress
-                      </span>
-                      <span className="font-medium text-amber-600 dark:text-amber-500">
-                        {SALE_PROGRESS.toFixed(1)}%
-                      </span>
-                    </div>
-                    <div className="w-full h-1.5 bg-gray-800 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-amber-600 rounded-full"
-                        style={{ width: `${SALE_PROGRESS}%` }}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Purchase Limits */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-                  <div className="feature-card p-2 sm:p-3 bg-gray-50 dark:bg-gray-700 rounded-xl">
-                    <div className="flex items-center gap-1.5 mb-1">
-                      <FiAlertCircle className="text-amber-600 text-base sm:text-lg md:text-xl" />
-                      <h3 className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm font-medium">
-                        Min Purchase
-                      </h3>
-                    </div>
-                    <p className="text-gray-900 dark:text-white text-xs sm:text-sm font-bold">
-                      {MIN_PURCHASE.toLocaleString()} NEFE
-                    </p>
-                  </div>
-                  <div className="feature-card p-2 sm:p-3 bg-gray-50 dark:bg-gray-700 rounded-xl">
-                    <div className="flex items-center gap-1.5 mb-1">
-                      <FiCheckCircle className="text-amber-600 text-base sm:text-lg md:text-xl" />
-                      <h3 className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm font-medium">
-                        Max Purchase
-                      </h3>
-                    </div>
-                    <p className="text-gray-900 dark:text-white text-xs sm:text-sm font-bold">
-                      {MAX_PURCHASE.toLocaleString()} NEFE
-                    </p>
-                  </div>
-                </div>
-
-                {/* Payment Method */}
+                {/* Select Currency (ETH disabled) */}
                 <div className="space-y-2">
                   <div className="flex items-center gap-1.5">
-                    <FiCreditCard className="text-gray-500 text-xs sm:text-sm" />
-                    <label className="text-gray-500 text-xs sm:text-sm font-medium">
-                      Payment Method
+                    <FiBarChart2 className="text-white text-base sm:text-lg" />
+                    <label className="text-white/80 text-xs sm:text-sm font-medium">
+                      Currency
                     </label>
                   </div>
-                  <div className="bg-amber-100 p-1 rounded-lg">
-                    <div className="flex-1 relative rounded-md transition-all duration-200 py-1.5 sm:py-2 md:py-2.5 px-2 sm:px-3 md:px-4 text-xs sm:text-sm md:text-base text-white">
-                      <span className="relative z-10">USDT (Tether)</span>
-                      <div className="absolute inset-0 bg-gradient-to-r from-amber-600 to-yellow-600 rounded-md" />
-                    </div>
+                  <div className="flex gap-2">
+                    {/* <button
+                      type="button"
+                      aria-disabled
+                      className="flex-1 rounded-md py-2 md:py-2.5 px-4 text-sm md:text-base bg-bgColor text-white/60 border border-bgColor/60 cursor-not-allowed"
+                    >
+                      ETH
+                    </button> */}
+                    <button
+                      type="button"
+                      className="flex-1 rounded-md py-2 md:py-2.5 px-4 text-sm md:text-base bg-amber-600 hover:bg-amber-700 text-white border border-amber-600"
+                    >
+                      USDT
+                    </button>
                   </div>
                 </div>
 
@@ -645,18 +625,18 @@ const Hero = () => {
                 <div className="space-y-2 sm:space-y-3">
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-1.5">
-                      <FiShoppingCart className="text-amber-600 text-base sm:text-lg md:text-xl" />
-                      <label className="text-gray-500 text-xs sm:text-sm font-medium">
+                      <FiShoppingCart className="text-amber-500 text-base sm:text-lg md:text-xl" />
+                      <label className="text-white text-sm md:text-base">
                         Amount of NEFE
                       </label>
                     </div>
-                    <span className="text-sm sm:text-base md:text-lg font-bold text-amber-600">
+                    <span className="text-sm sm:text-base md:text-lg font-bold text-amber-400">
                       {tokenAmount.toLocaleString()} NEFE
                     </span>
                   </div>
 
                   <div className="space-y-3 sm:space-y-4">
-                    <div className="relative pt-1">
+                    <div className="relative pt-1 px-2">
                       <input
                         type="range"
                         min={MIN_PURCHASE}
@@ -664,36 +644,27 @@ const Hero = () => {
                         step="100"
                         value={tokenAmount}
                         onChange={(e) => setTokenAmount(Number(e.target.value))}
-                        style={{
-                          background: `linear-gradient(to right, #f59e0b, #fbbf24 ${
-                            ((tokenAmount - MIN_PURCHASE) /
-                              (MAX_PURCHASE - MIN_PURCHASE)) *
-                            100
-                          }%, #e5e7eb ${
-                            ((tokenAmount - MIN_PURCHASE) /
-                              (MAX_PURCHASE - MIN_PURCHASE)) *
-                            100
-                          }%)`,
-                        }}
-                        className="w-full h-2 appearance-none rounded-lg cursor-pointer
-                                   [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:cursor-pointer
-                                   [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600"
+                        className="w-full appearance-none rounded-full cursor-pointer h-2 bg-neutral-900
+             [&::-webkit-slider-runnable-track]:bg-neutral-900 [&::-webkit-slider-runnable-track]:h-2 [&::-webkit-slider-runnable-track]:rounded-full
+             [&::-moz-range-track]:bg-neutral-900 [&::-moz-range-track]:h-2 [&::-moz-range-track]:rounded-full
+             [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-2 [&::-webkit-slider-thumb]:w-2 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:border-0 [&::-webkit-slider-thumb]:outline-none
+             [&::-moz-range-thumb]:h-2 [&::-moz-range-thumb]:w-2 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:outline-none"
                       />
 
                       <div className="flex justify-between mt-1 sm:mt-2">
                         <div className="flex flex-col items-center">
-                          <span className="text-xs font-medium text-gray-500">
+                          <span className="text-xs font-medium text-white/70">
                             Min
                           </span>
-                          <span className="text-xs font-bold">
+                          <span className="text-xs font-bold text-white">
                             {MIN_PURCHASE.toLocaleString()}
                           </span>
                         </div>
                         <div className="flex flex-col items-center">
-                          <span className="text-xs font-medium text-gray-500">
+                          <span className="text-xs font-medium text-white/70">
                             Max
                           </span>
-                          <span className="text-xs font-bold">
+                          <span className="text-xs font-bold text-white">
                             {MAX_PURCHASE.toLocaleString()}
                           </span>
                         </div>
@@ -703,26 +674,26 @@ const Hero = () => {
                 </div>
 
                 {/* Payment Summary */}
-                <div className="feature-card space-y-2 sm:space-y-3 p-2 sm:p-3 bg-gray-50 dark:bg-gray-700 rounded-xl">
+                <div className="space-y-2 sm:space-y-3 p-2 sm:p-3 bg-bgColor rounded-xl border border-bgColor/60">
                   <div className="flex items-center gap-1.5 mb-1">
-                    <FiDollarSign className="text-amber-600 text-base sm:text-lg md:text-xl" />
-                    <h3 className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm font-medium">
+                    <FiDollarSign className="text-white/70 text-base sm:text-lg md:text-xl" />
+                    <h3 className="text-white/80 text-xs sm:text-sm font-medium">
                       Payment Summary
                     </h3>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm font-medium">
+                    <span className="text-white/70 text-xs sm:text-sm font-medium">
                       You Pay
                     </span>
-                    <span className="text-amber-600 dark:text-amber-500 text-xs sm:text-sm md:text-base font-bold">
+                    <span className="text-amber-400 text-xs sm:text-sm md:text-base font-bold">
                       {calculatePaymentAmount()} USDT
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm font-medium">
+                    <span className="text-white/70 text-xs sm:text-sm font-medium">
                       Total in USD
                     </span>
-                    <span className="text-xs sm:text-sm md:text-base font-bold">
+                    <span className="text-white text-xs sm:text-sm md:text-base font-bold">
                       ${(tokenAmount * TOKEN_PRICE_USD).toFixed(2)}
                     </span>
                   </div>
@@ -733,7 +704,7 @@ const Hero = () => {
                   type="button"
                   onClick={isConnected ? handleBuyTokens : connectWallet}
                   disabled={isConnected && !hasSufficientFunds}
-                  className={`btn-primary relative z-50 cursor-pointer w-full flex items-center justify-center gap-2 py-2 sm:py-2.5 md:py-3 text-xs sm:text-sm md:text-base ${
+                  className={`relative z-50 cursor-pointer w-full flex items-center justify-center gap-2 py-2 sm:py-2.5 md:py-3 text-xs sm:text-sm md:text-base rounded-xl bg-amber-600 hover:bg-amber-700 text-white ${
                     isConnected && !hasSufficientFunds
                       ? "opacity-50 cursor-not-allowed"
                       : ""
@@ -761,7 +732,7 @@ const Hero = () => {
                   </span>
                 </motion.button>
 
-                <p className="text-xs text-gray-500 text-center">
+                <p className="text-xs text-center">
                   Compatible with MetaMask, Trust Wallet, or any ERC-20 wallet.
                   <br />
                   Do not send from an exchange.

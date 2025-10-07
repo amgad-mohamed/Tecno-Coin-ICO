@@ -1,0 +1,14 @@
+<svg width="234" height="160" viewBox="0 0 234 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M117 148C154.555 148 185 117.555 185 80C185 42.4446 154.555 12 117 12C79.4446 12 49 42.4446 49 80C49 117.555 79.4446 148 117 148Z" fill="url(#paint0_linear_178_459)"/>
+<path d="M117 116C136.882 116 153 99.8823 153 80C153 60.1178 136.882 44 117 44C97.1178 44 81 60.1178 81 80C81 99.8823 97.1178 116 117 116Z" fill="#F4AD30"/>
+<path d="M101 80L113 92L133 72" stroke="white" stroke-width="4.8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M117 156C158.974 156 193 121.974 193 80C193 38.0264 158.974 4 117 4C75.0264 4 41 38.0264 41 80C41 121.974 75.0264 156 117 156Z" stroke="#F4AD30" stroke-width="1.6" stroke-dasharray="3.2 3.2"/>
+<path d="M85 48C117 24 149 24 181 48" stroke="#CA6C2F" stroke-width="1.6" stroke-linecap="round" stroke-dasharray="3.2 3.2"/>
+<path d="M85 112C117 136 149 136 181 112" stroke="#CA6C2F" stroke-width="1.6" stroke-linecap="round" stroke-dasharray="3.2 3.2"/>
+<defs>
+<linearGradient id="paint0_linear_178_459" x1="49" y1="12" x2="13649" y2="13612" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F4AD30" stop-opacity="0.2"/>
+<stop offset="1" stop-color="#F4AD30" stop-opacity="0.1"/>
+</linearGradient>
+</defs>
+</svg>

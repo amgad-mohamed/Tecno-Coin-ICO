@@ -8,9 +8,9 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Override AppKit font loading to prevent external font errors */
-  * {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif !important;
+  /* Set default font to Inter via Next.js variable */
+  body {
+    font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   }
 
   /* Specifically target AppKit components to prevent external font loading */
@@ -18,7 +18,7 @@
   [class*="appkit"],
   [class*="w3m"],
   [class*="wcm"] {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif !important;
+    font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif !important;
   }
 
   /* Prevent any @font-face declarations from loading external fonts */
@@ -33,11 +33,9 @@
   }
 
   body {
-    /* Use CSS variables for consistent theming; overlay subtle amber glows */
-    background-image:
-      radial-gradient(circle at 15% 85%, rgba(245, 158, 11, 0.18) 0%, transparent 45%),
-      radial-gradient(circle at 75% 25%, rgba(234, 179, 8, 0.14) 0%, transparent 35%),
-      radial-gradient(circle at 45% 45%, rgba(217, 119, 6, 0.10) 0%, transparent 55%);
+    /* Sitewide background color */
+    @apply bg-bgColor text-white;
+    background-image: none;
     color-scheme: dark;
   }
 
@@ -46,13 +44,17 @@
   }
 
   input[type="range"]::-webkit-slider-thumb {
-    @apply w-6 h-6 bg-gradient-to-r from-amber-500 to-yellow-500 appearance-none cursor-pointer rounded-full shadow-lg;
-    border: 2px solid white;
+    @apply w-2.5 h-2.5 bg-amber-600 appearance-none cursor-pointer rounded-full shadow-none;
+    border: none;
+    outline: none;
+    box-shadow: none;
   }
 
   input[type="range"]::-moz-range-thumb {
-    @apply w-6 h-6 bg-gradient-to-r from-amber-500 to-yellow-500 cursor-pointer rounded-full shadow-lg;
-    border: 2px solid white;
+    @apply w-2.5 h-2.5 bg-amber-600 cursor-pointer rounded-full shadow-none;
+    border: none;
+    outline: none;
+    box-shadow: none;
   }
 
   .slider {

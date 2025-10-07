@@ -64,7 +64,7 @@ const Footer = () => {
           viewBox="0 0 24 24"
           aria-hidden="true"
         >
-          <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zm-3.11-8.83l.013-.007.87 2.87c.112.311.266.367.453.341.188-.025.287-.126.41-.244l1.188-1.148 2.55 1.888c.466.257.801.124.917-.432l1.657-7.822c.183-.728-.137-1.02-.702-.788l-9.733 3.76c-.664.266-.66.638-.12.803l2.497.78z" />
+          <path d="M21.5 3.5a1 1 0 0 0-1.2-.72L3.1 8.03c-.93.29-1.03 1.55-.15 1.92l5.02 2.08c.36.15.78.08 1.07-.18l5.25-4.64c.22-.2.54.06.38.31l-3.76 5.62c-.2.31-.23.7-.07 1.03l1.72 3.65c.4.85 1.64.83 2.03-.04l6-12.72a1 1 0 0 0-.16-1.11Z" />
         </svg>
       ),
     },
@@ -92,31 +92,30 @@ const Footer = () => {
 
   return (
     <motion.footer
-      className="bg-gray-50 dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-800"
+      className="bg-secondBgColor border-t border-white/20"
       variants={containerVariants}
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true }}
     >
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+      <div className="container mx-auto px-6 lg:px-10 py-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 text-white">
           <motion.div variants={itemVariants}>
             <a
               href="#"
-              className="text-2xl font-bold text-amber-600 dark:text-amber-400"
+              className="text-2xl font-bold text-amber-400"
             >
-              NefeCoin
+              NEFE
             </a>
-            <p className="mt-4 text-gray-600 dark:text-gray-400 text-sm sm:text-base">
-              Join our exclusive presale phase and be among the first to acquire
-              NEFE tokens.
+            <p className="mt-4 text-white/80 text-sm sm:text-base max-w-xs">
+              Join our exclusive presale phase and be among the first to acquire PLT tokens.
             </p>
             <div className="flex space-x-4 mt-6">
               {socialLinks.map((item) => (
                 <motion.a
                   key={item.name}
                   href={item.href}
-                  className="text-gray-500 hover:text-amber-600 dark:text-gray-400 dark:hover:text-amber-400 transition-colors"
+                  className="text-amber-400 hover:text-amber-300 transition-colors"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
@@ -136,7 +135,7 @@ const Footer = () => {
                   <li key={link.name}>
                     <motion.a
                       href={link.href}
-                      className="text-gray-600 hover:text-amber-600 dark:text-gray-400 dark:hover:text-amber-400 transition-colors text-sm sm:text-base"
+                      className="text-white/80 hover:text-amber-300 transition-colors text-sm sm:text-base"
                       whileHover={{ x: 5 }}
                     >
                       {link.name}
@@ -149,10 +148,10 @@ const Footer = () => {
         </div>
 
         <motion.div
-          className="mt-10 sm:mt-12 pt-6 sm:pt-8 border-t border-gray-200 dark:border-gray-800 text-center text-gray-500 dark:text-gray-400 text-sm sm:text-base"
+          className="mt-10 sm:mt-12 pt-6 sm:pt-8 border-t border-white/20 text-center text-white/70 text-sm sm:text-base"
           variants={itemVariants}
         >
-          <p>© {new Date().getFullYear()} NefeCoin. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} NEFE. All rights reserved.</p>
         </motion.div>
       </div>
     </motion.footer>
