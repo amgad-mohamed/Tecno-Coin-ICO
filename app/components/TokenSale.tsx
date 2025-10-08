@@ -74,7 +74,7 @@ const TokenSale = () => {
   return (
     <div
       id="token-sale"
-      className="container px-4 sm:px-6 lg:px-8 text-white font-nunito"
+      className=" text-white font-nunito"
     >
       <div className="text-center pt-20">
         <h2 className="text-3xl md:text-4xl font-bold mb-3">
@@ -158,7 +158,7 @@ const TokenSale = () => {
         </div>
       </div>
 
-      <div className="rounded-xl p-5 sm:p-6 border border-bgColor/60">
+      <div className="rounded-xl  border border-bgColor/60">
         <h3 className="text-base md:text-xl font-semibold mb-4 text-white/80">
           Vesting Schedule
         </h3>

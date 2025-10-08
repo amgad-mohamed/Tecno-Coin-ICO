@@ -17,50 +17,47 @@ export default function StakingManagement() {
   const {
     useCalculateAvailableRelease,
     useTotalReleased,
-    useFirstReleaseTime,
-    useSecondReleaseTime,
-    useThirdReleaseTime,
-    useFinalReleaseTime,
+    useReleaseTime,
+    useReleasePercent,
     useTotalStakingAmount,
-    useFirstReleaseAmount,
-    useSecondReleaseAmount,
-    useThirdReleaseAmount,
     releaseTokens,
   } = useTokenStakingContract();
 
   // Contract data
   const { data: stakingAvailable } = useCalculateAvailableRelease();
   const { data: stakingTotalReleased } = useTotalReleased();
-  const { data: firstReleaseTs } = useFirstReleaseTime();
-  const { data: secondReleaseTs } = useSecondReleaseTime();
-  const { data: thirdReleaseTs } = useThirdReleaseTime();
-  const { data: finalReleaseTs } = useFinalReleaseTime();
   const { data: totalStakingAmt } = useTotalStakingAmount();
-  const { data: firstReleaseAmt } = useFirstReleaseAmount();
-  const { data: secondReleaseAmt } = useSecondReleaseAmount();
-  const { data: thirdReleaseAmt } = useThirdReleaseAmount();
+
+  // New ABI: read release times and percents by index (0..3)
+  const { data: releaseTs0 } = useReleaseTime(0);
+  const { data: releaseTs1 } = useReleaseTime(1);
+  const { data: releaseTs2 } = useReleaseTime(2);
+  const { data: releaseTs3 } = useReleaseTime(3);
+  const { data: releaseTs4 } = useReleaseTime(4);
+
+  const { data: releasePct0 } = useReleasePercent(0);
+  const { data: releasePct1 } = useReleasePercent(1);
+  const { data: releasePct2 } = useReleasePercent(2);
+  const { data: releasePct3 } = useReleasePercent(3);
+  const { data: releasePct4 } = useReleasePercent(4);
 
   // Derived values
   const TOTAL_STAKING_AMOUNT =
     typeof totalStakingAmt === "bigint" ? Number(totalStakingAmt) / 1e18 : 0;
-  const FIRST_RELEASE =
-    typeof firstReleaseAmt === "bigint" ? Number(firstReleaseAmt) / 1e18 : 0;
-  const SECOND_RELEASE =
-    typeof secondReleaseAmt === "bigint" ? Number(secondReleaseAmt) / 1e18 : 0;
-  const THIRD_RELEASE =
-    typeof thirdReleaseAmt === "bigint" ? Number(thirdReleaseAmt) / 1e18 : 0;
-  const FINAL_RELEASE = Math.max(
-    TOTAL_STAKING_AMOUNT - (FIRST_RELEASE + SECOND_RELEASE + THIRD_RELEASE),
-    0
+
+  const percents = [
+    releasePct0,
+    releasePct1,
+    releasePct2,
+    releasePct3,
+    releasePct4,
+  ].map((p) =>
+    typeof p === "bigint" ? Number(p) : typeof p === "number" ? p : 0
   );
+  const amounts = percents.map((p) => (p / 100) * TOTAL_STAKING_AMOUNT);
 
   const nowSec = Math.floor(Date.now() / 1000);
-  const nextTs = [
-    firstReleaseTs,
-    secondReleaseTs,
-    thirdReleaseTs,
-    finalReleaseTs,
-  ]
+  const nextTs = [releaseTs0, releaseTs1, releaseTs2, releaseTs3, releaseTs4]
     .map((v) =>
       typeof v === "bigint" ? Number(v) : typeof v === "number" ? v : 0
     )
@@ -87,26 +84,11 @@ export default function StakingManagement() {
   }, [releaseTokens, showSuccess, showError, isConnected, address, open]);
 
   const releaseSchedule = [
-    {
-      label: "First Release",
-      ts: firstReleaseTs,
-      amt: FIRST_RELEASE,
-    },
-    {
-      label: "Second Release",
-      ts: secondReleaseTs,
-      amt: SECOND_RELEASE,
-    },
-    {
-      label: "Third Release",
-      ts: thirdReleaseTs,
-      amt: THIRD_RELEASE,
-    },
-    {
-      label: "Final Release",
-      ts: finalReleaseTs,
-      amt: FINAL_RELEASE,
-    },
+    { label: "First Release", ts: releaseTs0, amt: amounts[0] || 0 },
+    { label: "Second Release", ts: releaseTs1, amt: amounts[1] || 0 },
+    { label: "Third Release", ts: releaseTs2, amt: amounts[2] || 0 },
+    { label: "Forth Release", ts: releaseTs3, amt: amounts[3] || 0 },
+    { label: "Final Release", ts: releaseTs4, amt: amounts[4] || 0 },
   ];
 
   return (

@@ -21,35 +21,32 @@ export function useTokenStakingContract() {
   const useIcoContractAddress = () =>
     useReadContract({ abi, address, functionName: "icoContractAddress" });
 
-  // New: Release time getters
-  const useFirstReleaseTime = () =>
-    useReadContract({ abi, address, functionName: "firstReleaseTime" });
+  // New ABI: releaseTimes(index) and releasePercents(index)
+  const useReleaseTime = (index: number) =>
+    useReadContract({ abi, address, functionName: "releaseTimes", args: [BigInt(index)] });
 
-  const useSecondReleaseTime = () =>
-    useReadContract({ abi, address, functionName: "secondReleaseTime" });
+  const useReleasePercent = (index: number) =>
+    useReadContract({ abi, address, functionName: "releasePercents", args: [BigInt(index)] });
 
-  const useThirdReleaseTime = () =>
-    useReadContract({ abi, address, functionName: "thirdReleaseTime" });
-
-  const useFinalReleaseTime = () =>
-    useReadContract({ abi, address, functionName: "finalReleaseTime" });
-
-  // New: Release amount getters (public constants)
+  // Staking amounts
   const useTotalStakingAmount = () =>
-    useReadContract({ abi, address, functionName: "TOTAL_STAKING_AMOUNT" });
+    useReadContract({ abi, address, functionName: "totalStakingAmount" });
 
-  const useFirstReleaseAmount = () =>
-    useReadContract({ abi, address, functionName: "FIRST_RELEASE" });
+  const useStakingPlanAmount = () =>
+    useReadContract({ abi, address, functionName: "stakingPlanAmount" });
 
-  const useSecondReleaseAmount = () =>
-    useReadContract({ abi, address, functionName: "SECOND_RELEASE" });
-
-  const useThirdReleaseAmount = () =>
-    useReadContract({ abi, address, functionName: "THIRD_RELEASE" });
+  const useStakingStartTime = () =>
+    useReadContract({ abi, address, functionName: "stakingStartTime" });
 
   // ----------- Writes ------------
   const setIcoContract = (ico: `0x${string}`) =>
     writeContract({ abi, address, functionName: "setIcoContract", args: [ico] });
+
+  const updateReleasePlan = (percents: bigint[], times: bigint[]) =>
+    writeContract({ abi, address, functionName: "updateReleasePlan", args: [percents, times] });
+
+  const adminWithdraw = (to: `0x${string}`, amount: bigint) =>
+    writeContract({ abi, address, functionName: "adminWithdraw", args: [to, amount] });
 
   const releaseTokens = () =>
     writeContract({ abi, address, functionName: "releaseTokens" });
@@ -59,17 +56,16 @@ export function useTokenStakingContract() {
     useCalculateAvailableRelease,
     useTotalReleased,
     useIcoContractAddress,
-    useFirstReleaseTime,
-    useSecondReleaseTime,
-    useThirdReleaseTime,
-    useFinalReleaseTime,
+    useReleaseTime,
+    useReleasePercent,
     useTotalStakingAmount,
-    useFirstReleaseAmount,
-    useSecondReleaseAmount,
-    useThirdReleaseAmount,
+    useStakingPlanAmount,
+    useStakingStartTime,
 
     // writes
     setIcoContract,
+    updateReleasePlan,
+    adminWithdraw,
     releaseTokens,
 
     // tx state

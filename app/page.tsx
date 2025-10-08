@@ -9,7 +9,7 @@ import HowToBuy from "./components/HowToBuy";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-bgColor relative overflow-hidden">
+    <main className="min-h-screen container bg-bgColor relative overflow-hidden">
       {/* Animated Background */}
       {/* <AnimatedBackground /> */}
       {/* Hero Section */}
@@ -28,7 +28,7 @@ export default function Home() {
       </section>
 
       {/* How To Buy Section */}
-      <section className="py-10 relative z-10" id="how-to-buy-section">
+      <section className="py-10 relative z-10" id="how-to-buy">
         <HowToBuy />
       </section>
 

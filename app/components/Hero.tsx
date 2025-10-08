@@ -418,9 +418,9 @@ const Hero = () => {
   return (
     <div className="relative pt-20 md:pt-20 pb-0 md:pb-10 min-h-screen overflow-hidden flex items-center bg-bgColor">
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-8 md:py-0">
+      <div className="w-full mx-auto py-8 md:py-0">
         {/* Upper part: coin icon and current price (neutral bg) */}
-        <div className="mb-6 md:mb-8 rounded-xl font-nunito bg-secondBgColor border border-bgColor/60 p-4 sm:p-5 flex flex-col sm:flex-row items-center sm:items-center gap-4 sm:gap-0 justify-between">
+        <div className="mb-6 md:mb-8  rounded-xl font-nunito bg-secondBgColor border border-bgColor/60 p-4 sm:p-5 flex flex-col sm:flex-row items-center sm:items-center gap-4 sm:gap-0 justify-between">
           <div className="flex items-center gap-3 sm:gap-4 flex-1">
             <div className="rounded-lg p-1 flex items-center justify-center w-20 sm:w-28 md:w-40">
               <Image
@@ -490,7 +490,7 @@ const Hero = () => {
               </div>
 
               {/* Token Analysis (moved from right card) */}
-              <div className="space-y-3 p-4 sm:p-5 bg-bgColor rounded-xl border border-bgColor/60 font-nunito">
+              <div className="space-y-3 py-4 sm:py-5 bg-bgColor rounded-xl border border-bgColor/60 font-nunito">
                 <div className="flex items-center gap-4 mb-3">
                   <div className="p-1.5 bg-bgColor/60 rounded-lg">
                     <FiBarChart2 className="text-white text-base sm:text-lg" />
@@ -499,14 +499,14 @@ const Hero = () => {
                     Token Analysis
                   </h3>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-0">
                   <div>
                     <span className="block text-xs sm:text-sm md:text-base mb-1">Total Supply</span>
                     <span className="text-amber font-extrabold text-2xl md:text-3xl text-primary">
                       {TOTAL_SUPPLY.toLocaleString()}
                     </span>
                   </div>
-                  <div>
+                  <div className="pl-0 sm:pl-10">
                     <span className="block text-xs sm:text-sm md:text-base mb-1">Sold</span>
                     <span className="text-amber font-extrabold text-2xl md:text-3xl text-primary">
                       {SOLD_TOKENS.toLocaleString()}

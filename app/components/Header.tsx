@@ -31,7 +31,6 @@ const Header = () => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
 
-      // Only detect sections if we're on the home page
       if (pathname === "/") {
         const sections = {
           home: 0,
@@ -52,8 +51,21 @@ const Header = () => {
       }
     };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    if (pathname === "/") {
+      window.addEventListener("scroll", handleScroll);
+      handleScroll();
+      return () => window.removeEventListener("scroll", handleScroll);
+    } else {
+      // Map non-home routes to nav item ids; support admin subroutes
+      setIsScrolled(window.scrollY > 50);
+      if (pathname.startsWith("/admin")) {
+        setActiveSection("admin");
+      } else if (pathname.startsWith("/transactions")) {
+        setActiveSection("transactions");
+      } else {
+        setActiveSection("home");
+      }
+    }
   }, [pathname]);
 
   const navItems: NavItem[] = [
@@ -74,7 +86,7 @@ const Header = () => {
 
   return (
     <motion.header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={`fixed container top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
           ? "bg-bgColor backdrop-blur-lg shadow-lg border-b border-white/10"
           : "bg-bgColor "
@@ -83,7 +95,7 @@ const Header = () => {
       animate={{ y: 0 }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
     >
-      <div className="container mx-auto px-4">
+      <div className="">
         <div className="flex items-center justify-between h-16 md:h-20">
           <motion.div
             className="flex items-center"
@@ -91,20 +103,18 @@ const Header = () => {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
           >
-            <a
-              href="#"
-              className="flex items-center"
-              aria-label="Nefe home"
-            >
-              <div className="flex flex-col relative w-20 items-center">
+            <a href="#" className="flex items-center" aria-label="Nefe home">
+              <div className="flex flex-col relative items-center w-14 sm:w-16">
                 <Image
                   src="/logo.png"
                   alt="Nefe Logo"
                   width={40}
                   height={20}
-                  className="w-28 sm:w-32 md:w-auto h-auto"
+                  className="w-10 sm:w-13 h-auto"
                 />
-                <p className="absolute -bottom-1 text-[9px] font-normal">NEFE COIN</p>
+                <p className="absolute -bottom-1 text-[8px] sm:text-[9px] font-normal">
+                  NEFE COIN
+                </p>
               </div>
             </a>
           </motion.div>
@@ -116,8 +126,7 @@ const Header = () => {
                 key={item.name}
                 href={item.href}
                 className={`flex items-center gap-2 transition-colors text-sm lg:text-base ${
-                  (pathname === "/" && activeSection === item.id) ||
-                  (!item.href.includes("#") && pathname === item.href)
+                  activeSection === item.id
                     ? "text-amber-400 font-medium"
                     : "text-white/80 hover:text-white"
                 }`}
@@ -188,8 +197,7 @@ const Header = () => {
                     key={item.name}
                     href={item.href}
                     className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                      (pathname === "/" && activeSection === item.id) ||
-                      (!item.href.includes("#") && pathname === item.href)
+                      activeSection === item.id
                         ? "bg-amber-500/10 text-amber-400"
                         : "hover:bg-white/10"
                     }`}

@@ -119,7 +119,7 @@
 
 @layer components {
   .section {
-    @apply px-4 sm:px-6 lg:px-10 py-12 sm:py-16 md:py-20;
+    @apply py-12 sm:py-16 md:py-20;
   }
 
   .heading-1 {
