@@ -68,17 +68,17 @@ export default function PresaleCountdown() {
 
   const Tile = ({ value, label }: { value: number; label: string }) => (
     <div className="flex flex-col items-center font-nunito">
-      <div className="flex flex-col items-center bg-secondBgColor rounded-xl px-14 py-9 min-w-[90px] md:min-w-[120px] shadow-sm">
-        <span className="block text-base md:text-2xl font-semibold text-white text-center">
+      <div className="flex flex-col items-center bg-secondBgColor rounded-xl w-20 sm:w-24 md:w-36 py-6 sm:py-8 md:py-9 shadow-sm">
+        <span className="block text-lg sm:text-xl md:text-2xl font-semibold text-white text-center">
           {value.toString().padStart(2, "0")}
         </span>
-        <span className="mt-2 text-sm text-gray-300">{label}</span>
+        <span className="mt-2 text-xs sm:text-base">{label}</span>
       </div>
     </div>
   );
 
   return (
-    <section className="py-12 bg-bgColor font-nunito">
+    <div className="bg-bgColor font-nunito">
       <div className="container mx-auto px-4">
         <h2 className="text-center text-2xl md:text-4xl font-extrabold text-white mb-8">
           Presale Ends In
@@ -90,6 +90,6 @@ export default function PresaleCountdown() {
           <Tile value={timeLeft.seconds} label="Seconds" />
         </div>
       </div>
-    </section>
+    </div>
   );
 }

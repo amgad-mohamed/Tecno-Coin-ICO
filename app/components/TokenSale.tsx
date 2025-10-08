@@ -134,12 +134,15 @@ const TokenSale = () => {
           </h3>
           <div className="space-y-4">
             {distribution.map((item, index) => (
-              <div key={index} className="flex items-center justify-between">
-                <span className="text-xs sm:text-sm md:text-base ">
+              <div
+                key={index}
+                className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <span className="text-xs sm:text-sm md:text-base">
                   {item.category}
                 </span>
-                <div className="flex items-center gap-4">
-                  <div className="w-40 sm:w-52 h-1.5 bg-bgColor rounded-full overflow-hidden">
+                <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto">
+                  <div className="h-1.5 bg-bgColor rounded-full overflow-hidden flex-1 sm:flex-none w-full sm:w-40 md:w-52">
                     <div
                       className="h-full rounded-full bg-gradient-to-r from-[#F4AD30] to-[#CA6C2F]"
                       style={{ width: `${item.percentage}%` }}

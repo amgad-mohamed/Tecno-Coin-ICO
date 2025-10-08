@@ -13,14 +13,14 @@ export default function Home() {
       {/* Animated Background */}
       {/* <AnimatedBackground /> */}
       {/* Hero Section */}
-      <section>
+      <section className="section">
         <Hero />
       </section>
 
       {/* Presale Countdown Section (uses CountdownTimer with DB data) */}
-      <section className="section relative z-50">
         <PresaleCountdown />
-      </section>
+      {/* <section className="section relative z-50">
+      </section> */}
 
       {/* Token Sale Section */}
       <section className="section relative z-10" id="token-sale">
@@ -28,7 +28,7 @@ export default function Home() {
       </section>
 
       {/* How To Buy Section */}
-      <section className="section relative z-10" id="how-to-buy-section">
+      <section className="py-10 relative z-10" id="how-to-buy-section">
         <HowToBuy />
       </section>
 

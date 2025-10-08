@@ -68,17 +68,17 @@ const steps = [
 
 export default function HowToBuy() {
   return (
-    <section id="how-to-buy" className="py-20 bg-bgColor font-nunito">
-      <div className="container mx-auto px-4">
+    <section id="how-to-buy" className="mb-10  bg-bgColor font-nunito">
+      <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-10">
           <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondBgColor text-amber-400 text-xs">
-            <Secu />
+            <Secu size={16} />
             Secure Purchase Process
           </span>
-          <h2 className="mt-4 text-3xl md:text-4xl font-bold text-primary">
+          <h2 className="mt-4 text-2xl sm:text-3xl md:text-4xl font-bold text-primary">
             How to Buy PLT Tokens
           </h2>
-          <p className="mt-3 text-lg text-gray-300 max-w-3xl mx-auto">
+          <p className="mt-3 text-sm sm:text-base md:text-lg text-gray-300 max-w-3xl mx-auto">
             Follow these simple steps to participate in our presale and acquire
             PLT tokens.
             <br /> The process is secure, transparent, and only takes a few
@@ -86,7 +86,7 @@ export default function HowToBuy() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mx-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {steps.map((step, idx) => (
             <motion.div
               key={idx}
@@ -94,20 +94,21 @@ export default function HowToBuy() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: idx * 0.1 }}
-              className="relative bg-secondBgColor rounded-2xl border border-bgColor/60 py-20 pb-10 px-8 mt-20"
+              className="relative bg-fourthBgColor rounded-2xl border border-bgColor/60 px-6 sm:px-8 pt-16 sm:pt-20 md:pt-24 pb-8 sm:pb-10 mt-16 sm:mt-20"
             >
-              <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[234px] h-[160px] flex items-center justify-center pointer-events-none select-none">
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 sm:w-52 md:w-[234px] h-28 sm:h-36 md:h-[160px] flex items-center justify-center pointer-events-none select-none">
                 <Image
                   src={step.iconSrc}
                   alt={step.title}
                   width={264}
                   height={160}
+                  className="w-full h-auto"
                 />
               </div>
-              <h3 className="text-4xl text-center font-bold mb-3 px-2 bg-gradient-to-r from-[#F4AD30] to-[#F4AD30] bg-clip-text text-transparent">
+              <h3 className="text-2xl sm:text-3xl md:text-4xl text-center font-bold mb-3 px-2 bg-gradient-to-r from-[#F4AD30] to-[#F4AD30] bg-clip-text text-transparent">
                 {step.title}
               </h3>
-              <p className="text-white/70 text-sm tracking-wider md:text-base pb-20 text-center">
+              <p className="text-white/70 text-xs sm:text-sm md:text-base tracking-wider pb-12 sm:pb-16 md:pb-20 text-center">
                 {step.description}
               </p>
             </motion.div>
@@ -115,11 +116,11 @@ export default function HowToBuy() {
         </div>
 
         <div className="text-center mt-8">
-          <button className="px-6 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-500 text-white font-semibold shadow-md">
+          <button className="px-6 py-2.5 sm:py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-500 text-white font-semibold shadow-md">
             Connect Wallet to Now
           </button>
-          <div className="mt-3 text-sm flex justify-center items-center">
-            <Secu size={16} />
+          <div className="mt-3 text-xs sm:text-sm flex justify-center items-center gap-2">
+            <Secu size={14} />
             Secure, Fast & Easy Process
           </div>
         </div>
