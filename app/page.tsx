@@ -11,7 +11,7 @@ export default function Home() {
   return (
     <main className="min-h-screen container bg-bgColor relative overflow-hidden">
       {/* Animated Background */}
-      {/* <AnimatedBackground /> */}
+      <AnimatedBackground />
       {/* Hero Section */}
       <section className="section">
         <Hero />
