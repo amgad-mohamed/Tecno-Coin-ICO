@@ -30,22 +30,24 @@ const Header = () => {
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
-
       if (pathname === "/") {
-        const sections = {
-          home: 0,
-          "token-sale": document.getElementById("token-sale")?.offsetTop || 0,
-          "how-to-buy": document.getElementById("how-to-buy")?.offsetTop || 0,
-        };
+        const tokenSaleTop = document.getElementById("token-sale")?.offsetTop ?? Number.POSITIVE_INFINITY;
+        const howToBuyTop = document.getElementById("how-to-buy")?.offsetTop ?? Number.POSITIVE_INFINITY;
 
-        const currentPosition = window.scrollY + window.innerHeight / 3;
+        // Buffer to account for fixed header height
+        const buffer = 80;
+        const y = window.scrollY;
 
+        // Determine active section using simple ranges:
+        // home: before token-sale
+        // token-sale: between token-sale and how-to-buy
+        // how-to-buy: after how-to-buy
         let current = "home";
-        Object.entries(sections).forEach(([key, value]) => {
-          if (currentPosition >= value) {
-            current = key;
-          }
-        });
+        if (y + buffer >= tokenSaleTop && y + buffer < howToBuyTop) {
+          current = "token-sale";
+        } else if (y + buffer >= howToBuyTop) {
+          current = "how-to-buy";
+        }
 
         setActiveSection(current);
       }
@@ -75,6 +77,28 @@ const Header = () => {
     { name: "Transactions", href: "/transactions", id: "transactions" },
     ...(isAdminUser ? [{ name: "Admin", href: "/admin", id: "admin" }] : []),
   ];
+
+  // Smooth-scroll behavior on homepage to avoid refresh
+  const handleNavClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    item: NavItem
+  ) => {
+    if (pathname === "/") {
+      // On home page, prevent navigation and smooth scroll
+      if (item.id === "home") {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        const target = document.getElementById(item.id);
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }
+    }
+    // Close mobile menu if open
+    setIsMobileMenuOpen(false);
+  };
 
   const handleDisconnect = async () => {
     try {
@@ -135,6 +159,7 @@ const Header = () => {
                 transition={{ delay: index * 0.1 }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={(e) => handleNavClick(e, item)}
               >
                 <span>{item.name}</span>
               </motion.a>
@@ -201,7 +226,7 @@ const Header = () => {
                         ? "bg-amber-500/10 text-amber-400"
                         : "hover:bg-white/10"
                     }`}
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    onClick={(e) => handleNavClick(e, item)}
                   >
                     <span className="text-sm">{item.name}</span>
                   </a>
