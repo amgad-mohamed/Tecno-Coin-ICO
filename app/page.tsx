@@ -23,9 +23,9 @@ export default function Home() {
       </section> */}
 
       {/* Token Sale Section */}
-      <section className="section relative z-10" id="token-sale">
+      <div className="mb-5 md:mb-14 relative z-10" id="token-sale">
         <TokenSale />
-      </section>
+      </div>
 
       {/* How To Buy Section */}
       <section className="py-10 relative z-10" id="how-to-buy">
