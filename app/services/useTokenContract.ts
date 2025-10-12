@@ -11,13 +11,14 @@ const abi = CONTRACT_ABIS.TOKEN;
 
 export function useTokenContract(tokenAddress?: `0x${string}`) {
   const address = (tokenAddress ?? (CONTRACT_ADDRESS.TOKEN as `0x${string}`)) as `0x${string}`;
+  const chainId = 11155111; // Sepolia
   const { writeContract, data: hash, isPending, error } = useWriteContract();
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
     useWaitForTransactionReceipt({ hash });
 
   // ----------- Reads ------------
   const useTotalSupply = () =>
-    useReadContract({ abi, address, functionName: "totalSupply" });
+    useReadContract({ abi, address, functionName: "totalSupply", chainId });
 
   const useBalanceOf = (account: `0x${string}`) =>
     useReadContract({
@@ -25,6 +26,7 @@ export function useTokenContract(tokenAddress?: `0x${string}`) {
       address,
       functionName: "balanceOf",
       args: [account],
+      chainId,
     });
 
   const useAllowance = (owner: `0x${string}`, spender: `0x${string}`) =>
@@ -33,10 +35,11 @@ export function useTokenContract(tokenAddress?: `0x${string}`) {
       address,
       functionName: "allowance",
       args: [owner, spender],
+      chainId,
     });
 
   const useGetTokenStats = () =>
-    useReadContract({ abi, address, functionName: "getTokenStats" });
+    useReadContract({ abi, address, functionName: "getTokenStats", chainId });
 
   // ----------- Writes ------------
   const transfer = (recipient: `0x${string}`, amount: bigint) =>

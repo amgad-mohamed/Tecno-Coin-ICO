@@ -76,11 +76,11 @@ export default function HowToBuy() {
             Secure Purchase Process
           </span>
           <h2 className="mt-4 text-2xl sm:text-3xl md:text-4xl font-bold text-primary">
-            How to Buy PLT Tokens
+            How to Buy NEFE
           </h2>
           <p className="mt-3 text-sm sm:text-base md:text-lg text-gray-300 max-w-3xl mx-auto">
             Follow these simple steps to participate in our presale and acquire
-            PLT tokens.
+            NEFE tokens.
             <br /> The process is secure, transparent, and only takes a few
             minutes.
           </p>
@@ -105,7 +105,7 @@ export default function HowToBuy() {
                   className="w-full h-auto"
                 />
               </div>
-              <h3 className="text-2xl sm:text-3xl md:text-4xl text-center font-bold mb-3 px-2 bg-gradient-to-r from-[#F4AD30] to-[#F4AD30] bg-clip-text text-transparent">
+              <h3 className="text-2xl sm:text-3xl md:text-4xl text-center font-bold mb-3  bg-gradient-to-r from-[#F4AD30] to-[#F4AD30] bg-clip-text text-transparent">
                 {step.title}
               </h3>
               <p className="text-white/70 text-xs sm:text-sm md:text-base tracking-wider pb-6 text-center mt-auto">

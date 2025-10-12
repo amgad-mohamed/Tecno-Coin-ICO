@@ -165,9 +165,9 @@ const TokenSale = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
           <div className="space-y-4">
             {vestingInfo.map((info, index) => (
-              <div key={index} className="flex items-start gap-3">
+              <div key={index} className="flex items-center gap-3">
                 <svg
-                  className="w-4 h-4 flex-shrink-0 text-amber-500 mt-1"
+                  className="w-5 h-5 flex-shrink-0 text-btnColor"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -175,7 +175,7 @@ const TokenSale = () => {
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    strokeWidth={4}
+                    strokeWidth={2}
                     d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>

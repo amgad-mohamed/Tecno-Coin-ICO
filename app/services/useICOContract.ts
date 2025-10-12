@@ -10,6 +10,7 @@ import { CONTRACT_ADDRESS } from "../utils/web3intraction/constants/contract_add
 // Contract constants
 const abi = CONTRACT_ABIS.ICO_CONTRACT;
 const address = CONTRACT_ADDRESS.ICO_CONTRACT as `0x${string}`;
+const chainId = 11155111; // Sepolia
 
 export function useICOContract() {
   const { writeContract, data: hash, isPending, error } = useWriteContract();
@@ -20,25 +21,25 @@ export function useICOContract() {
 
   // ----------- Reads ------------
   const useGetLatestETHPrice = () =>
-    useReadContract({ abi, address, functionName: "getLatestETHPrice" });
+    useReadContract({ abi, address, functionName: "getLatestETHPrice", chainId });
 
   const useGetTokenBalance = () =>
-    useReadContract({ abi, address, functionName: "getTokenBalance" });
+    useReadContract({ abi, address, functionName: "getTokenBalance", chainId });
 
   const useGetUSDTBalance = () =>
-    useReadContract({ abi, address, functionName: "getUSDTBalance" });
+    useReadContract({ abi, address, functionName: "getUSDTBalance", chainId });
 
   const useGetETHBalance = () =>
-    useReadContract({ abi, address, functionName: "getETHBalance" });
+    useReadContract({ abi, address, functionName: "getETHBalance", chainId });
 
   const useGgetTokenPrice = () =>
-    useReadContract({ abi, address, functionName: "tokenPrice" });
+    useReadContract({ abi, address, functionName: "tokenPrice", chainId });
 
   const useGetPauseStatus = () =>
-    useReadContract({ abi, address, functionName: "paused" });
+    useReadContract({ abi, address, functionName: "paused", chainId });
 
   const useGetTotalTokensSold = () =>
-    useReadContract({ abi, address, functionName: "totalTokensSold" });
+    useReadContract({ abi, address, functionName: "totalTokensSold", chainId });
 
   // ----------- Writes ------------
   const buyTokens = (amount) =>

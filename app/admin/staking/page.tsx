@@ -169,7 +169,7 @@ export default function StakingManagement() {
                       {status}
                     </span>
                     <span className="font-medium text-sm sm:text-base truncate text-white">
-                      {Number(item.amt).toLocaleString()} NEFE •{" "}
+                      {Number(item.amt).toLocaleString()} NEFE • <br className="block md:hidden" />
                       {ts ? new Date(ts * 1000).toLocaleString() : "-"}
                     </span>
                   </div>

@@ -40,7 +40,7 @@ export default function AdminTransactionsPage() {
   }, [selectedPriceId]);
 
   return (
-    <div className="p-6 sm:p-8">
+    <div>
       <div className="bg-thirdBgColor rounded-xl shadow-md p-4 sm:p-6 border border-bgColor/60">
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
           <label className="text-sm text-white/70">

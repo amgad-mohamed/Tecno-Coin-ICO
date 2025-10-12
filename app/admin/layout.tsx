@@ -199,7 +199,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               <motion.button
                 key={section.title}
                 onClick={() => handleNavigation(section.href)}
-                className={`w-full flex items-center gap-2 px-3 sm:px-3 py-4 rounded-lg transition-colors ${
+                className={`w-full flex items-center gap-2 px-3 sm:px-3 text-sm md:text-base py-4 rounded-lg transition-colors ${
                   isActive
                     ? "bg-btnColor"
                     : "border-bgColor/60 bg-fourthBgColor"
@@ -228,7 +228,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         </div>
 
         {/* Page Content */}
-        <div className="flex-1 overflow-auto ml-10 mr-24 my-5">{children}</div>
+        <div className="flex-1 overflow-auto ml-5 md:ml-10 mr-5 md:mr-24 my-5">{children}</div>
       </main>
     </div>
   );
