@@ -17,6 +17,7 @@ module.exports = {
         secondBgColor: "#352110",
         thirdBgColor:"#221D1A",
         fourthBgColor:"#4A2F19",
+        btnColor:"#F4AD30",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",

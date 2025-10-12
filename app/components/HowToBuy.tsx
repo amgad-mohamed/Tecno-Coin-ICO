@@ -42,28 +42,28 @@ function Secu({
 const steps = [
   {
     iconSrc: "/Icon.svg",
-    title: "Connect Your Wallet",
+    title: "CREATE A WALLET",
     description:
-      "Lorem ipsum dolor sit amet consectetur. Lacus in tristique odio mauris feugiat aliquam.",
+      "Download MetaMask or your wallet of choice from the app store or Google Play Store for free. Desktop users, download the Google Chrome extension by going to metamask.io.",
   },
   {
     iconSrc: "/Icon1.svg",
-    title: "Select Amount",
+    title: "GET SOME USDT",
     description:
-      "Lorem ipsum dolor sit amet consectetur. Lacus in tristique odio mauris feugiat aliquam.",
+      "Have USDT in your wallet to swap for NEFE. If you don’t have any USDT , you can buy directly on MetaMask, transfer from another wallet, or buy on another exchange and send it to your wallet.",
   },
   {
     iconSrc: "/Icon2.svg",
-    title: "Choose Payment",
+    title: "CLAIM YOUR NEFE",
     description:
-      "Lorem ipsum dolor sit amet consectetur. Lacus in tristique odio mauris feugiat aliquam.",
+      "Connect your wallet above. Enter the amount of USDT you wish to contribute, then confirm the transaction. Once the ICO period is over, you will be able to claim your NEFE tokens from this page.",
   },
-  {
-    iconSrc: "/Icon3.svg",
-    title: "Confirm Transaction",
-    description:
-      "Lorem ipsum dolor sit amet consectetur. Lacus in tristique odio mauris feugiat aliquam.",
-  },
+  // {
+  //   iconSrc: "/Icon3.svg",
+  //   title: "Confirm Transaction",
+  //   description:
+  //     "Lorem ipsum dolor sit amet consectetur. Lacus in tristique odio mauris feugiat aliquam.",
+  // },
 ];
 
 export default function HowToBuy() {
@@ -86,7 +86,7 @@ export default function HowToBuy() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mx-auto">
           {steps.map((step, idx) => (
             <motion.div
               key={idx}
@@ -94,7 +94,7 @@ export default function HowToBuy() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: idx * 0.1 }}
-              className="relative bg-fourthBgColor rounded-2xl border border-bgColor/60 px-6 sm:px-8 pt-16 sm:pt-20 md:pt-24 pb-8 sm:pb-10 mt-16 sm:mt-20"
+              className="relative bg-fourthBgColor rounded-2xl border border-bgColor/60 px-6 sm:px-8 pt-16 sm:pt-20 md:pt-24 pb-8 sm:pb-10 mt-16 sm:mt-20 flex flex-col"
             >
               <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 sm:w-52 md:w-[234px] h-28 sm:h-36 md:h-[160px] flex items-center justify-center pointer-events-none select-none">
                 <Image
@@ -108,7 +108,7 @@ export default function HowToBuy() {
               <h3 className="text-2xl sm:text-3xl md:text-4xl text-center font-bold mb-3 px-2 bg-gradient-to-r from-[#F4AD30] to-[#F4AD30] bg-clip-text text-transparent">
                 {step.title}
               </h3>
-              <p className="text-white/70 text-xs sm:text-sm md:text-base tracking-wider pb-12 sm:pb-16 md:pb-20 text-center">
+              <p className="text-white/70 text-xs sm:text-sm md:text-base tracking-wider pb-6 text-center mt-auto">
                 {step.description}
               </p>
             </motion.div>

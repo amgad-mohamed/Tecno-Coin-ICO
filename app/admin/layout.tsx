@@ -101,25 +101,25 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   // Early returns for authentication
   if (!isConnected) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50 dark:bg-gray-900 mt-[84px]">
+      <div className="min-h-screen flex items-center justify-center p-4 bg-bgColor mt-[84px]">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-center max-w-md w-full bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-gray-700"
+          className="text-center max-w-md w-full bg-secondBgColor rounded-2xl shadow-xl p-8 border border-bgColor/60"
         >
           <div className="flex items-center justify-center gap-3 mb-6">
-            <FiAlertCircle className="text-red-500 text-4xl" />
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+            <FiAlertCircle className="text-amber-400 text-4xl" />
+            <h2 className="text-2xl font-bold text-white">
               Wallet Connection Required
             </h2>
           </div>
-          <p className="text-gray-600 dark:text-gray-300 mb-8 text-lg">
+          <p className="text-white/70 mb-8 text-lg">
             Please connect your wallet to access the admin dashboard.
           </p>
           <motion.button
             onClick={() => open()}
-            className="w-full px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition-all duration-300 flex items-center justify-center gap-3 text-lg font-medium shadow-md hover:shadow-lg"
+            className="w-full px-6 py-3 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-all duration-300 flex items-center justify-center gap-3 text-lg font-medium shadow-md hover:shadow-lg"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -132,26 +132,26 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   if (!isAdminUser) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50 dark:bg-gray-900 mt-[84px]">
+      <div className="min-h-screen flex items-center justify-center p-4 bg-bgColor mt-[84px]">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-center max-w-md w-full bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-gray-700"
+          className="text-center max-w-md w-full bg-secondBgColor rounded-2xl shadow-xl p-8 border border-bgColor/60"
         >
           <div className="flex items-center justify-center gap-3 mb-6">
-            <FiAlertCircle className="text-red-500 text-4xl" />
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+            <FiAlertCircle className="text-amber-400 text-4xl" />
+            <h2 className="text-2xl font-bold text-white">
               Admin Access Required
             </h2>
           </div>
-          <p className="text-gray-600 dark:text-gray-300 mb-8 text-lg">
+          <p className="text-white/70 mb-8 text-lg">
             Your connected wallet does not have admin privileges. Please connect
             with an admin wallet.
           </p>
           <motion.button
             onClick={() => open()}
-            className="w-full px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition-all duration-300 flex items-center justify-center gap-3 text-lg font-medium shadow-md hover:shadow-lg"
+            className="w-full px-6 py-3 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-all duration-300 flex items-center justify-center gap-3 text-lg font-medium shadow-md hover:shadow-lg"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -163,7 +163,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex mt-[84px]">
+    <div className="min-h-screen bg-bgColor flex mt-[84px] font-nunito">
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div
@@ -174,20 +174,20 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
       {/* Sidebar */}
       <aside
-        className={`fixed lg:static inset-y-0 left-0 z-50 md:z-20 w-[260px] sm:w-[280px] lg:w-[290px] bg-white dark:bg-gray-800 p-5 sm:p-6 border-r border-gray-200 dark:border-gray-700 transform transition-transform duration-300 ${
+        className={`fixed lg:static inset-y-0 left-0 z-50 md:z-20 w-[260px] sm:w-[280px] lg:w-[290px] bg-thirdBgColor p-5 sm:p-6 border-r border-bgColor/60 transform transition-transform duration-300 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0`}
       >
         {/* Sidebar Header */}
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-base md:text-xl font-bold text-purple-600 dark:text-white flex items-center gap-2">
-            <FiSettings className="text-purple-600" /> Admin Dashboard
+          <h2 className="text-base md:text-lg font-semibold flex items-center gap-2">
+            <FiSettings className="text-amber-400" /> Admin Dashboard
           </h2>
           <button
             onClick={() => setSidebarOpen(false)}
-            className="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+            className="lg:hidden p-2 rounded-lg hover:bg-white/10"
           >
-            <FiX className="text-gray-600 dark:text-gray-400" />
+            <FiX className="text-white/70" />
           </button>
         </div>
 
@@ -199,10 +199,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               <motion.button
                 key={section.title}
                 onClick={() => handleNavigation(section.href)}
-                className={`w-full flex items-center gap-3 px-3 sm:px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+                className={`w-full flex items-center gap-2 px-3 sm:px-3 py-4 rounded-lg transition-colors ${
                   isActive
-                    ? "bg-purple-600 text-white"
-                    : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                    ? "bg-btnColor"
+                    : "border-bgColor/60 bg-fourthBgColor"
                 }`}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -218,17 +218,17 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       {/* Main Content */}
       <main className="flex-1 flex flex-col">
         {/* Top Bar */}
-        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-4 lg:hidden">
+        <div className="bg-secondBgColor border-b border-bgColor/60 p-4 lg:hidden">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+            className="p-2 rounded-lg hover:bg-white/10"
           >
-            <FiMenu className="text-gray-600 dark:text-gray-400 text-xl" />
+            <FiMenu className="text-white/70 text-xl" />
           </button>
         </div>
 
         {/* Page Content */}
-        <div className="flex-1 overflow-auto sm:p-6 lg:p-8">{children}</div>
+        <div className="flex-1 overflow-auto ml-10 mr-24 my-5">{children}</div>
       </main>
     </div>
   );

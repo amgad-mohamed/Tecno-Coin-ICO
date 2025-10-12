@@ -312,7 +312,7 @@ export default function ICOManagement() {
       : 0;
 
   return (
-    <div className="p-4 sm:p-6 md:p-8">
+    <div className="">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -321,7 +321,7 @@ export default function ICOManagement() {
       >
         {/* Header with refresh button */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">
             ICO Management
           </h1>
 
@@ -329,7 +329,7 @@ export default function ICOManagement() {
             onClick={refreshAllData}
             onTouchStart={refreshAllData}
             disabled={loading.refreshing}
-            className="flex items-center gap-2 px-4 py-2.5 text-sm bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 touch-manipulation min-h-[44px]"
+            className="flex items-center gap-2 px-4 py-2.5 text-sm bg-secondBgColor border border-bgColor/60 text-white rounded-lg hover:bg-white/10 transition-colors disabled:opacity-50 touch-manipulation min-h-[44px]"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -344,9 +344,9 @@ export default function ICOManagement() {
           {/* Left column - Token Price & Status */}
           <div className="md:col-span-2 space-y-4 md:space-y-6">
             {/* Token Price Card */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 sm:p-6 border border-gray-200 dark:border-gray-700">
+            <div className="bg-secondBgColor rounded-xl shadow-md p-4 sm:p-6 border border-bgColor/60">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
-                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
+                <h3 className="text-lg sm:text-xl font-semibold text-white">
                   Token Price
                 </h3>
 
@@ -385,14 +385,14 @@ export default function ICOManagement() {
                         min="0.01"
                         value={tokenPrice}
                         onChange={(e) => setTokenPrice(e.target.value)}
-                        className="flex-1 px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm min-h-[44px]"
+                        className="flex-1 px-3 py-2.5 border border-bgColor/60 rounded-lg bg-fourthBgColor text-white text-sm min-h-[44px]"
                         placeholder="Enter new token price"
                       />
                       <motion.button
                         onClick={handleUpdateTokenPrice}
                         onTouchStart={handleUpdateTokenPrice}
                         disabled={loading.priceUpdate}
-                        className="px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 text-sm min-h-[44px] touch-manipulation"
+                        className="px-4 py-2.5 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors disabled:opacity-50 text-sm min-h-[44px] touch-manipulation"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
@@ -407,69 +407,38 @@ export default function ICOManagement() {
                     exit={{ opacity: 0 }}
                     className="flex items-end gap-2 mb-4"
                   >
-                    <span className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+                    <span className="text-2xl sm:text-3xl font-bold text-primary">
                       ${tokenPrice}
                     </span>
-                    <span className="text-gray-500 dark:text-gray-400 text-sm mb-1">
+                    <span className="text-white/60 text-sm mb-1">
                       per token
                     </span>
                   </motion.div>
                 )}
               </AnimatePresence>
-
-              {priceHistory.length > 0 && (
-                <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                  <h4 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
-                    Recent Price History
-                  </h4>
-                  <div className="space-y-2">
-                    {priceHistory.slice(0, 3).map((entry, index) => (
-                      <div
-                        key={index}
-                        className="flex justify-between text-xs sm:text-sm"
-                      >
-                        <span className="text-gray-500 dark:text-gray-400">
-                          {new Date(entry.timestamp).toLocaleTimeString()}
-                        </span>
-                        <span className="font-medium">${entry.price}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
 
             {/* ICO Status Card */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 sm:p-6 border border-gray-200 dark:border-gray-700">
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-4">
+            <div className="bg-secondBgColor rounded-xl shadow-md p-4 sm:p-6 border border-bgColor/60">
+              <h3 className="text-lg sm:text-xl font-semibold text-white mb-4">
                 ICO Status
               </h3>
 
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <div
-                    className={`p-2 rounded-full ${
-                      isPaused
-                        ? "bg-red-100 dark:bg-red-900/20"
-                        : "bg-green-100 dark:bg-green-900/20"
-                    }`}
-                  >
+                  <div className={`p-2 rounded-full bg-amber-500/10`}>
                     {isPaused ? (
-                      <FiPause className="text-red-600 dark:text-red-400 text-lg sm:text-xl" />
+                      <FiPause className="text-btnColor text-lg sm:text-xl" />
                     ) : (
-                      <FiPlay className="text-green-600 dark:text-green-400 text-lg sm:text-xl" />
+                      <FiPlay className="text-btnColor text-lg sm:text-xl" />
                     )}
                   </div>
                   <div>
-                    <span className="text-gray-600 dark:text-gray-300 block text-xs sm:text-sm">
+                    <span className="text-white/70 block text-xs sm:text-sm">
                       Current Status
                     </span>
                     <span
-                      className={`font-semibold text-lg sm:text-xl ${
-                        isPaused
-                          ? "text-red-600 dark:text-red-400"
-                          : "text-green-600 dark:text-green-400"
-                      }`}
+                      className={`font-semibold text-lg sm:text-xl text-amber-400`}
                     >
                       {isPaused ? "PAUSED" : "ACTIVE"}
                     </span>
@@ -480,11 +449,7 @@ export default function ICOManagement() {
                   onClick={handleTogglePause}
                   onTouchStart={handleTogglePause}
                   disabled={loading.pauseToggle}
-                  className={`px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm sm:text-base min-h-[44px] touch-manipulation ${
-                    isPaused
-                      ? "bg-green-600 text-white hover:bg-green-700"
-                      : "bg-red-600 text-white hover:bg-red-700"
-                  } disabled:opacity-50`}
+                  className={`px-4 sm:px-6 sm:py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm sm:text-base min-h-[44px] touch-manipulation bg-amber-500 text-white hover:bg-amber-600 disabled:opacity-50`}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -503,10 +468,10 @@ export default function ICOManagement() {
                 </motion.button>
               </div>
 
-              <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+              <div className="mt-4 p-3 bg-fourthBgColor rounded-lg">
                 <div className="flex items-start gap-2">
-                  <FiInfo className="text-blue-500 mt-0.5 flex-shrink-0 text-sm sm:text-base" />
-                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                  <FiInfo className="text-amber-400 mt-0.5 flex-shrink-0 text-sm sm:text-base" />
+                  <p className="text-xs sm:text-sm text-white/70">
                     {isPaused
                       ? "ICO is currently paused. No purchases can be made until resumed."
                       : "ICO is active. Users can purchase tokens using ETH or USDT."}
@@ -519,50 +484,44 @@ export default function ICOManagement() {
           {/* Right column - Balances & Withdrawals */}
           <div className="space-y-4 md:space-y-6">
             {/* Balances Card */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 sm:p-6 border border-gray-200 dark:border-gray-700">
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-4">
+            <div className="bg-secondBgColor rounded-xl shadow-md p-4 sm:p-6 border border-bgColor/60">
+              <h3 className="text-lg sm:text-xl font-semibold text-white mb-4">
                 Contract Balances
               </h3>
 
               <div className="space-y-3">
-                <div className="p-3 sm:p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <div className="p-3 sm:p-4 bg-fourthBgColor rounded-lg">
                   <div className="flex justify-between items-center mb-1">
-                    <span className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm">
+                    <span className="text-white/70 text-xs sm:text-sm">
                       Token Balance
                     </span>
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                      NEFE
-                    </span>
+                    <span className="text-xs text-white/60">NEFE</span>
                   </div>
-                  <span className="font-semibold text-lg sm:text-xl text-gray-900 dark:text-white">
+                  <span className="font-semibold text-lg sm:text-xl text-white">
                     {formatBalance(icoTokenBal as bigint)}
                   </span>
                 </div>
 
-                <div className="p-3 sm:p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <div className="p-3 sm:p-4 bg-fourthBgColor rounded-lg">
                   <div className="flex justify-between items-center mb-1">
-                    <span className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm">
+                    <span className="text-white/70 text-xs sm:text-sm">
                       ETH Balance
                     </span>
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                      ETH
-                    </span>
+                    <span className="text-xs text-white/60">ETH</span>
                   </div>
-                  <span className="font-semibold text-lg sm:text-xl text-gray-900 dark:text-white">
+                  <span className="font-semibold text-lg sm:text-xl text-white">
                     {formatBalance(icoETHBal as bigint)}
                   </span>
                 </div>
 
-                <div className="p-3 sm:p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <div className="p-3 sm:p-4 bg-fourthBgColor rounded-lg">
                   <div className="flex justify-between items-center mb-1">
-                    <span className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm">
+                    <span className="text-white/70 text-xs sm:text-sm">
                       USDT Balance
                     </span>
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                      USDT
-                    </span>
+                    <span className="text-xs text-white/60">USDT</span>
                   </div>
-                  <span className="font-semibold text-lg sm:text-xl text-gray-900 dark:text-white">
+                  <span className="font-semibold text-lg sm:text-xl text-white">
                     {formatBalance(icoUSDTBal as bigint, 6)}
                   </span>
                 </div>
@@ -570,8 +529,8 @@ export default function ICOManagement() {
             </div>
 
             {/* Withdrawals Card */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 sm:p-6 border border-gray-200 dark:border-gray-700">
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-4">
+            <div className="bg-secondBgColor rounded-xl shadow-md p-4 sm:p-6 border border-bgColor/60">
+              <h3 className="text-lg sm:text-xl font-semibold text-white mb-4">
                 Withdraw Funds
               </h3>
 
@@ -582,7 +541,7 @@ export default function ICOManagement() {
                   disabled={
                     loading.withdrawETH || !icoETHBal || Number(icoETHBal) === 0
                   }
-                  className="w-full flex items-center justify-between px-4 py-2.5 sm:py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base min-h-[44px] touch-manipulation"
+                  className="w-full flex items-center justify-between px-4 py-2.5 sm:py-3 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base min-h-[44px] touch-manipulation"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
@@ -600,7 +559,7 @@ export default function ICOManagement() {
                     !icoUSDTBal ||
                     Number(icoUSDTBal) === 0
                   }
-                  className="w-full flex items-center justify-between px-4 py-2.5 sm:py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base min-h-[44px] touch-manipulation"
+                  className="w-full flex items-center justify-between px-4 py-2.5 sm:py-3 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base min-h-[44px] touch-manipulation"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
@@ -611,10 +570,10 @@ export default function ICOManagement() {
                 </motion.button>
               </div>
 
-              <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+              <div className="mt-4 p-3 bg-amber-500/10 rounded-lg">
                 <div className="flex items-start gap-2">
-                  <FiAlertCircle className="text-yellow-500 mt-0.5 flex-shrink-0 text-sm sm:text-base" />
-                  <p className="text-xs sm:text-sm text-yellow-700 dark:text-yellow-300">
+                  <FiAlertCircle className="text-amber-400 mt-0.5 flex-shrink-0 text-sm sm:text-base" />
+                  <p className="text-xs sm:text-sm text-amber-300">
                     Withdrawals will transfer funds to the contract owner's
                     wallet. This action is irreversible.
                   </p>

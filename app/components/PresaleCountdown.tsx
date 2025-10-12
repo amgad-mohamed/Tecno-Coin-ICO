@@ -80,8 +80,8 @@ export default function PresaleCountdown() {
   return (
     <div className="bg-bgColor font-nunito">
       <div className="container mx-auto px-4">
-        <h2 className="text-center text-2xl md:text-4xl font-extrabold text-white mb-8">
-          Presale Ends In
+        <h2 className="text-center text-2xl md:text-[32px] font-extrabold text-white mb-8">
+          JOIN THE ICO
         </h2>
         <div className="flex flex-wrap justify-center gap-6 md:gap-12">
           <Tile value={timeLeft.days} label="Days" />

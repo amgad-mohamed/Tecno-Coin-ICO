@@ -472,9 +472,9 @@ const Hero = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4, duration: 0.8 }}
                 >
-                  The Future of{" "}
+                  THE INITIAL COIN{" "}
                   <span className="bg-gradient-to-r from-[#F4AD30] to-[#CA6C2F] bg-clip-text text-transparent ">
-                    Digital Assets
+                    OFFERING IS LIVE
                   </span>
                 </motion.h1>
 
@@ -484,8 +484,8 @@ const Hero = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5, duration: 0.8 }}
                 >
-                  Join our exclusive presale phase and be among the first to
-                  acquire NEFE tokens at the best possible price.
+                  Your opportunity to claim a stake in the Nefe dynasty begins
+                  now. Be among the first to unearth the legacy.
                 </motion.p>
               </div>
 
@@ -501,19 +501,25 @@ const Hero = () => {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-0">
                   <div>
-                    <span className="block text-xs sm:text-sm md:text-base mb-1">Total Supply</span>
+                    <span className="block text-xs sm:text-sm md:text-base mb-1">
+                      Total Supply
+                    </span>
                     <span className="text-amber font-extrabold text-2xl md:text-3xl text-primary">
                       {TOTAL_SUPPLY.toLocaleString()}
                     </span>
                   </div>
                   <div className="pl-0 sm:pl-10">
-                    <span className="block text-xs sm:text-sm md:text-base mb-1">Sold</span>
+                    <span className="block text-xs sm:text-sm md:text-base mb-1">
+                      Sold
+                    </span>
                     <span className="text-amber font-extrabold text-2xl md:text-3xl text-primary">
                       {SOLD_TOKENS.toLocaleString()}
                     </span>
                   </div>
                   <div>
-                    <span className="block text-xs sm:text-sm md:text-base mb-1">Available</span>
+                    <span className="block text-xs sm:text-sm md:text-base mb-1">
+                      Available
+                    </span>
                     <span className="text-amber font-extrabold text-2xl md:text-3xl text-primary">
                       {AVAILABLE_TOKENS.toLocaleString()}
                     </span>

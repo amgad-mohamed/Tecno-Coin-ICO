@@ -107,70 +107,67 @@ export default function TokenManagement() {
   ]);
 
   return (
-    <div className="p-6 sm:p-8">
+    <div className="">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-4xl mx-auto"
+        className="font-nunito"
       >
         <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-gray-900 dark:text-white">
           Token Management
         </h1>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-5 sm:p-8 border border-gray-200 dark:border-gray-700">
+        <div className=" bg-thirdBgColor rounded-2xl shadow-lg p-5 sm:p-8">
           <div className="space-y-6">
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
               Token Contract
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
-              <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
-                <span className="text-gray-600 dark:text-gray-300 block text-sm">
-                  Total Minted
-                </span>
-                <span className="font-semibold text-lg">
+              <div className="p-4 bg-secondBgColor rounded-lg">
+                <span className="font-semibold block">Total Minted</span>
+                <span className="bg-gradient-to-r from-[#F4AD30] to-[#CA6C2F] bg-clip-text text-transparent font-bold text-xl md:text-2xl">
                   {tokenStats.totalMinted.toLocaleString()} NEFE
                 </span>
               </div>
-              <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
-                <span className="text-gray-600 dark:text-gray-300 block text-sm">
-                  Current Supply
-                </span>
-                <span className="font-semibold text-lg">
+              <div className="p-4 bg-secondBgColor rounded-lg">
+                <span className="font-semibold block">Current Supply</span>
+                <span className="bg-gradient-to-r from-[#F4AD30] to-[#CA6C2F] bg-clip-text text-transparent font-bold text-xl md:text-2xl">
                   {tokenStats.currentSupply.toLocaleString()} NEFE
                 </span>
               </div>
-              <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
-                <span className="text-gray-600 dark:text-gray-300 block text-sm">
-                  Total Burned
-                </span>
-                <span className="font-semibold text-lg">
+              <div className="p-4 bg-secondBgColor rounded-lg">
+                <span className="font-semibold block">Total Burned</span>
+                <span className="bg-gradient-to-r from-[#F4AD30] to-[#CA6C2F] bg-clip-text text-transparent font-bold text-xl md:text-2xl">
                   {tokenStats.totalBurned.toLocaleString()} NEFE
                 </span>
               </div>
             </div>
-            <div className="pt-4 border-t border-gray-200 dark:border-gray-700" />
-            <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Update Token Price
-            </h4>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Current Price{" "}
+            <div className="pt-4 border-t border-secondBgColor" />
+            <div className="flex justify-between items-center">
+              <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Update Token Price
+              </h4>
+              <label className="block text-sm font-medium">
+                Current Price{" "}
+                <span className="bg-gradient-to-r from-[#F4AD30] to-[#CA6C2F] bg-clip-text text-transparent font-bold text-sm">
                   {tokenPriceData
                     ? (Number(tokenPriceData) / 1e6).toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 6,
                       })
                     : "0"}{" "}
-                  (USDT)
-                </label>
-
+                  USDT
+                </span>
+              </label>
+            </div>
+            <div className="space-y-4">
+              <div>
                 <input
                   type="number"
                   value={tokenPrice}
                   onChange={(e) => setTokenPrice(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                  className="w-full px-4 py-2 border border-fourthBgColor rounded-lg focus:border-transparent dark:bg-[#201409] dark:text-white"
                   step="0.01"
                   min="0"
                   placeholder="Enter token price"
@@ -179,8 +176,8 @@ export default function TokenManagement() {
               <motion.button
                 onClick={handleUpdateTokenPrice}
                 disabled={loading}
-                className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50"
-                whileHover={{ scale: 1.05 }}
+                className="w-full px-4 py-2 bg-btnColor text-white rounded-lg transition-colors disabled:opacity-50"
+                whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.95 }}
               >
                 {loading ? "Updating..." : "Update Price"}

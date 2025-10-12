@@ -101,14 +101,12 @@ const Footer = () => {
       <div className="container mx-auto px-6 lg:px-10 py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 text-white">
           <motion.div variants={itemVariants}>
-            <a
-              href="#"
-              className="text-2xl font-bold text-amber-400"
-            >
+            <a href="#" className="text-2xl font-bold text-amber-400">
               NEFE
             </a>
             <p className="mt-4 text-white/80 text-sm sm:text-base max-w-xs">
-              Join our exclusive presale phase and be among the first to acquire PLT tokens.
+              Join our exclusive presale phase and be among the first to acquire
+              PLT tokens.
             </p>
             <div className="flex space-x-4 mt-6">
               {socialLinks.map((item) => (
@@ -152,6 +150,11 @@ const Footer = () => {
           variants={itemVariants}
         >
           <p>© {new Date().getFullYear()} NEFE. All rights reserved.</p>
+          <p>
+            Disclaimer: The Nefe Coin ICO is a high-risk investment. The crypto
+            market is volatile. Please do your own research and invest only what
+            you can afford to lose. This is not financial advice.
+          </p>
         </motion.div>
       </div>
     </motion.footer>

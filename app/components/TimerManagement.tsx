@@ -132,27 +132,27 @@ const getStatusBadge = (timer: Timer) => {
 
     if (!isActive) {
       return (
-        <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300 rounded-full">
+        <span className="px-2 py-1 text-xs font-medium bg-white/10 text-white/70 rounded-full">
           Inactive
         </span>
       );
     }
   if (now < startTime) {
     return (
-      <span className="px-2 py-1 text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-700 dark:text-amber-300 rounded-full">
+      <span className="px-2 py-1 text-xs font-medium bg-amber-500/10 text-amber-400 rounded-full">
         Upcoming
       </span>
     );
   }
     if (now >= startTime && now <= endTime) {
       return (
-        <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 dark:bg-green-700 dark:text-green-300 rounded-full">
+        <span className="px-2 py-1 text-xs font-medium bg-green-500/10 text-green-400 rounded-full">
           Active
         </span>
       );
     }
     return (
-      <span className="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 dark:bg-red-700 dark:text-red-300 rounded-full">
+      <span className="px-2 py-1 text-xs font-medium bg-red-500/10 text-red-400 rounded-full">
         Expired
       </span>
     );
@@ -160,12 +160,10 @@ const getStatusBadge = (timer: Timer) => {
 
   const getTypeBadge = (type: string) => {
     const typeColors = {
-      GENERAL: "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300",
-      PRESALE: "bg-amber-100 text-amber-800 dark:bg-amber-700 dark:text-amber-300",
-      STAKING:
-        "bg-green-100 text-green-800 dark:bg-green-700 dark:text-green-300",
-      VESTING:
-        "bg-amber-100 text-amber-800 dark:bg-amber-700 dark:text-amber-300",
+      GENERAL: "bg-white/10 text-white/70",
+      PRESALE: "bg-amber-500/10 text-amber-400",
+      STAKING: "bg-green-500/10 text-green-400",
+      VESTING: "bg-amber-500/10 text-amber-400",
     };
     return (
       <span
@@ -240,7 +238,7 @@ const getStatusBadge = (timer: Timer) => {
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-gray-50 dark:bg-gray-700 p-4 sm:p-6 rounded-lg border border-gray-200 dark:border-gray-600"
+          className="bg-thirdBgColor p-4 sm:p-6 rounded-lg border border-bgColor/60"
         >
           <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
             {editingTimer ? "Edit Timer" : "Create New Timer"}
@@ -258,7 +256,7 @@ const getStatusBadge = (timer: Timer) => {
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 dark:bg-gray-600 dark:text-white"
+                  className="w-full px-3 py-2 border border-bgColor/60 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-fourthBgColor text-white"
                   required
                 />
               </div>
@@ -289,7 +287,7 @@ const getStatusBadge = (timer: Timer) => {
                 onChange={(e) =>
                   setFormData({ ...formData, description: e.target.value })
                 }
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 dark:bg-gray-600 dark:text-white"
+                className="w-full px-3 py-2 border border-bgColor/60 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-fourthBgColor text-white"
                 rows={3}
               />
             </div>
@@ -304,7 +302,7 @@ const getStatusBadge = (timer: Timer) => {
                   onChange={(e) =>
                     setFormData({ ...formData, startTime: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 dark:bg-gray-600 dark:text-white"
+                  className="w-full px-3 py-2 border border-bgColor/60 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-fourthBgColor text-white"
                   required
                 />
               </div>
@@ -318,7 +316,7 @@ const getStatusBadge = (timer: Timer) => {
                   onChange={(e) =>
                     setFormData({ ...formData, endTime: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 dark:bg-gray-600 dark:text-white"
+                  className="w-full px-3 py-2 border border-bgColor/60 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-fourthBgColor text-white"
                   required
                 />
               </div>
@@ -346,7 +344,7 @@ const getStatusBadge = (timer: Timer) => {
                     type: "GENERAL",
                   });
                 }}
-                className="w-full sm:w-auto px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                className="w-full sm:w-auto px-4 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -364,37 +362,37 @@ const getStatusBadge = (timer: Timer) => {
             key={timer._id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm"
+            className="bg-thirdBgColor p-4 sm:p-6 rounded-lg border border-bgColor/60 shadow-sm"
           >
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
               {/* Info */}
               <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap items-center gap-2 mb-2">
-                  <h4 className="text-lg font-semibold text-gray-900 dark:text-white break-words">
+                  <h4 className="text-lg font-semibold text-white break-words">
                     {timer.name}
                   </h4>
                   {getStatusBadge(timer)}
                   {getTypeBadge(timer.type)}
                 </div>
                 {timer.description && (
-                  <p className="text-gray-600 dark:text-gray-400 mb-3 break-words">
+                  <p className="text-white/70 mb-3 break-words">
                     {timer.description}
                   </p>
                 )}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
                   <div>
-                    <span className="text-gray-500 dark:text-gray-400">
+                    <span className="text-white/60">
                       Start:
                     </span>
-                    <span className="ml-2 text-gray-900 dark:text-white">
+                    <span className="ml-2 text-white">
                       {formatDate(timer.startTime)}
                     </span>
                   </div>
                   <div>
-                    <span className="text-gray-500 dark:text-gray-400">
+                    <span className="text-white/60">
                       End:
                     </span>
-                    <span className="ml-2 text-gray-900 dark:text-white">
+                    <span className="ml-2 text-white">
                       {formatDate(timer.endTime)}
                     </span>
                   </div>
@@ -406,8 +404,8 @@ const getStatusBadge = (timer: Timer) => {
                   onClick={() => handleToggleStatus(timer._id, timer.isActive)}
                   className={`p-2 rounded-lg transition-colors ${
                     timer.isActive
-                      ? "bg-green-100 text-green-600 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-400"
+                      ? "bg-green-500/10 text-green-400 hover:bg-green-500/20"
+                      : "bg-white/10 text-white/70 hover:bg-white/20"
                   }`}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -417,7 +415,7 @@ const getStatusBadge = (timer: Timer) => {
                 </motion.button>
                 <motion.button
                   onClick={() => handleEdit(timer)}
-                  className="p-2 bg-amber-100 text-amber-600 rounded-lg hover:bg-amber-200 dark:bg-amber-900/30 dark:text-amber-400"
+                  className="p-2 bg-amber-500/10 text-amber-400 rounded-lg hover:bg-amber-500/20"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -425,7 +423,7 @@ const getStatusBadge = (timer: Timer) => {
                 </motion.button>
                 <motion.button
                   onClick={() => handleDelete(timer._id)}
-                  className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400"
+                  className="p-2 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
