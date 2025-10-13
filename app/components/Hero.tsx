@@ -448,7 +448,7 @@ const Hero = () => {
               Current price
             </p>
             <p className="text-lg md:text-5xl font-extrabold text-white">
-              ${TOKEN_PRICE_USD.toFixed(3)} / NEFE
+              USDT{TOKEN_PRICE_USD.toFixed(3)} / NEFE
             </p>
           </div>
         </div>

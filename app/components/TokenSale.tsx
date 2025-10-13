@@ -8,13 +8,13 @@ const TokenSale = () => {
       description: "Fixed supply, no additional minting",
     },
     {
-      title: "Presale Allocation",
+      title: "Public Allocation",
       value: "50,000,000 NEFE",
       description: "50% of total supply available",
     },
     {
       title: "Token Price",
-      value: "$0.10 USDT",
+      value: "$0.001 USDT",
       description: "Early investor price",
     },
     {

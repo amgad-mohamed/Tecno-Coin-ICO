@@ -68,7 +68,7 @@ const steps = [
 
 export default function HowToBuy() {
   return (
-    <section id="how-to-buy" className="mb-10  bg-bgColor font-nunito">
+    <section id="how-to-buy" className="mb-10 bg-bgColor font-nunito">
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-10">
           <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondBgColor text-amber-400 text-xs">
@@ -84,9 +84,22 @@ export default function HowToBuy() {
             <br /> The process is secure, transparent, and only takes a few
             minutes.
           </p>
+          {/* Step Progress Indicator */}
+          {/* <div className="mt-6 flex items-center justify-center gap-3">
+            {[1, 2, 3].map((n) => (
+              <div key={n} className="flex items-center gap-3">
+                <div className="w-7 h-7 rounded-full bg-amber-500/10 border border-amber-500/40 text-amber-400 flex items-center justify-center text-sm font-semibold">
+                  {n}
+                </div>
+                {n < 3 && (
+                  <div className="w-10 h-[2px] bg-white/10" />
+                )}
+              </div>
+            ))}
+          </div> */}
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mx-auto">
+        <div className="space-y-4 sm:space-y-6">
           {steps.map((step, idx) => (
             <motion.div
               key={idx}
@@ -94,34 +107,50 @@ export default function HowToBuy() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: idx * 0.1 }}
-              className="relative bg-fourthBgColor rounded-2xl border border-bgColor/60 px-6 sm:px-8 pt-16 sm:pt-20 md:pt-24 pb-8 sm:pb-10 mt-16 sm:mt-20 flex flex-col"
+              className="group relative bg-secondBgColor rounded-tr-3xl rounded-bl-3xl border border-bgColor/60 p-6 sm:p-8 flex items-center gap-5 sm:gap-8 hover:bg-white/5 hover:border-bgColor transition-colors"
             >
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 sm:w-52 md:w-[234px] h-28 sm:h-36 md:h-[160px] flex items-center justify-center pointer-events-none select-none">
+              {/* Step number badge */}
+              <div className="absolute -top-3 -left-3 w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/40 text-amber-400 flex items-center justify-center text-sm font-semibold shadow-sm">
+                {idx + 1}
+              </div>
+              {/* Icon left */}
+              <div className="flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-xl bg-white/5 border border-bgColor/60 shadow-inner flex items-center justify-center overflow-hidden">
                 <Image
                   src={step.iconSrc}
                   alt={step.title}
-                  width={264}
-                  height={160}
-                  className="w-full h-auto"
+                  width={96}
+                  height={96}
+                  className="w-16 h-16 sm:w-20 sm:h-20 object-contain"
                 />
               </div>
-              <h3 className="text-2xl sm:text-3xl md:text-4xl text-center font-bold mb-3  bg-gradient-to-r from-[#F4AD30] to-[#F4AD30] bg-clip-text text-transparent">
-                {step.title}
-              </h3>
-              <p className="text-white/70 text-xs sm:text-sm md:text-base tracking-wider pb-6 text-center mt-auto">
-                {step.description}
-              </p>
+              {/* Content */}
+              <div className="flex-1">
+                <h3 className="text-2xl sm:text-3xl font-bold mb-2 bg-gradient-to-r from-[#F4AD30] to-[#CA6C2F] bg-clip-text text-transparent">
+                  {step.title}
+                </h3>
+                <p className="text-white/70 text-sm sm:text-base leading-relaxed">
+                  {step.description}
+                </p>
+                <div className="mt-2 text-[11px] sm:text-xs text-white/60">
+                  {idx === 0 && "Install MetaMask on mobile or Chrome"}
+                  {idx === 1 && "You can buy USDT on most exchanges"}
+                  {idx === 2 && "Connect wallet then contribute USDT"}
+                </div>
+              </div>
             </motion.div>
           ))}
         </div>
 
         <div className="text-center mt-8">
-          <button className="px-6 py-2.5 sm:py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-500 text-white font-semibold shadow-md">
-            Connect Wallet to Now
-          </button>
-          <div className="mt-3 text-xs sm:text-sm flex justify-center items-center gap-2">
+          <a
+            href="/audit"
+            className="inline-flex items-center gap-2 px-6 py-2.5 sm:py-3 rounded-xl bg-amber-500 text-white font-semibold shadow-md hover:bg-amber-600 transition-colors"
+          >
+            <span>Audit</span>
+          </a>
+          <div className="mt-3 text-xs sm:text-sm flex justify-center items-center gap-2 text-white/80">
             <Secu size={14} />
-            Secure, Fast & Easy Process
+            Audited • Verified security and best practices
           </div>
         </div>
       </div>
