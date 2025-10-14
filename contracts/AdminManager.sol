@@ -17,28 +17,31 @@ contract AdminManager {
     }
 
     modifier onlySuperAdmin() {
-        require(msg.sender == superAdmin, "Only super admin");
+        require(msg.sender == superAdmin, "Only super admin can perform this operation");
         _;
     }
 
     modifier onlyAdmin() {
-        require(isAdmin[msg.sender], "Only admin");
+        require(isAdmin[msg.sender], "Only admin can perform this operation");
         _;
     }
 
     function addAdmin(address _newAdmin) external onlyAdmin {
         require(_newAdmin != address(0), "Invalid address");
-        require(!isAdmin[_newAdmin], "Already admin");
+        require(!isAdmin[_newAdmin], "Admin already exists");
+
         isAdmin[_newAdmin] = true;
         adminList.push(_newAdmin);
         emit AdminAdded(_newAdmin);
     }
 
     function removeAdmin(address _admin) external onlyAdmin {
-        require(isAdmin[_admin], "Not admin");
-        require(_admin != superAdmin, "Can't remove super admin");
+        require(isAdmin[_admin], "Admin does not exist");
+        require(_admin != superAdmin, "Cannot remove super admin directly");
+
         isAdmin[_admin] = false;
-         for (uint i = 0; i < adminList.length; i++) {
+
+        for (uint i = 0; i < adminList.length; i++) {
             if (adminList[i] == _admin) {
                 adminList[i] = adminList[adminList.length - 1];
                 adminList.pop();
@@ -48,12 +51,16 @@ contract AdminManager {
         emit AdminRemoved(_admin);
     }
 
-    function changeSuperAdmin(address _newSuperAdmin) external onlySuperAdmin {
+    function removeSuperAdmin(address _newSuperAdmin) external onlySuperAdmin {
         require(_newSuperAdmin != address(0), "Invalid new super admin");
-        require(isAdmin[_newSuperAdmin], "Must already be admin");
+        require(isAdmin[_newSuperAdmin], "New super admin must already be admin");
 
         address old = superAdmin;
+
+        isAdmin[superAdmin] = false;
         superAdmin = _newSuperAdmin;
+        isAdmin[_newSuperAdmin] = true;
+
         emit SuperAdminChanged(old, _newSuperAdmin);
     }
 

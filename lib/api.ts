@@ -40,6 +40,24 @@ export async function getTransactions(page = 1, limit = 10, priceId?: string, wa
     return res.json();
   }
 
+export async function getAllTransactions(priceId?: string, walletAddress?: string, type?: string, status?: string) {
+  const qs = new URLSearchParams();
+  if (priceId) qs.set("priceId", priceId);
+  if (walletAddress) qs.set("walletAddress", walletAddress);
+  if (type) qs.set("type", type);
+  if (status) qs.set("status", status);
+  const url = `/api/transactions/all${qs.toString() ? `?${qs.toString()}` : ""}`;
+  const res = await fetch(url, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: "Failed" }));
+    throw new Error(err.error || "Failed to fetch all transactions");
+  }
+  return res.json();
+}
+
 // Prices API
 export type NewPriceBody = {
   token: string;
