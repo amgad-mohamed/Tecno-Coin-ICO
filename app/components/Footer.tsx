@@ -125,7 +125,7 @@ const Footer = () => {
 
           {Object.entries(footerLinks).map(([category, links]) => (
             <motion.div key={category} variants={itemVariants}>
-              <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 capitalize text-gray-900 dark:text-white">
+              <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 capitalize text-gray-900">
                 {category}
               </h3>
               <ul className="space-y-2 sm:space-y-3">

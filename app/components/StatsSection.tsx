@@ -54,12 +54,12 @@ const StatCard = ({ stat, index, inView }: { stat: StatItem; index: number; inVi
       transition={{ duration: 0.6, delay: index * 0.1 }}
       className="relative group"
     >
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 group-hover:border-amber-200 dark:group-hover:border-amber-700">
+      <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 group-hover:border-amber-200">
         <div className="flex items-center justify-between mb-4">
           <div className={`p-3 rounded-xl ${stat.color} group-hover:scale-110 transition-transform duration-300`}>
             {stat.icon}
           </div>
-          <div className="w-12 h-12 bg-gradient-to-br from-amber-100 to-yellow-100 dark:from-amber-900/20 dark:to-yellow-900/20 rounded-full flex items-center justify-center opacity-20 group-hover:opacity-40 transition-opacity duration-300">
+          <div className="w-12 h-12 bg-gradient-to-br from-amber-100 to-yellow-100 rounded-full flex items-center justify-center opacity-20 group-hover:opacity-40 transition-opacity duration-300">
             <div className="w-6 h-6 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-full"></div>
           </div>
         </div>
@@ -69,11 +69,11 @@ const StatCard = ({ stat, index, inView }: { stat: StatItem; index: number; inVi
             <span className="text-3xl font-bold bg-gradient-to-r from-amber-500 to-yellow-500 bg-clip-text text-transparent">
               {count.toLocaleString()}
             </span>
-            <span className="text-lg font-semibold text-amber-600 dark:text-amber-400">
+            <span className="text-lg font-semibold text-amber-600">
               {stat.suffix}
             </span>
           </div>
-          <p className="text-gray-600 dark:text-gray-300 font-medium">
+          <p className="text-gray-600 font-medium">
             {stat.label}
           </p>
         </div>
@@ -121,7 +121,7 @@ const StatsSection = () => {
   ];
   
   return (
-    <section className="py-20 bg-gradient-to-br from-gray-50 to-amber-50 dark:from-gray-900 dark:to-amber-900/20 relative z-10">
+    <section className="py-20 bg-gradient-to-br from-gray-50 to-amber-50 relative z-10">
       <div className="container mx-auto px-4">
         <motion.div
           ref={ref}
@@ -130,13 +130,13 @@ const StatsSection = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
             Impressive Numbers That{" "}
             <span className="bg-gradient-to-r from-amber-500 to-yellow-500 bg-clip-text text-transparent">
               Speak for Themselves
             </span>
           </h2>
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
             Join thousands of investors who trust NEFE Token. Our growing community and impressive metrics 
             demonstrate the strength and potential of our ecosystem.
           </p>
@@ -149,8 +149,8 @@ const StatsSection = () => {
         </div>
         
         {/* Decorative elements */}
-        <div className="absolute top-10 left-10 w-20 h-20 bg-amber-200 dark:bg-amber-800 rounded-full opacity-10 animate-pulse"></div>
-        <div className="absolute bottom-10 right-10 w-32 h-32 bg-yellow-200 dark:bg-yellow-800 rounded-full opacity-10 animate-pulse delay-1000"></div>
+        <div className="absolute top-10 left-10 w-20 h-20 bg-amber-200 rounded-full opacity-10 animate-pulse"></div>
+        <div className="absolute bottom-10 right-10 w-32 h-32 bg-yellow-200 rounded-full opacity-10 animate-pulse delay-1000"></div>
       </div>
     </section>
   );

@@ -55,30 +55,30 @@ const ToastItem = ({ toast, onRemove }: ToastProps) => {
   const getBgColor = () => {
     switch (toast.type) {
       case "success":
-        return "bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800";
+        return "bg-green-50 border-green-200";
       case "error":
-        return "bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-800";
+        return "bg-red-50 border-red-200";
       case "warning":
-        return "bg-yellow-50 border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-800";
+        return "bg-yellow-50 border-yellow-200";
       case "info":
-        return "bg-amber-50 border-amber-200 dark:bg-amber-900/20 dark:border-amber-800";
+        return "bg-amber-50 border-amber-200";
       default:
-        return "bg-amber-50 border-amber-200 dark:bg-amber-900/20 dark:border-amber-800";
+        return "bg-amber-50 border-amber-200";
     }
   };
 
   const getTextColor = () => {
     switch (toast.type) {
       case "success":
-        return "text-green-800 dark:text-green-200";
+        return "text-green-800";
       case "error":
-        return "text-red-800 dark:text-red-200";
+        return "text-red-800";
       case "warning":
-        return "text-yellow-800 dark:text-yellow-200";
+        return "text-yellow-800";
       case "info":
-        return "text-amber-800 dark:text-amber-200";
+        return "text-amber-800";
       default:
-        return "text-amber-800 dark:text-amber-200";
+        return "text-amber-800";
     }
   };
 
@@ -105,7 +105,7 @@ const ToastItem = ({ toast, onRemove }: ToastProps) => {
                 setIsVisible(false);
                 setTimeout(() => onRemove(toast.id), 300);
               }}
-              className="flex-shrink-0 ml-2 p-1 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
+              className="flex-shrink-0 ml-2 p-1 rounded-full hover:bg-black/10 transition-colors"
             >
               <FiX className="w-4 h-4" />
             </button>

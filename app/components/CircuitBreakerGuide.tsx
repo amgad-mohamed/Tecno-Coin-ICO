@@ -63,15 +63,15 @@ const CircuitBreakerGuide = ({
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-md w-full shadow-2xl"
+            className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl"
           >
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/20 rounded-xl flex items-center justify-center">
+                <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
                   <FiAlertTriangle className="text-orange-600 text-xl" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                  <h3 className="text-lg font-bold text-gray-900">
                     Circuit Breaker Active
                   </h3>
                   <p className="text-sm text-gray-500">
@@ -81,20 +81,20 @@ const CircuitBreakerGuide = ({
               </div>
               <button
                 onClick={onClose}
-                className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
               >
                 <FiX className="text-xl" />
               </button>
             </div>
 
             <div className="space-y-4">
-              <div className="flex items-center gap-3 p-3 bg-orange-50 dark:bg-orange-900/10 rounded-lg">
+              <div className="flex items-center gap-3 p-3 bg-orange-50 rounded-lg">
                 <FiAlertTriangle className="text-orange-600 flex-shrink-0" />
                 <div>
-                  <p className="text-sm font-medium text-orange-800 dark:text-orange-200">
+                  <p className="text-sm font-medium text-orange-800">
                     Transaction Blocked
                   </p>
-                  <p className="text-xs text-orange-600 dark:text-orange-300">
+                  <p className="text-xs text-orange-600">
                     MetaMask has temporarily blocked transactions for your
                     safety
                   </p>
@@ -102,27 +102,27 @@ const CircuitBreakerGuide = ({
               </div>
 
               <div className="space-y-3">
-                <h4 className="font-medium text-gray-900 dark:text-white">
+                <h4 className="font-medium text-gray-900">
                   Try these solutions:
                 </h4>
                 {steps.map((step, index) => (
                   <div
                     key={index}
-                    className="flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
+                    className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg"
                   >
-                    <div className="w-6 h-6 bg-amber-100 dark:bg-amber-900/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <div className="w-6 h-6 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                       <span className="text-xs font-bold text-amber-600">
                         {index + 1}
                       </span>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      <p className="text-sm font-medium text-gray-900">
                         {step.title}
                       </p>
-                      <p className="text-xs text-gray-600 dark:text-gray-300">
+                      <p className="text-xs text-gray-600">
                         {step.description}
                       </p>
-                      <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">
+                      <p className="text-xs text-amber-600 mt-1">
                         {step.action}
                       </p>
                     </div>
@@ -140,7 +140,7 @@ const CircuitBreakerGuide = ({
                 </button>
                 <button
                   onClick={onClose}
-                  className="px-4 py-3 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 transition-colors"
+                  className="px-4 py-3 text-gray-600 hover:text-gray-800 transition-colors"
                 >
                   Close
                 </button>

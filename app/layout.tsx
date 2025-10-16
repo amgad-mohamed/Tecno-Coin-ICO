@@ -6,7 +6,6 @@ import Footer from "./components/Footer";
 import { AppKitProvider } from "./context/appKit";
 import { ToastProvider } from "./context/ToastContext";
 import ToastDisplay from "./components/ToastDisplay";
-import { headers } from "next/headers"; // added
 
 const inter = Inter({
   subsets: ["latin"],
@@ -23,16 +22,51 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = {
-  title: "Nefe Token Presale",
+  title: "Nefe Token ICO",
   description:
-    "Join our exclusive presale phase and be among the first to acquire NEFE tokens.",
+    "Join the NEFE Token presale. Buy NEFE with USDT and track transactions, timers, and staking.",
+  applicationName: "NEFE Token",
+  keywords: [
+    "NEFE",
+    "Nefe Token",
+    "ICO",
+    "token presale",
+    "USDT",
+    "crypto",
+    "Ethereum",
+    "Sepolia",
+  ],
+  authors: [{ name: "NEFE" }],
+  category: "cryptocurrency",
+  themeColor: "#0b1222",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    title: "Nefe Token ICO",
+    description:
+      "Join the NEFE Token presale. Buy NEFE with USDT and track transactions, timers, and staking.",
+    siteName: "NEFE Token",
+    url: "/",
+    images: [{ url: "/logo.png" }],
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Nefe Token ICO",
+    description:
+      "Join the NEFE Token presale. Buy NEFE with USDT and track transactions, timers, and staking.",
+    images: ["/logo.png"],
+    creator: "@nefe",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
   icons: {
-    icon: [
-      { url: "/favicon.png", type: "image/png" },
-    ],
-    shortcut: [
-      { url: "/favicon.png", type: "image/png" },
-    ],
+    icon: [{ url: "/favicon.png", type: "image/png" }],
+    shortcut: [{ url: "/favicon.png", type: "image/png" }],
   },
 };
 

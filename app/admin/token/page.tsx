@@ -114,13 +114,13 @@ export default function TokenManagement() {
         transition={{ duration: 0.5 }}
         className="font-nunito"
       >
-        <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-gray-900 dark:text-white">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-gray-900">
           Token Management
         </h1>
 
         <div className=" bg-thirdBgColor rounded-2xl shadow-lg p-5 sm:p-8">
           <div className="space-y-6">
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <h3 className="text-xl font-semibold text-gray-900">
               Token Contract
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
@@ -145,7 +145,7 @@ export default function TokenManagement() {
             </div>
             <div className="pt-4 border-t border-secondBgColor" />
             <div className="flex justify-between items-center">
-              <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
+              <h4 className="text-lg font-semibold text-gray-900">
                 Update Token Price
               </h4>
               <label className="block text-sm font-medium">
@@ -167,7 +167,7 @@ export default function TokenManagement() {
                   type="number"
                   value={tokenPrice}
                   onChange={(e) => setTokenPrice(e.target.value)}
-                  className="w-full px-4 py-2 border border-fourthBgColor rounded-lg focus:border-transparent dark:bg-[#201409] dark:text-white"
+                  className="w-full px-4 py-2 border border-fourthBgColor rounded-lg focus:border-transparent"
                   step="0.01"
                   min="0"
                   placeholder="Enter token price"

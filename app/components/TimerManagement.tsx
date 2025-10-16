@@ -187,7 +187,7 @@ const getStatusBadge = (timer: Timer) => {
   if (error) {
     return (
       <div className="text-center p-8">
-        <p className="text-red-600 dark:text-red-400">
+        <p className="text-red-600">
           Error loading timers: {error}
         </p>
       </div>
@@ -200,7 +200,7 @@ const getStatusBadge = (timer: Timer) => {
     >
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
-        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+        <h3 className="text-xl font-semibold text-gray-900">
           Timer Management
         </h3>
         <motion.button
@@ -228,7 +228,7 @@ const getStatusBadge = (timer: Timer) => {
 
       {/* Info Alert */}
       {timers.length >= 1 && (
-        <div className="p-4 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 rounded-lg border border-amber-200 dark:border-amber-800 text-sm sm:text-base">
+        <div className="p-4 bg-amber-50 text-amber-700 rounded-lg border border-amber-200 text-sm sm:text-base">
           Only one timer can exist at a time. Use Edit to modify it.
         </div>
       )}
@@ -240,14 +240,14 @@ const getStatusBadge = (timer: Timer) => {
           animate={{ opacity: 1, y: 0 }}
           className="bg-thirdBgColor p-4 sm:p-6 rounded-lg border border-bgColor/60"
         >
-          <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+          <h4 className="text-lg font-medium text-gray-900 mb-4">
             {editingTimer ? "Edit Timer" : "Create New Timer"}
           </h4>
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Inputs */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Name
                 </label>
                 <input
@@ -261,7 +261,7 @@ const getStatusBadge = (timer: Timer) => {
                 />
               </div>
               {/* <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Type
                 </label>
                 <select
@@ -269,7 +269,7 @@ const getStatusBadge = (timer: Timer) => {
                   onChange={(e) =>
                     setFormData({ ...formData, type: e.target.value as any })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 dark:bg-gray-600 dark:text-white"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
                 >
                   <option value="GENERAL">General</option>
                   <option value="PRESALE">Presale</option>
@@ -279,9 +279,9 @@ const getStatusBadge = (timer: Timer) => {
               </div> */}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Description
-              </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Description
+                </label>
               <textarea
                 value={formData.description}
                 onChange={(e) =>
@@ -293,7 +293,7 @@ const getStatusBadge = (timer: Timer) => {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Start Time
                 </label>
                 <input
@@ -307,7 +307,7 @@ const getStatusBadge = (timer: Timer) => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   End Time
                 </label>
                 <input
@@ -436,7 +436,7 @@ const getStatusBadge = (timer: Timer) => {
       </div>
 
       {timers.length === 0 && (
-        <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+        <div className="text-center py-8 text-gray-500">
           No timers found. Create your first timer to get started.
         </div>
       )}

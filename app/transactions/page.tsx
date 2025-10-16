@@ -89,15 +89,15 @@ export default function TransactionsPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 border border-gray-200 dark:border-gray-700"
+            className="bg-white rounded-xl shadow-lg p-8 border border-gray-200"
           >
             <div className="inline-flex items-center gap-3 mb-6">
               <FiAlertCircle className="text-blue-500 text-3xl" />
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+              <h2 className="text-2xl font-bold text-gray-900">
                 Wallet Not Connected
               </h2>
             </div>
-            <p className="text-gray-600 dark:text-gray-300 mb-8 text-lg">
+            <p className="text-gray-600 mb-8 text-lg">
               Please connect your wallet to view your transactions and manage
               your tokens.
             </p>
@@ -142,15 +142,15 @@ export default function TransactionsPage() {
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4 mb-6"
+              className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6"
             >
               <div className="flex items-center gap-3">
                 <FiAlertCircle className="text-red-500 text-xl" />
                 <div>
-                  <h3 className="text-red-800 dark:text-red-200 font-medium">
+                  <h3 className="text-red-800 font-medium">
                     Error Loading Data
                   </h3>
-                  <p className="text-red-600 dark:text-red-300 text-sm">
+                  <p className="text-red-600 text-sm">
                     {error}
                   </p>
                 </div>

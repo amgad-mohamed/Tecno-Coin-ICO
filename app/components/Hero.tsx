@@ -748,7 +748,7 @@ const Hero = () => {
                 {/* USDT Balance Status Message */}
                 {isConnected && !hasSufficientFunds && (
                   <div className="text-center">
-                    <p className="text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 px-3 py-2 rounded-lg">
+                    <p className="text-xs text-red-600 bg-red-50 px-3 py-2 rounded-lg">
                       Insufficient USDT balance for the selected amount.
                     </p>
                   </div>

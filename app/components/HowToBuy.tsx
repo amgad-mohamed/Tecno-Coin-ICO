@@ -75,10 +75,10 @@ export default function HowToBuy() {
             <Secu size={16} />
             Secure Purchase Process
           </span>
-          <h2 className="mt-4 text-2xl sm:text-3xl md:text-4xl font-bold text-primary">
+          <h2 className="mt-4 text-xl sm:text-3xl md:text-4xl font-bold text-primary">
             How to Buy NEFE
           </h2>
-          <p className="mt-3 text-sm sm:text-base md:text-lg text-gray-300 max-w-3xl mx-auto">
+          <p className="mt-3 text-xs sm:text-base md:text-lg text-gray-300 max-w-3xl mx-auto">
             Follow these simple steps to participate in our presale and acquire
             NEFE tokens.
             <br /> The process is secure, transparent, and only takes a few
@@ -107,14 +107,14 @@ export default function HowToBuy() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: idx * 0.1 }}
-              className="group relative bg-secondBgColor rounded-tr-3xl rounded-bl-3xl border border-bgColor/60 p-6 sm:p-8 flex items-center gap-5 sm:gap-8 hover:bg-white/5 hover:border-bgColor transition-colors"
+              className="group relative bg-secondBgColor rounded-tr-3xl rounded-bl-3xl border border-bgColor/60 p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-5 sm:gap-8 hover:bg-white/5 hover:border-bgColor transition-colors"
             >
               {/* Step number badge */}
               <div className="absolute -top-3 -left-3 w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/40 text-amber-400 flex items-center justify-center text-sm font-semibold shadow-sm">
                 {idx + 1}
               </div>
               {/* Icon left */}
-              <div className="flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-xl bg-white/5 border border-bgColor/60 shadow-inner flex items-center justify-center overflow-hidden">
+              <div className="flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-xl bg-white/5 border border-bgColor/60 shadow-inner flex items-center justify-center overflow-hidden mb-4 sm:mb-0">
                 <Image
                   src={step.iconSrc}
                   alt={step.title}
@@ -124,11 +124,11 @@ export default function HowToBuy() {
                 />
               </div>
               {/* Content */}
-              <div className="flex-1">
-                <h3 className="text-2xl sm:text-3xl font-bold mb-2 bg-gradient-to-r from-[#F4AD30] to-[#CA6C2F] bg-clip-text text-transparent">
+              <div className="flex-1 text-center sm:text-left">
+                <h3 className="text-xl sm:text-3xl font-bold mb-2 bg-gradient-to-r from-[#F4AD30] to-[#CA6C2F] bg-clip-text text-transparent">
                   {step.title}
                 </h3>
-                <p className="text-white/70 text-sm sm:text-base leading-relaxed">
+                <p className="text-white/70 text-xs sm:text-base leading-relaxed">
                   {step.description}
                 </p>
                 <div className="mt-2 text-[11px] sm:text-xs text-white/60">
