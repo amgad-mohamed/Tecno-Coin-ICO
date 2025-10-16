@@ -54,7 +54,7 @@ export default function StakingManagement() {
   ].map((p) =>
     typeof p === "bigint" ? Number(p) : typeof p === "number" ? p : 0
   );
-  const amounts = percents.map((p) => (p / 100) * TOTAL_STAKING_AMOUNT);
+  const amounts = percents.map((p) => (p / 100) * (TOTAL_STAKING_AMOUNT / 2));
 
   const nowSec = Math.floor(Date.now() / 1000);
   const nextTs = [releaseTs0, releaseTs1, releaseTs2, releaseTs3, releaseTs4]
@@ -169,7 +169,8 @@ export default function StakingManagement() {
                       {status}
                     </span>
                     <span className="font-medium text-sm sm:text-base truncate text-white">
-                      {Number(item.amt).toLocaleString()} NEFE • <br className="block md:hidden" />
+                      {Number(item.amt).toLocaleString()} NEFE •{" "}
+                      <br className="block md:hidden" />
                       {ts ? new Date(ts * 1000).toLocaleString() : "-"}
                     </span>
                   </div>

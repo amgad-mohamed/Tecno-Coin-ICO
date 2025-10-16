@@ -51,7 +51,7 @@
   }
 
   input[type="range"]::-moz-range-thumb {
-    @apply w-2.5 h-2.5 bg-amber-600 cursor-pointer rounded-full shadow-none;
+    @apply w-5 h-5 bg-amber-600 cursor-pointer rounded-full shadow-none;
     border: none;
     outline: none;
     box-shadow: none;
