@@ -26,6 +26,14 @@ export const metadata: Metadata = {
   title: "Nefe Token Presale",
   description:
     "Join our exclusive presale phase and be among the first to acquire NEFE tokens.",
+  icons: {
+    icon: [
+      { url: "/favicon.png", type: "image/png" },
+    ],
+    shortcut: [
+      { url: "/favicon.png", type: "image/png" },
+    ],
+  },
 };
 
 export default async function RootLayout({
