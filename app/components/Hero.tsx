@@ -7,13 +7,12 @@ import CountdownTimer from "./CountdownTimer";
 import {
   FiDollarSign,
   FiTrendingUp,
-  FiBox,
   FiShoppingCart,
   FiCreditCard,
   FiBarChart2,
-  FiCheckCircle,
-  FiAlertCircle,
   FiLoader,
+  FiMinus,
+  FiPlus,
 } from "react-icons/fi";
 import { useICOContract } from "../services/useICOContract";
 import { useTokenContract } from "../services/useTokenContract";
@@ -37,7 +36,6 @@ import CircuitBreakerGuide from "./CircuitBreakerGuide";
 const Hero = () => {
   const [mounted, setMounted] = useState(false);
   const [selectedCurrency, setSelectedCurrency] = useState<"USDT">("USDT");
-  const [tokenAmount, setTokenAmount] = useState<number>(100);
   const [submitting, setSubmitting] = useState(false);
   const [pendingUSDTAmount, setPendingUSDTAmount] = useState<bigint | null>(
     null
@@ -49,6 +47,10 @@ const Hero = () => {
   const [hasPosted, setHasPosted] = useState(false);
   const [showCircuitBreakerGuide, setShowCircuitBreakerGuide] = useState(false);
   const [purchaseQueued, setPurchaseQueued] = useState(false);
+  // const TOKEN_PRICE_USD = Number(presaleData?.tokenPrice ?? 0.1);
+  const MIN_PURCHASE = 100000;
+  const MAX_PURCHASE = 10000000;
+  const [tokenAmount, setTokenAmount] = useState<number>(MIN_PURCHASE);
 
   const router = useRouter();
   const { showSuccess, showError, showInfo } = useToastContext();
@@ -58,9 +60,6 @@ const Hero = () => {
   const { connect, isPending: isConnecting } = useConnect();
   const { disconnect } = useDisconnect();
 
-  // const TOKEN_PRICE_USD = Number(presaleData?.tokenPrice ?? 0.1);
-  const MIN_PURCHASE = 100;
-  const MAX_PURCHASE = 50000;
   const {
     timers,
     loading: timerLoading,
@@ -131,6 +130,9 @@ const Hero = () => {
   // Required payment amounts for current selection
   const usdAmount = tokenAmount * TOKEN_PRICE_USD;
   const requiredUsdtUnits = parseUnits(usdAmount.toFixed(6), 6);
+
+  const rewardsNEFE = tokenAmount * 0.01;
+  const totalNEFE = tokenAmount + rewardsNEFE;
 
   const hasSufficientUsdt = Boolean(
     isConnected &&
@@ -643,21 +645,50 @@ const Hero = () => {
                   </div>
 
                   <div className="space-y-3 sm:space-y-4">
-                    <div className="relative pt-1 px-2">
-                      <input
-                        type="range"
-                        min={MIN_PURCHASE}
-                        max={MAX_PURCHASE}
-                        step="100"
-                        value={tokenAmount}
-                        onChange={(e) => setTokenAmount(Number(e.target.value))}
-                        className="w-full appearance-none rounded-full cursor-pointer h-2 bg-neutral-900
+                    <div className="relative pt-1">
+                      <div className="flex items-center gap-3 sm:gap-4">
+                        <button
+                          type="button"
+                          aria-label="Decrease amount"
+                          disabled={tokenAmount <= MIN_PURCHASE}
+                          onClick={() =>
+                            setTokenAmount((prev) =>
+                              Math.max(MIN_PURCHASE, prev - 100)
+                            )
+                          }
+                          className="sm:hidden w-10 h-10 rounded-full bg-amber-600 text-white flex-shrink-0 flex items-center justify-center active:scale-95"
+                        >
+                          <FiMinus className="text-lg" />
+                        </button>
+                        <input
+                          type="range"
+                          min={MIN_PURCHASE}
+                          max={MAX_PURCHASE}
+                          step="100"
+                          value={tokenAmount}
+                          onChange={(e) =>
+                            setTokenAmount(Number(e.target.value))
+                          }
+                          className="flex-1 w-full appearance-none rounded-full cursor-pointer h-2 bg-neutral-900
              [&::-webkit-slider-runnable-track]:bg-neutral-900 [&::-webkit-slider-runnable-track]:h-2 [&::-webkit-slider-runnable-track]:rounded-full
              [&::-moz-range-track]:bg-neutral-900 [&::-moz-range-track]:h-2 [&::-moz-range-track]:rounded-full
              [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-2 [&::-webkit-slider-thumb]:w-2 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:border-0 [&::-webkit-slider-thumb]:outline-none
              [&::-moz-range-thumb]:h-2 [&::-moz-range-thumb]:w-2 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:outline-none"
-                      />
-
+                        />
+                        <button
+                          type="button"
+                          aria-label="Increase amount"
+                          disabled={tokenAmount >= MAX_PURCHASE}
+                          onClick={() =>
+                            setTokenAmount((prev) =>
+                              Math.min(MAX_PURCHASE, prev + 100)
+                            )
+                          }
+                          className="sm:hidden w-10 h-10 rounded-full bg-amber-600 text-white flex-shrink-0 flex items-center justify-center active:scale-95"
+                        >
+                          <FiPlus className="text-lg" />
+                        </button>
+                      </div>
                       <div className="flex justify-between mt-1 sm:mt-2">
                         <div className="flex flex-col items-center">
                           <span className="text-xs font-medium text-white/70">
@@ -698,10 +729,40 @@ const Hero = () => {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-white/70 text-xs sm:text-sm font-medium">
+                      Amount of NEFE
+                    </span>
+                    <span className="text-amber-400 text-xs sm:text-sm md:text-base font-bold">
+                      {tokenAmount.toLocaleString()} NEFE
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-white/70 text-xs sm:text-sm font-medium">
+                      Rewards (ascription 1%)
+                    </span>
+                    <span className="text-amber-400 text-xs sm:text-sm md:text-base font-bold">
+                      {rewardsNEFE.toLocaleString(undefined, {
+                        maximumFractionDigits: 2,
+                      })}{" "}
+                      NEFE
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-white/70 text-xs sm:text-sm font-medium">
+                      Total NEFE
+                    </span>
+                    <span className="text-amber-400 text-xs sm:text-sm md:text-base font-bold">
+                      {totalNEFE.toLocaleString(undefined, {
+                        maximumFractionDigits: 2,
+                      })}{" "}
+                      NEFE
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-white/70 text-xs sm:text-sm font-medium">
                       Total in USD
                     </span>
                     <span className="text-white text-xs sm:text-sm md:text-base font-bold">
-                      ${(tokenAmount * TOKEN_PRICE_USD).toFixed(2)}
+                      ${usdAmount.toFixed(2)}
                     </span>
                   </div>
                 </div>

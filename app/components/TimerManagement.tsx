@@ -200,7 +200,7 @@ const getStatusBadge = (timer: Timer) => {
     >
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
-        <h3 className="text-xl font-semibold text-gray-900">
+        <h3 className="text-xl font-semibold">
           Timer Management
         </h3>
         <motion.button

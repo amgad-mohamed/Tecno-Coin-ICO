@@ -4,12 +4,13 @@ import { getAddress } from "ethers";
 const checksumAddress = (address: string) => getAddress(address);
 
 export const CONTRACT_ADDRESS = {
-  TOKEN: checksumAddress("0x21824d6eBC2A3cb47f247af0f4b3dbA37599B6cD"),
-  ADMIN_MANAGER: checksumAddress("0x6455902d7CFB13D333F0C4D8d6bA3d605640326a"),
-  MOCK_USDT: checksumAddress("0xf4154d54ae816A929048ee6958d2A429Be63D90a"),
+  TOKEN: checksumAddress("0x5b1a14e219ca13e36D368Ef59b2600f1C6dAE37d"),
+  ADMIN_MANAGER: checksumAddress("0xb6EBc2AE9F7A3007AFE155df5508C42798Ef5D64"),
+  MOCK_USDT: checksumAddress("0xf56127E906D3689F4f4AC6F8E5fcBCCF474A8a08"),
+  MOCK_USDC: checksumAddress("0x3fefD5B9F2a3EfA43976964f73CE6cafdfD3eE83"),
   MOCK_PRICE_FEED: checksumAddress(
     "0x7ED5addb41671Af2886D2EB1b3380ee6C8778446"
   ),
-  ICO_CONTRACT: checksumAddress("0xFC3cE755eD3567188704c767159143BbDE247D4D"),
-  TOKEN_STACKING: checksumAddress("0xCf7DB64Ef2FeDDBEb21b44DC47C63D7396358FA8"), 
+  ICO_CONTRACT: checksumAddress("0x48f3E8b3a93C3d87E124994bde8EDEc981978d8c"),
+  TOKEN_STACKING: checksumAddress("0x40e88A691170d3CfEE22e1627e2B45427f5F1b6E"), 
 };

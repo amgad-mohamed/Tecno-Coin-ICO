@@ -1,15 +1,24 @@
 "use client";
 
+import { useTokenContract } from "../services/useTokenContract";
+import { formatEther } from "viem";
+
 const TokenSale = () => {
+  const { useTotalSupply } = useTokenContract();
+  const { data: totalSupply } = useTotalSupply();
+  const TOTAL_SUPPLY = Number(
+    typeof totalSupply === "bigint" ? formatEther(totalSupply) : 0
+  );
+  const PUBLIC_ALLOCATION = TOTAL_SUPPLY / 2;
   const tokenDetails = [
     {
       title: "Total Supply",
-      value: "100,000,000 NEFE",
+      value: `${TOTAL_SUPPLY > 0 ? TOTAL_SUPPLY.toLocaleString() : "—"} NEFE`,
       description: "Fixed supply, no additional minting",
     },
     {
       title: "Public Allocation",
-      value: "50,000,000 NEFE",
+      value: `${PUBLIC_ALLOCATION > 0 ? PUBLIC_ALLOCATION.toLocaleString() : "—"} NEFE`,
       description: "50% of total supply available",
     },
     {
@@ -19,7 +28,7 @@ const TokenSale = () => {
     },
     {
       title: "Listing Price",
-      value: "$0.20 USD",
+      value: "$0.01 USD",
       description: "100% upside potential",
     },
   ];
