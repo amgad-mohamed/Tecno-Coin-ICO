@@ -3,7 +3,6 @@ import { useReadContract, useWriteContract, useWaitForTransactionReceipt } from 
 import { CONTRACT_ADDRESS } from "../utils/web3intraction/constants/contract_address";
 import CONTRACT_ABIS from "../utils/web3intraction/constants/contract_abi";
 
-
 const abi = CONTRACT_ABIS.TOKEN_STACKING;
 const address = CONTRACT_ADDRESS.TOKEN_STACKING as `0x${string}`;
 
@@ -18,17 +17,6 @@ export function useTokenStakingContract() {
   const useTotalReleased = () =>
     useReadContract({ abi, address, functionName: "totalReleased" });
 
-  const useIcoContractAddress = () =>
-    useReadContract({ abi, address, functionName: "icoContractAddress" });
-
-  // New ABI: releaseTimes(index) and releasePercents(index)
-  const useReleaseTime = (index: number) =>
-    useReadContract({ abi, address, functionName: "releaseTimes", args: [BigInt(index)] });
-
-  const useReleasePercent = (index: number) =>
-    useReadContract({ abi, address, functionName: "releasePercents", args: [BigInt(index)] });
-
-  // Staking amounts
   const useTotalStakingAmount = () =>
     useReadContract({ abi, address, functionName: "totalStakingAmount" });
 
@@ -38,12 +26,31 @@ export function useTokenStakingContract() {
   const useStakingStartTime = () =>
     useReadContract({ abi, address, functionName: "stakingStartTime" });
 
+  const useIcoContractAddress = () =>
+    useReadContract({ abi, address, functionName: "icoContractAddress" });
+
+  const useGetReleasesCount = () =>
+    useReadContract({ abi, address, functionName: "getReleasesCount" });
+
+  // Returns [time, price, rewardPercent]
+  const useGetRelease = (index: number) =>
+    useReadContract({ abi, address, functionName: "getRelease", args: [BigInt(index)] });
+
   // ----------- Writes ------------
   const setIcoContract = (ico: `0x${string}`) =>
     writeContract({ abi, address, functionName: "setIcoContract", args: [ico] });
 
-  const updateReleasePlan = (percents: bigint[], times: bigint[]) =>
-    writeContract({ abi, address, functionName: "updateReleasePlan", args: [percents, times] });
+  const updateReleasePlan = (
+    times: bigint[],
+    prices: bigint[],
+    rewardPercents: bigint[]
+  ) =>
+    writeContract({
+      abi,
+      address,
+      functionName: "updateReleasePlan",
+      args: [times, prices, rewardPercents],
+    });
 
   const adminWithdraw = (to: `0x${string}`, amount: bigint) =>
     writeContract({ abi, address, functionName: "adminWithdraw", args: [to, amount] });
@@ -55,12 +62,12 @@ export function useTokenStakingContract() {
     // reads
     useCalculateAvailableRelease,
     useTotalReleased,
-    useIcoContractAddress,
-    useReleaseTime,
-    useReleasePercent,
     useTotalStakingAmount,
     useStakingPlanAmount,
     useStakingStartTime,
+    useIcoContractAddress,
+    useGetReleasesCount,
+    useGetRelease,
 
     // writes
     setIcoContract,

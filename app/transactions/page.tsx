@@ -12,6 +12,7 @@ import { useAccount, useBalance } from "wagmi";
 import { getTransactions } from "@/lib/api";
 import { Transaction } from "@/models/Transaction";
 import { useMockUSDTContract } from "@/app/services/useMockUSDTContract";
+import { useMockUSDCContract } from "@/app/services/useMockUSDCContract";
 import { formatEther, formatUnits } from "viem";
 
 const ITEMS_PER_PAGE = 10;
@@ -30,6 +31,13 @@ export default function TransactionsPage() {
     useMockUSDTContract();
   const { data: usdtBalance } = useUSDTBalance(address as `0x${string}`);
   const { data: usdtDecimals } = useUSDTDecimals();
+
+  // Get USDC balance using the custom hook
+  const { useBalanceOf: useUSDCBalance, useDecimals: useUSDCDecimals } =
+    useMockUSDCContract();
+  const { data: usdcBalance } = useUSDCBalance(address as `0x${string}`);
+  const { data: usdcDecimals } = useUSDCDecimals();
+
   const [mounted, setMounted] = useState(false);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [totalTransactions, setTotalTransactions] = useState(0);
@@ -150,9 +158,7 @@ export default function TransactionsPage() {
                   <h3 className="text-red-800 font-medium">
                     Error Loading Data
                   </h3>
-                  <p className="text-red-600 text-sm">
-                    {error}
-                  </p>
+                  <p className="text-red-600 text-sm">{error}</p>
                 </div>
               </div>
             </motion.div>
@@ -172,7 +178,9 @@ export default function TransactionsPage() {
                   <span className="p-2 rounded-xl bg-gradient-to-br from-[#F4AD30] to-[#CA6C2F]">
                     <FiDollarSign className="w-5 h-5 text-white" />
                   </span>
-                  <h3 className="text-sm md:text-base font-medium text-white/80">ETH Balance</h3>
+                  <h3 className="text-sm md:text-base font-medium text-white/80">
+                    ETH Balance
+                  </h3>
                 </div>
               </div>
               <div className="text-base sm:text-lg md:text-2xl font-bold bg-gradient-to-r from-[#F4AD30] to-[#CA6C2F] bg-clip-text text-transparent mb-1">
@@ -203,7 +211,9 @@ export default function TransactionsPage() {
                   <span className="p-2 rounded-xl bg-gradient-to-br from-[#F4AD30] to-[#CA6C2F]">
                     <FiCreditCard className="w-5 h-5 text-white" />
                   </span>
-                  <h3 className="text-sm md:text-base font-medium text-white/80">USDT Balance</h3>
+                  <h3 className="text-sm md:text-base font-medium text-white/80">
+                    USDT Balance
+                  </h3>
                 </div>
               </div>
               <div className="text-base sm:text-lg md:text-2xl font-bold bg-gradient-to-r from-[#F4AD30] to-[#CA6C2F] bg-clip-text text-transparent mb-1">
@@ -217,6 +227,36 @@ export default function TransactionsPage() {
                   : "0.00"}
               </div>
               <div className="text-white/70 text-xs sm:text-sm">USDT</div>
+            </motion.div>
+
+            {/* USDC Balance */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="bg-secondBgColor rounded-xl p-5 sm:p-6 border border-bgColor/60 text-white"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-3">
+                  <span className="p-2 rounded-xl bg-gradient-to-br from-[#F4AD30] to-[#CA6C2F]">
+                    <FiCreditCard className="w-5 h-5 text-white" />
+                  </span>
+                  <h3 className="text-sm md:text-base font-medium text-white/80">
+                    USDC Balance
+                  </h3>
+                </div>
+              </div>
+              <div className="text-base sm:text-lg md:text-2xl font-bold bg-gradient-to-r from-[#F4AD30] to-[#CA6C2F] bg-clip-text text-transparent mb-1">
+                {usdcBalance && usdcDecimals && typeof usdcBalance === "bigint"
+                  ? `${Number(
+                      formatUnits(usdcBalance, Number(usdcDecimals))
+                    ).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 6,
+                    })}`
+                  : "0.00"}
+              </div>
+              <div className="text-white/70 text-xs sm:text-sm">USDC</div>
             </motion.div>
           </div>
 
@@ -277,8 +317,9 @@ export default function TransactionsPage() {
                         </td>
                         <td className="px-6 py-4">
                           {transaction.currency === "ETH"
-                            ? `${Number(transaction.price).toFixed(6)} ETH`
-                            : `${Number(transaction.price).toFixed(2)} USDT`}
+                            ? `${Number(transaction.price).toFixed(6)} `
+                            : `${Number(transaction.price).toFixed(2)} `}
+                          {transaction.currency}
                         </td>
                         <td className="px-6 py-4 text-muted-foreground">
                           {new Date(transaction.date).toLocaleString()}

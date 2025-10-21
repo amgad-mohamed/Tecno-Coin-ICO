@@ -28,7 +28,7 @@ const transactionSchema = new Schema<Transaction>({
   },
   currency: {
     type: String,
-    enum: ["USDT", "ETH"],
+    enum: ["USDT", "USDC"],
     required: true,
   },
   status: {

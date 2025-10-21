@@ -5,6 +5,7 @@ import AnimatedBackground from "./components/AnimatedBackground";
 import StatsSection from "./components/StatsSection";
 import RoadmapSection from "./components/RoadmapSection";
 import PresaleCountdown from "./components/PresaleCountdown";
+import ReleasesSection from "./components/ReleasesSection";
 import HowToBuy from "./components/HowToBuy";
 
 export default function Home() {
@@ -26,6 +27,11 @@ export default function Home() {
       <div className="mb-5 md:mb-14 relative z-10" id="token-sale">
         <TokenSale />
       </div>
+
+      {/* Releases Section */}
+      <section className="py-10 relative z-10" id="releases">
+        <ReleasesSection />
+      </section>
 
       {/* How To Buy Section */}
       <section className="py-10 relative z-10" id="how-to-buy">

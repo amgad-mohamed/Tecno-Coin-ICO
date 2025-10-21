@@ -2,7 +2,7 @@ export type NewTransactionBody = {
   type: "BUY" | "SELL";
   amount: number;
   price: number;
-  currency: "USDT" | "ETH";
+  currency: "USDT" | "USDC";
   status: "COMPLETED" | "PENDING";
   date: string;
   hash: `0x${string}`;

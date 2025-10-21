@@ -14,6 +14,8 @@ import {
   FiMinus,
   FiPlus,
 } from "react-icons/fi";
+import { SiTether } from "react-icons/si";
+// import { FaDollarSign } from "react-icons/fa";
 import { useICOContract } from "../services/useICOContract";
 import { useTokenContract } from "../services/useTokenContract";
 import { parseEther, parseUnits, formatEther, formatUnits } from "viem";
@@ -22,6 +24,7 @@ import { injected } from "wagmi/connectors";
 import { CONTRACT_ADDRESS } from "../utils/web3intraction/constants/contract_address";
 import { useRouter } from "next/navigation";
 import { useMockUSDTContract } from "../services/useMockUSDTContract";
+import { useMockUSDCContract } from "../services/useMockUSDCContract";
 import {
   postTransaction,
   type NewTransactionBody,
@@ -30,14 +33,20 @@ import {
 import { useTimers } from "../hooks/useTimers";
 import { useToastContext } from "../context/ToastContext";
 import CircuitBreakerGuide from "./CircuitBreakerGuide";
+import { useTokenStakingContract } from "../services/useTokenStakingContract";
 
 // Constants
 
 const Hero = () => {
   const [mounted, setMounted] = useState(false);
-  const [selectedCurrency, setSelectedCurrency] = useState<"USDT">("USDT");
+  const [selectedCurrency, setSelectedCurrency] = useState<"USDT" | "USDC">(
+    "USDT"
+  );
   const [submitting, setSubmitting] = useState(false);
   const [pendingUSDTAmount, setPendingUSDTAmount] = useState<bigint | null>(
+    null
+  );
+  const [pendingUSDCAmount, setPendingUSDCAmount] = useState<bigint | null>(
     null
   );
   const [queuedTxBody, setQueuedTxBody] = useState<Omit<
@@ -51,6 +60,10 @@ const Hero = () => {
   const MIN_PURCHASE = 100000;
   const MAX_PURCHASE = 10000000;
   const [tokenAmount, setTokenAmount] = useState<number>(MIN_PURCHASE);
+  const [usdSelection, setUsdSelection] = useState<number>(100);
+  const USD_OPTIONS = [
+    100, 200, 300, 400, 500, 1000, 1500, 2000, 3000, 5000, 10000,
+  ];
 
   const router = useRouter();
   const { showSuccess, showError, showInfo } = useToastContext();
@@ -111,6 +124,10 @@ const Hero = () => {
     address,
     token: CONTRACT_ADDRESS.MOCK_USDT as `0x${string}`,
   });
+  const { data: usdcBalance } = useBalance({
+    address,
+    token: CONTRACT_ADDRESS.MOCK_USDC as `0x${string}`,
+  });
 
   // Calculate derived values
   const TOTAL_SUPPLY = Number(
@@ -128,18 +145,57 @@ const Hero = () => {
   const endDateString = timers[0]?.endTime;
 
   // Required payment amounts for current selection
-  const usdAmount = tokenAmount * TOKEN_PRICE_USD;
-  const requiredUsdtUnits = parseUnits(usdAmount.toFixed(6), 6);
+  const usdAmount = usdSelection;
+  const requiredUsdtUnits = parseUnits(usdSelection.toFixed(6), 6);
+  const requiredUsdcUnits = parseUnits(usdSelection.toFixed(6), 6);
 
-  const rewardsNEFE = tokenAmount * 0.01;
+  const { useGetRelease } = useTokenStakingContract();
+  const { data: release0 } = useGetRelease(0);
+  const { data: release1 } = useGetRelease(1);
+  const { data: release2 } = useGetRelease(2);
+  const { data: release3 } = useGetRelease(3);
+  const { data: release4 } = useGetRelease(4);
+  const releases = [release0, release1, release2, release3, release4];
+  const times = releases.map((r) => {
+    const val = Array.isArray(r) ? r[0] : undefined;
+    return typeof val === "bigint"
+      ? Number(val)
+      : typeof val === "number"
+      ? val
+      : 0;
+  });
+  const rewardsPercents = releases.map((r) => {
+    const val = Array.isArray(r) ? r[2] : undefined;
+    return typeof val === "bigint"
+      ? Number(val)
+      : typeof val === "number"
+      ? val
+      : 0;
+  });
+  const nowSec = Math.floor(Date.now() / 1000);
+  const nextTs = times.filter((v) => v > nowSec).sort((a, b) => a - b)[0];
+  const nextIndex = typeof nextTs === "number" ? times.indexOf(nextTs) - 1 : -1;
+  const currentRewardPercent =
+    nextIndex >= 0 ? rewardsPercents[nextIndex] : undefined;
+  const rewardsNEFE = tokenAmount * ((currentRewardPercent ?? 1) / 100);
   const totalNEFE = tokenAmount + rewardsNEFE;
+
+  // console.log(previousReleaseData);
+  console.log("//////////////");
+  console.log(currentRewardPercent);
 
   const hasSufficientUsdt = Boolean(
     isConnected &&
       usdtBalance?.value !== undefined &&
       usdtBalance.value >= requiredUsdtUnits
   );
-  const hasSufficientFunds = hasSufficientUsdt;
+  const hasSufficientUsdc = Boolean(
+    isConnected &&
+      usdcBalance?.value !== undefined &&
+      usdcBalance.value >= requiredUsdcUnits
+  );
+  const hasSufficientFunds =
+    selectedCurrency === "USDT" ? hasSufficientUsdt : hasSufficientUsdc;
 
   // Effects
   useEffect(() => {
@@ -238,8 +294,15 @@ const Hero = () => {
   }, [showInfo, showError]);
 
   const calculatePaymentAmount = useCallback(() => {
-    return (tokenAmount * TOKEN_PRICE_USD).toFixed(2);
-  }, [tokenAmount, TOKEN_PRICE_USD]);
+    return usdSelection.toFixed(2);
+  }, [usdSelection]);
+
+  // Sync NEFE token amount from selected USD to prevent manual NEFE input
+  useEffect(() => {
+    const derived = usdSelection / TOKEN_PRICE_USD;
+    if (!Number.isFinite(derived)) return;
+    setTokenAmount(derived);
+  }, [usdSelection, TOKEN_PRICE_USD]);
 
   const handleBuyTokens = useCallback(async () => {
     if (!isConnected || !address) {
@@ -265,7 +328,11 @@ const Hero = () => {
         }
       }
 
-      await handleUSDTPurchase();
+      if (selectedCurrency === "USDT") {
+        await handleUSDTPurchase();
+      } else {
+        await handleUSDCPurchase();
+      }
     } catch (error) {
       console.error("Error buying tokens:", error);
 
@@ -276,7 +343,7 @@ const Hero = () => {
             "MetaMask circuit breaker is active. Please wait a moment and try again, or restart MetaMask.";
           setShowCircuitBreakerGuide(true);
         } else if (error.message.includes("insufficient funds")) {
-          errorMessage = "Insufficient USDT balance for this transaction.";
+          errorMessage = `Insufficient ${selectedCurrency} balance for this transaction.`;
         } else if (error.message.includes("user rejected")) {
           errorMessage = "Transaction was cancelled by user.";
         } else {
@@ -288,10 +355,17 @@ const Hero = () => {
     } finally {
       setSubmitting(false);
     }
-  }, [isConnected, address, connectWallet, showError, tokenAmount]);
+  }, [
+    isConnected,
+    address,
+    connectWallet,
+    showError,
+    tokenAmount,
+    selectedCurrency,
+  ]);
 
   const handleUSDTPurchase = async () => {
-    const usdtAmount = tokenAmount * TOKEN_PRICE_USD;
+    const usdtAmount = usdSelection;
 
     // Validate calculation
     if (isNaN(usdtAmount) || usdtAmount <= 0) {
@@ -312,13 +386,11 @@ const Hero = () => {
       throw new Error("USDT amount must be greater than 0");
     }
 
-    // 🔹 خزّن القيمة عشان نستخدمها بعد الـ confirm
     setPendingUSDTAmount(usdtInSmallest);
 
     // Add delay to prevent circuit breaker issues
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    // 🔹 approve فقط
     try {
       await approveUSDT(
         CONTRACT_ADDRESS.ICO_CONTRACT as `0x${string}`,
@@ -329,6 +401,51 @@ const Hero = () => {
       setPendingUSDTAmount(null);
       throw new Error(
         "Failed to approve USDT. Please try again or check your wallet connection."
+      );
+    }
+  };
+
+  const {
+    approve: approveUSDC,
+    isConfirming: isUSDCConfirming,
+    isConfirmed: isUSDCConfirmed,
+    error: usdcApproveError,
+  } = useMockUSDCContract();
+
+  const handleUSDCPurchase = async () => {
+    const usdcAmount = usdSelection;
+
+    if (isNaN(usdcAmount) || usdcAmount <= 0) {
+      throw new Error("Invalid calculation. Please check your input.");
+    }
+
+    const usdcInSmallest = parseUnits(usdcAmount.toFixed(6), 6);
+
+    if (
+      usdcBalance?.value !== undefined &&
+      usdcBalance.value < usdcInSmallest
+    ) {
+      throw new Error("Insufficient USDC balance for this purchase");
+    }
+
+    if (usdcInSmallest <= 0n) {
+      throw new Error("USDC amount must be greater than 0");
+    }
+
+    setPendingUSDCAmount(usdcInSmallest);
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    try {
+      await approveUSDC(
+        CONTRACT_ADDRESS.ICO_CONTRACT as `0x${string}`,
+        usdcInSmallest
+      );
+    } catch (error) {
+      console.error("USDC Approval Error:", error);
+      setPendingUSDCAmount(null);
+      throw new Error(
+        "Failed to approve USDC. Please try again or check your wallet connection."
       );
     }
   };
@@ -356,7 +473,10 @@ const Hero = () => {
 
           try {
             setPurchaseQueued(true);
-            await buyTokens(pendingUSDTAmount);
+            await buyTokens(
+              CONTRACT_ADDRESS.MOCK_USDT as `0x${string}`,
+              pendingUSDTAmount
+            );
           } catch (buyError) {
             console.error("Buy Tokens Error:", buyError);
             throw new Error(
@@ -364,7 +484,6 @@ const Hero = () => {
             );
           }
 
-          // Lookup active priceId
           let priceId: string | undefined = undefined;
           try {
             const activePrice = await getActivePrice("MEM");
@@ -373,7 +492,7 @@ const Hero = () => {
 
           setQueuedTxBody({
             type: "BUY",
-            amount: tokenAmount,
+            amount: totalNEFE,
             price: Number(tokenAmount * TOKEN_PRICE_USD),
             currency: "USDT",
             status: "COMPLETED",
@@ -402,6 +521,69 @@ const Hero = () => {
     showInfo,
     showError,
     purchaseQueued,
+    address,
+  ]);
+
+  useEffect(() => {
+    const proceedUSDC = async () => {
+      if (isUSDCConfirmed && pendingUSDCAmount && !purchaseQueued) {
+        try {
+          showInfo(
+            "USDC Approved",
+            "Approval confirmed, proceeding with purchase"
+          );
+
+          try {
+            setPurchaseQueued(true);
+            await buyTokens(
+              CONTRACT_ADDRESS.MOCK_USDC as `0x${string}`,
+              pendingUSDCAmount
+            );
+          } catch (buyError) {
+            console.error("Buy Tokens Error:", buyError);
+            throw new Error(
+              "Failed to complete token purchase. Please try again."
+            );
+          }
+
+          let priceId: string | undefined = undefined;
+          try {
+            const activePrice = await getActivePrice("MEM");
+            priceId = activePrice?._id as string | undefined;
+          } catch {}
+
+          setQueuedTxBody({
+            type: "BUY",
+            amount: tokenAmount,
+            price: Number(tokenAmount * TOKEN_PRICE_USD),
+            currency: "USDC",
+            status: "COMPLETED",
+            date: new Date().toISOString(),
+            walletAddress: address as `0x${string}`,
+            priceId,
+          });
+          setHasPosted(false);
+        } catch (err) {
+          console.error("Buy failed:", err);
+          showError("Purchase Failed", "Unable to complete purchase with USDC");
+          setPurchaseQueued(false);
+        } finally {
+          setPendingUSDCAmount(null);
+        }
+      }
+    };
+
+    void proceedUSDC();
+  }, [
+    isUSDCConfirmed,
+    pendingUSDCAmount,
+    tokenAmount,
+    TOKEN_PRICE_USD,
+    buyTokens,
+    showInfo,
+    showError,
+    purchaseQueued,
+    address,
   ]);
 
   // Loading states
@@ -596,7 +778,7 @@ const Hero = () => {
                         <FiTrendingUp className="text-white text-base sm:text-lg" />
                       </div>
                       <h3 className="text-white/80 text-xs sm:text-sm font-semibold">
-                        USDT Price
+                        USDT or USDC Price
                       </h3>
                     </div>
                     <p className="text-amber-400 text-sm sm:text-base font-bold">
@@ -614,80 +796,74 @@ const Hero = () => {
                     </label>
                   </div>
                   <div className="flex gap-2">
-                    {/* <button
-                      type="button"
-                      aria-disabled
-                      className="flex-1 rounded-md py-2 md:py-2.5 px-4 text-sm md:text-base bg-bgColor text-white/60 border border-bgColor/60 cursor-not-allowed"
-                    >
-                      ETH
-                    </button> */}
                     <button
                       type="button"
-                      className="flex-1 rounded-md py-2 md:py-2.5 px-4 text-sm md:text-base bg-amber-600 hover:bg-amber-700 text-white border border-amber-600"
+                      onClick={() => setSelectedCurrency("USDT")}
+                      className={`flex-1 rounded-md py-2 md:py-2.5 px-4 text-sm md:text-base border ${
+                        selectedCurrency === "USDT"
+                          ? "bg-amber-600 hover:bg-amber-700 text-white border-amber-600"
+                          : "bg-bgColor text-white/80 border-bgColor/60"
+                      }`}
                     >
-                      USDT
+                      <span className="inline-flex items-center gap-2 justify-center">
+                        <SiTether className="w-5 h-5" />
+                        USDT
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedCurrency("USDC")}
+                      className={`flex-1 rounded-md py-2 md:py-2.5 px-4 text-sm md:text-base border ${
+                        selectedCurrency === "USDC"
+                          ? "bg-amber-600 hover:bg-amber-700 text-white border-amber-600"
+                          : "bg-bgColor text-white/80 border-bgColor/60"
+                      }`}
+                    >
+                      <span className="inline-flex items-center gap-2 justify-center">
+                        <Image
+                          src="/usdc.png"
+                          alt="USDC"
+                          width={22}
+                          height={22}
+                          className="inline-block bg-white rounded-full"
+                        />
+                        USDC
+                      </span>
                     </button>
                   </div>
                 </div>
 
                 {/* Amount Selection */}
+                {/* Purchase Amount Selection */}
                 <div className="space-y-2 sm:space-y-3">
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-1.5">
                       <FiShoppingCart className="text-amber-500 text-base sm:text-lg md:text-xl" />
                       <label className="text-white text-sm md:text-base">
-                        Amount of NEFE
+                        Purchase Amount
                       </label>
                     </div>
                     <span className="text-sm sm:text-base md:text-lg font-bold text-amber-400">
-                      {tokenAmount.toLocaleString()} NEFE
+                      {usdSelection.toLocaleString()} {selectedCurrency}
                     </span>
                   </div>
 
                   <div className="space-y-3 sm:space-y-4">
                     <div className="relative pt-1">
-                      <div className="flex items-center gap-3 sm:gap-4">
-                        <button
-                          type="button"
-                          aria-label="Decrease amount"
-                          disabled={tokenAmount <= MIN_PURCHASE}
-                          onClick={() =>
-                            setTokenAmount((prev) =>
-                              Math.max(MIN_PURCHASE, prev - 100)
-                            )
-                          }
-                          className="sm:hidden w-10 h-10 rounded-full bg-amber-600 text-white flex-shrink-0 flex items-center justify-center active:scale-95"
-                        >
-                          <FiMinus className="text-lg" />
-                        </button>
-                        <input
-                          type="range"
-                          min={MIN_PURCHASE}
-                          max={MAX_PURCHASE}
-                          step="100"
-                          value={tokenAmount}
+                      <div className="flex items-center gap-3 sm:gap-4 w-full">
+                        <select
+                          value={usdSelection}
                           onChange={(e) =>
-                            setTokenAmount(Number(e.target.value))
+                            setUsdSelection(Number(e.target.value))
                           }
-                          className="flex-1 w-full appearance-none rounded-full cursor-pointer h-2 bg-neutral-900
-             [&::-webkit-slider-runnable-track]:bg-neutral-900 [&::-webkit-slider-runnable-track]:h-2 [&::-webkit-slider-runnable-track]:rounded-full
-             [&::-moz-range-track]:bg-neutral-900 [&::-moz-range-track]:h-2 [&::-moz-range-track]:rounded-full
-             [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-2 [&::-webkit-slider-thumb]:w-2 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:border-0 [&::-webkit-slider-thumb]:outline-none
-             [&::-moz-range-thumb]:h-2 [&::-moz-range-thumb]:w-2 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:outline-none"
-                        />
-                        <button
-                          type="button"
-                          aria-label="Increase amount"
-                          disabled={tokenAmount >= MAX_PURCHASE}
-                          onClick={() =>
-                            setTokenAmount((prev) =>
-                              Math.min(MAX_PURCHASE, prev + 100)
-                            )
-                          }
-                          className="sm:hidden w-10 h-10 rounded-full bg-amber-600 text-white flex-shrink-0 flex items-center justify-center active:scale-95"
+                          className="flex-1 w-full bg-neutral-900 text-white rounded-md px-3 py-2 border border-bgColor/60 focus:outline-none focus:ring-2 focus:ring-amber-600"
                         >
-                          <FiPlus className="text-lg" />
-                        </button>
+                          {USD_OPTIONS.map((opt) => (
+                            <option key={opt} value={opt}>
+                              {opt.toLocaleString()} {selectedCurrency}
+                            </option>
+                          ))}
+                        </select>
                       </div>
                       <div className="flex justify-between mt-1 sm:mt-2">
                         <div className="flex flex-col items-center">
@@ -695,7 +871,7 @@ const Hero = () => {
                             Min
                           </span>
                           <span className="text-xs font-bold text-white">
-                            {MIN_PURCHASE.toLocaleString()}
+                            {USD_OPTIONS[0].toLocaleString()}
                           </span>
                         </div>
                         <div className="flex flex-col items-center">
@@ -703,7 +879,9 @@ const Hero = () => {
                             Max
                           </span>
                           <span className="text-xs font-bold text-white">
-                            {MAX_PURCHASE.toLocaleString()}
+                            {USD_OPTIONS[
+                              USD_OPTIONS.length - 1
+                            ].toLocaleString()}
                           </span>
                         </div>
                       </div>
@@ -724,7 +902,7 @@ const Hero = () => {
                       You Pay
                     </span>
                     <span className="text-amber-400 text-xs sm:text-sm md:text-base font-bold">
-                      {calculatePaymentAmount()} USDT
+                      {calculatePaymentAmount()} {selectedCurrency}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
@@ -737,7 +915,7 @@ const Hero = () => {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-white/70 text-xs sm:text-sm font-medium">
-                      Rewards (ascription 1%)
+                      Rewards (ascription {currentRewardPercent}%)
                     </span>
                     <span className="text-amber-400 text-xs sm:text-sm md:text-base font-bold">
                       {rewardsNEFE.toLocaleString(undefined, {
@@ -794,7 +972,7 @@ const Hero = () => {
                       ? "Processing..."
                       : isConnected
                       ? !hasSufficientFunds
-                        ? "Insufficient USDT"
+                        ? `Insufficient ${selectedCurrency}`
                         : "Buy Tokens Now"
                       : "Connect Wallet to Buy"}
                   </span>
@@ -810,7 +988,7 @@ const Hero = () => {
                 {isConnected && !hasSufficientFunds && (
                   <div className="text-center">
                     <p className="text-xs text-red-600 bg-red-50 px-3 py-2 rounded-lg">
-                      Insufficient USDT balance for the selected amount.
+                      {`Insufficient ${selectedCurrency} balance for the selected amount.`}
                     </p>
                   </div>
                 )}
