@@ -950,7 +950,7 @@ const Hero = () => {
                   type="button"
                   onClick={isConnected ? handleBuyTokens : connectWallet}
                   disabled={isConnected && !hasSufficientFunds}
-                  className={`relative z-50 cursor-pointer w-full flex items-center justify-center gap-2 py-2 sm:py-2.5 md:py-3 text-xs sm:text-sm md:text-base rounded-xl bg-amber-600 hover:bg-amber-700 text-white ${
+                  className={`relative  cursor-pointer w-full flex items-center justify-center gap-2 py-2 sm:py-2.5 md:py-3 text-xs sm:text-sm md:text-base rounded-xl bg-amber-600 hover:bg-amber-700 text-white ${
                     isConnected && !hasSufficientFunds
                       ? "opacity-50 cursor-not-allowed"
                       : ""
