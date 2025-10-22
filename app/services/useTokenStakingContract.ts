@@ -5,6 +5,7 @@ import CONTRACT_ABIS from "../utils/web3intraction/constants/contract_abi";
 
 const abi = CONTRACT_ABIS.TOKEN_STACKING;
 const address = CONTRACT_ADDRESS.TOKEN_STACKING as `0x${string}`;
+const chainId = 11155111; // Sepolia
 
 export function useTokenStakingContract() {
   const { writeContract, data: hash, isPending, error } = useWriteContract();
@@ -12,29 +13,29 @@ export function useTokenStakingContract() {
 
   // ----------- Reads ------------
   const useCalculateAvailableRelease = () =>
-    useReadContract({ abi, address, functionName: "calculateAvailableRelease" });
+    useReadContract({ abi, address, functionName: "calculateAvailableRelease", chainId });
 
   const useTotalReleased = () =>
-    useReadContract({ abi, address, functionName: "totalReleased" });
+    useReadContract({ abi, address, functionName: "totalReleased", chainId });
 
   const useTotalStakingAmount = () =>
-    useReadContract({ abi, address, functionName: "totalStakingAmount" });
+    useReadContract({ abi, address, functionName: "totalStakingAmount", chainId });
 
   const useStakingPlanAmount = () =>
-    useReadContract({ abi, address, functionName: "stakingPlanAmount" });
+    useReadContract({ abi, address, functionName: "stakingPlanAmount", chainId });
 
   const useStakingStartTime = () =>
-    useReadContract({ abi, address, functionName: "stakingStartTime" });
+    useReadContract({ abi, address, functionName: "stakingStartTime", chainId });
 
   const useIcoContractAddress = () =>
-    useReadContract({ abi, address, functionName: "icoContractAddress" });
+    useReadContract({ abi, address, functionName: "icoContractAddress", chainId });
 
   const useGetReleasesCount = () =>
-    useReadContract({ abi, address, functionName: "getReleasesCount" });
+    useReadContract({ abi, address, functionName: "getReleasesCount", chainId });
 
   // Returns [time, price, rewardPercent]
   const useGetRelease = (index: number) =>
-    useReadContract({ abi, address, functionName: "getRelease", args: [BigInt(index)] });
+    useReadContract({ abi, address, functionName: "getRelease", args: [BigInt(index)], chainId });
 
   // ----------- Writes ------------
   const setIcoContract = (ico: `0x${string}`) =>
