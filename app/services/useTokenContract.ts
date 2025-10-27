@@ -41,6 +41,18 @@ export function useTokenContract(tokenAddress?: `0x${string}`) {
   const useGetTokenStats = () =>
     useReadContract({ abi, address, functionName: "getTokenStats", chainId });
 
+  // New detail reads from latest ABI
+  const useName = () => useReadContract({ abi, address, functionName: "name", chainId });
+  const useSymbol = () => useReadContract({ abi, address, functionName: "symbol", chainId });
+  const useDecimals = () => useReadContract({ abi, address, functionName: "decimals", chainId });
+  const useMaxSupply = () => useReadContract({ abi, address, functionName: "maxSupply", chainId });
+  const useStakingAddress = () =>
+    useReadContract({ abi, address, functionName: "stakingAddress", chainId });
+  const useTotalMinted = () =>
+    useReadContract({ abi, address, functionName: "totalMinted", chainId });
+  const useTotalBurned = () =>
+    useReadContract({ abi, address, functionName: "totalBurned", chainId });
+
   // ----------- Writes ------------
   const transfer = (recipient: `0x${string}`, amount: bigint) =>
     writeContract({
@@ -82,6 +94,13 @@ export function useTokenContract(tokenAddress?: `0x${string}`) {
     useBalanceOf,
     useAllowance,
     useGetTokenStats,
+    useName,
+    useSymbol,
+    useDecimals,
+    useMaxSupply,
+    useStakingAddress,
+    useTotalMinted,
+    useTotalBurned,
     
     // writes
     transfer,

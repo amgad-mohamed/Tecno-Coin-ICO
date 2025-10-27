@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, ChangeEvent } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import CountdownTimer from "./CountdownTimer";
@@ -13,6 +13,8 @@ import {
   FiLoader,
   FiMinus,
   FiPlus,
+  FiAward,
+  FiAlertCircle,
 } from "react-icons/fi";
 import { SiTether } from "react-icons/si";
 // import { FaDollarSign } from "react-icons/fa";
@@ -59,10 +61,16 @@ const Hero = () => {
   // const TOKEN_PRICE_USD = Number(presaleData?.tokenPrice ?? 0.1);
   const MIN_PURCHASE = 100000;
   const MAX_PURCHASE = 10000000;
-  const [tokenAmount, setTokenAmount] = useState<number>(MIN_PURCHASE);
-  const [usdSelection, setUsdSelection] = useState<number>(100);
+
+  // USD purchase constraints
+  const MIN_USD = 100;
+  const MAX_USD = 100000;
+
+  const [tokenAmount, setTokenAmount] = useState<number>(0);
+  const [usdSelection, setUsdSelection] = useState<number | null>(null);
+  const [usdError, setUsdError] = useState<string | null>(null);
   const USD_OPTIONS = [
-    100, 200, 300, 400, 500, 1000, 1500, 2000, 3000, 5000, 10000,
+    MIN_USD, 200, 300, 400, 500, 1000, 1500, 2000, 3000, 5000, MAX_USD,
   ];
 
   const router = useRouter();
@@ -145,9 +153,14 @@ const Hero = () => {
   const endDateString = timers[0]?.endTime;
 
   // Required payment amounts for current selection
-  const usdAmount = usdSelection;
-  const requiredUsdtUnits = parseUnits(usdSelection.toFixed(6), 6);
-  const requiredUsdcUnits = parseUnits(usdSelection.toFixed(6), 6);
+  const usdAmount = Number.isFinite(usdSelection ?? NaN)
+    ? (usdSelection as number)
+    : 0;
+  const safeUsdForUnits = Number.isFinite(usdSelection ?? NaN) && (usdSelection as number) > 0
+    ? (usdSelection as number)
+    : 0;
+  const requiredUsdtUnits = parseUnits(safeUsdForUnits.toFixed(6), 6);
+  const requiredUsdcUnits = parseUnits(safeUsdForUnits.toFixed(6), 6);
 
   const { useGetRelease } = useTokenStakingContract();
   const { data: release0 } = useGetRelease(0);
@@ -179,6 +192,7 @@ const Hero = () => {
     nextIndex >= 0 ? rewardsPercents[nextIndex] : undefined;
   const rewardsNEFE = tokenAmount * ((currentRewardPercent ?? 1) / 100);
   const totalNEFE = tokenAmount + rewardsNEFE;
+  const totalNEFERounded = Math.round(totalNEFE);
 
   // console.log(previousReleaseData);
   console.log("//////////////");
@@ -294,15 +308,120 @@ const Hero = () => {
   }, [showInfo, showError]);
 
   const calculatePaymentAmount = useCallback(() => {
-    return usdSelection.toFixed(2);
+    const val = usdSelection ?? NaN;
+    return Number.isFinite(val) ? (val as number).toFixed(2) : "0.00";
   }, [usdSelection]);
 
-  // Sync NEFE token amount from selected USD to prevent manual NEFE input
+  // Helpers to ensure total NEFE becomes an integer based on reward percent
+  const gcd = (a: number, b: number): number =>
+    b === 0 ? Math.abs(a) : gcd(b, a % b);
+  const getWholeTotalStep = (percent: number): number => {
+    const a = 100 + Math.round(percent);
+    const g = gcd(a, 100);
+    return 100 / g; // token multiple required to make total integer
+  };
+
+  const snapUsdToWholeTotal = useCallback(
+    (usdAmt: number) => {
+      const p =
+        typeof currentRewardPercent === "number" ? currentRewardPercent : 0;
+      if (!Number.isFinite(usdAmt) || TOKEN_PRICE_USD <= 0) {
+        return { tokensInt: 0, roundedUsd: 0, totalInt: 0 };
+      }
+      const step = getWholeTotalStep(p);
+      const tokensFloat = usdAmt / TOKEN_PRICE_USD;
+      const roundedTokens = Math.round(tokensFloat / step) * step;
+
+      // Ensure snapped result respects USD min/max by clamping in token space
+      const minTokens = Math.ceil((MIN_USD / TOKEN_PRICE_USD) / step) * step;
+      const maxTokens = Math.floor((MAX_USD / TOKEN_PRICE_USD) / step) * step;
+
+      let tokensInt = Math.max(0, roundedTokens);
+      if (tokensInt * TOKEN_PRICE_USD < MIN_USD) {
+        tokensInt = Math.max(0, minTokens);
+      } else if (tokensInt * TOKEN_PRICE_USD > MAX_USD) {
+        tokensInt = Math.max(0, maxTokens);
+      }
+
+      const roundedUsd = tokensInt * TOKEN_PRICE_USD;
+      const totalInt = Math.round((tokensInt * (100 + Math.round(p))) / 100);
+      return { tokensInt, roundedUsd, totalInt };
+    },
+    [TOKEN_PRICE_USD, currentRewardPercent]
+  );
+
+  const handleUsdInputChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const valStr = e.target.value;
+      if (valStr.trim() === "") {
+        setUsdSelection(null);
+        setUsdError(null);
+        return;
+      }
+      const raw = Number(valStr);
+      if (!Number.isFinite(raw)) {
+        setUsdError("The value is not a valid number");
+        return;
+      }
+
+      // Real-time snapping when input is within valid range
+      if (raw >= MIN_USD && raw <= MAX_USD) {
+        const { tokensInt, roundedUsd } = snapUsdToWholeTotal(raw);
+        setTokenAmount(tokensInt);
+        setUsdSelection(Number(roundedUsd.toFixed(6)));
+        setUsdError(null);
+        return;
+      }
+
+      // Otherwise allow free typing (below MIN or above MAX), avoid snapping now
+      setUsdSelection(raw);
+      setUsdError(null);
+    },
+    [snapUsdToWholeTotal]
+  );
+
+  const handleUsdInputBlur = useCallback(() => {
+    const value = usdSelection ?? NaN;
+    if (!Number.isFinite(value)) {
+      setUsdError("The value is not a valid number");
+      return;
+    }
+    if (value < MIN_USD) {
+      setUsdError(`Minimum is ${MIN_USD} USD`);
+      return;
+    }
+    if (value > MAX_USD) {
+      setUsdError(`Maximum is ${MAX_USD} USD`);
+      return;
+    }
+
+    const { tokensInt, roundedUsd } = snapUsdToWholeTotal(value);
+    setTokenAmount(tokensInt);
+    setUsdSelection(Number(roundedUsd.toFixed(6)));
+    setUsdError(null);
+  }, [usdSelection, snapUsdToWholeTotal]);
+
+  // Keep tokenAmount snapped to the nearest valid multiple only for valid amounts (>= MIN_USD)
   useEffect(() => {
-    const derived = usdSelection / TOKEN_PRICE_USD;
-    if (!Number.isFinite(derived)) return;
-    setTokenAmount(derived);
-  }, [usdSelection, TOKEN_PRICE_USD]);
+    const p =
+      typeof currentRewardPercent === "number" ? currentRewardPercent : 0;
+    const step = getWholeTotalStep(p);
+    const val = usdSelection ?? NaN;
+
+    if (!Number.isFinite(val) || val < MIN_USD || val > MAX_USD) {
+      setTokenAmount(0);
+      return;
+    }
+
+    const derived = val / TOKEN_PRICE_USD;
+    if (!Number.isFinite(derived)) {
+      setTokenAmount(0);
+      return;
+    }
+
+    const tokensInt = Math.max(0, Math.round(derived / step) * step);
+    setTokenAmount(tokensInt);
+  }, [usdSelection, TOKEN_PRICE_USD, currentRewardPercent]);
 
   const handleBuyTokens = useCallback(async () => {
     if (!isConnected || !address) {
@@ -326,6 +445,33 @@ const Hero = () => {
           );
           return;
         }
+      }
+
+      // Validate number format and range before proceeding
+      if (!Number.isFinite(usdSelection ?? NaN)) {
+        showError("Invalid Value", "The value is not a valid number");
+        return;
+      }
+      if ((usdSelection as number) <= 0) {
+        showError("Invalid Value", "Please enter a valid number");
+        return;
+      }
+      if ((usdSelection as number) < MIN_USD) {
+        showError("Invalid Value", `Minimum is ${MIN_USD} USD`);
+        return;
+      }
+      if ((usdSelection as number) > MAX_USD) {
+        showError("Invalid Value", `Maximum is ${MAX_USD} USD`);
+        return;
+      }
+
+      // Snap to nearest valid amount to keep Total NEFE integer
+      const { tokensInt, roundedUsd } = snapUsdToWholeTotal(usdSelection as number);
+      const snappedUsd = Number(roundedUsd.toFixed(6));
+      if (Math.abs(snappedUsd - (usdSelection as number)) > 1e-6) {
+        setUsdSelection(snappedUsd);
+        setTokenAmount(tokensInt);
+        showInfo("Amount Adjusted", "We aligned the value for reward calculation");
       }
 
       if (selectedCurrency === "USDT") {
@@ -360,12 +506,18 @@ const Hero = () => {
     address,
     connectWallet,
     showError,
+    showInfo,
     tokenAmount,
     selectedCurrency,
+    usdSelection,
+    snapUsdToWholeTotal,
   ]);
 
   const handleUSDTPurchase = async () => {
-    const usdtAmount = usdSelection;
+    const { tokensInt, roundedUsd } = snapUsdToWholeTotal(usdSelection as number);
+    setTokenAmount(tokensInt);
+    setUsdSelection(Number(roundedUsd.toFixed(6)));
+    const usdtAmount = roundedUsd;
 
     // Validate calculation
     if (isNaN(usdtAmount) || usdtAmount <= 0) {
@@ -413,7 +565,10 @@ const Hero = () => {
   } = useMockUSDCContract();
 
   const handleUSDCPurchase = async () => {
-    const usdcAmount = usdSelection;
+    const { tokensInt, roundedUsd } = snapUsdToWholeTotal(usdSelection as number);
+    setTokenAmount(tokensInt);
+    setUsdSelection(Number(roundedUsd.toFixed(6)));
+    const usdcAmount = roundedUsd;
 
     if (isNaN(usdcAmount) || usdcAmount <= 0) {
       throw new Error("Invalid calculation. Please check your input.");
@@ -492,7 +647,7 @@ const Hero = () => {
 
           setQueuedTxBody({
             type: "BUY",
-            amount: totalNEFE,
+            amount: totalNEFERounded,
             price: Number(tokenAmount * TOKEN_PRICE_USD),
             currency: "USDT",
             status: "COMPLETED",
@@ -554,7 +709,7 @@ const Hero = () => {
 
           setQueuedTxBody({
             type: "BUY",
-            amount: tokenAmount,
+            amount: totalNEFERounded,
             price: Number(tokenAmount * TOKEN_PRICE_USD),
             currency: "USDC",
             status: "COMPLETED",
@@ -844,26 +999,26 @@ const Hero = () => {
                       </label>
                     </div>
                     <span className="text-sm sm:text-base md:text-lg font-bold text-amber-400">
-                      {usdSelection.toLocaleString()} {selectedCurrency}
+                      {typeof usdSelection === "number" && Number.isFinite(usdSelection)
+                        ? usdSelection.toLocaleString()
+                        : "-"} {selectedCurrency}
                     </span>
                   </div>
 
                   <div className="space-y-3 sm:space-y-4">
                     <div className="relative pt-1">
                       <div className="flex items-center gap-3 sm:gap-4 w-full">
-                        <select
-                          value={usdSelection}
-                          onChange={(e) =>
-                            setUsdSelection(Number(e.target.value))
-                          }
+                        <input
+                          type="number"
+                          value={usdSelection ?? ""}
+                          onChange={handleUsdInputChange}
+                          onBlur={handleUsdInputBlur}
+                          inputMode="decimal"
+                          step={TOKEN_PRICE_USD}
+                          placeholder="Enter amount"
+                          max={MAX_USD}
                           className="flex-1 w-full bg-neutral-900 text-white rounded-md px-3 py-2 border border-bgColor/60 focus:outline-none focus:ring-2 focus:ring-amber-600"
-                        >
-                          {USD_OPTIONS.map((opt) => (
-                            <option key={opt} value={opt}>
-                              {opt.toLocaleString()} {selectedCurrency}
-                            </option>
-                          ))}
-                        </select>
+                        />
                       </div>
                       <div className="flex justify-between mt-1 sm:mt-2">
                         <div className="flex flex-col items-center">
@@ -871,7 +1026,7 @@ const Hero = () => {
                             Min
                           </span>
                           <span className="text-xs font-bold text-white">
-                            {USD_OPTIONS[0].toLocaleString()}
+                            {MIN_USD.toLocaleString()}
                           </span>
                         </div>
                         <div className="flex flex-col items-center">
@@ -879,14 +1034,31 @@ const Hero = () => {
                             Max
                           </span>
                           <span className="text-xs font-bold text-white">
-                            {USD_OPTIONS[
-                              USD_OPTIONS.length - 1
-                            ].toLocaleString()}
+                            {MAX_USD.toLocaleString()}
                           </span>
                         </div>
                       </div>
                     </div>
+                    {usdError && (
+                      <div className="mt-2 flex items-center gap-2 text-red-400 text-xs">
+                        <FiAlertCircle className="text-red-400" />
+                        <span>{usdError}</span>
+                      </div>
+                    )}
                   </div>
+                </div>
+
+                {/* Bonus Reward Banner */}
+                <div className="p-3 sm:p-4 bg-fourthBgColor rounded-xl border border-amber-500/40">
+                  <div className="flex items-center gap-2 mb-1">
+                    <FiAward className="text-amber-500 text-base sm:text-lg" />
+                    <h3 className="text-white text-xs sm:text-sm font-semibold">
+                      Bonus Rewards: {typeof currentRewardPercent === "number" ? currentRewardPercent : 0}% extra NEFE
+                    </h3>
+                  </div>
+                  <p className="text-white/80 text-xs sm:text-sm">
+                    You earn <span className="text-amber-400 font-bold">{rewardsNEFE.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span> NEFE bonus on this purchase.
+                  </p>
                 </div>
 
                 {/* Payment Summary */}
@@ -929,10 +1101,7 @@ const Hero = () => {
                       Total NEFE
                     </span>
                     <span className="text-amber-400 text-xs sm:text-sm md:text-base font-bold">
-                      {totalNEFE.toLocaleString(undefined, {
-                        maximumFractionDigits: 2,
-                      })}{" "}
-                      NEFE
+                      {totalNEFERounded.toLocaleString()} NEFE
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
@@ -949,17 +1118,34 @@ const Hero = () => {
                 <motion.button
                   type="button"
                   onClick={isConnected ? handleBuyTokens : connectWallet}
-                  disabled={isConnected && !hasSufficientFunds}
-                  className={`relative  cursor-pointer w-full flex items-center justify-center gap-2 py-2 sm:py-2.5 md:py-3 text-xs sm:text-sm md:text-base rounded-xl bg-amber-600 hover:bg-amber-700 text-white ${
-                    isConnected && !hasSufficientFunds
-                      ? "opacity-50 cursor-not-allowed"
-                      : ""
-                  }`}
+                  disabled={
+                    submitting ||
+                    (isConnected &&
+                      (!hasSufficientFunds ||
+                        !Number.isFinite(usdSelection ?? NaN) ||
+                        (usdSelection as number) < MIN_USD ||
+                        (usdSelection as number) > MAX_USD))
+                  }
+                  className={`relative w-full flex items-center justify-center gap-2 py-2 sm:py-2.5 md:py-3 text-xs sm:text-sm md:text-base rounded-xl text-white bg-amber-600 hover:bg-amber-700 disabled:bg-gray-600 disabled:hover:bg-gray-600 disabled:text-white/80 disabled:cursor-not-allowed`}
                   whileHover={
-                    isConnected && !hasSufficientFunds ? {} : { scale: 1.02 }
+                    submitting ||
+                    (isConnected &&
+                      (!hasSufficientFunds ||
+                        !Number.isFinite(usdSelection ?? NaN) ||
+                        (usdSelection as number) < MIN_USD ||
+                        (usdSelection as number) > MAX_USD))
+                      ? {}
+                      : { scale: 1.02 }
                   }
                   whileTap={
-                    isConnected && !hasSufficientFunds ? {} : { scale: 0.98 }
+                    submitting ||
+                    (isConnected &&
+                      (!hasSufficientFunds ||
+                        !Number.isFinite(usdSelection ?? NaN) ||
+                        (usdSelection as number) < MIN_USD ||
+                        (usdSelection as number) > MAX_USD))
+                      ? {}
+                      : { scale: 0.98 }
                   }
                 >
                   {isPending ? (

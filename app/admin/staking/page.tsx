@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { useAppKit, useAppKitAccount } from "@reown/appkit/react";
 import { FiSettings, FiAlertCircle } from "react-icons/fi";
 import { useTokenStakingContract } from "../../services/useTokenStakingContract";
+import { postPriceChange } from "@/lib/api";
 import CountdownTimer from "../../components/CountdownTimer";
 import { useToastContext } from "../../context/ToastContext";
 import { ethers } from "ethers";
@@ -30,17 +31,17 @@ export default function StakingManagement() {
   } = useTokenStakingContract();
 
   // Contract data
-  const { data: stakingAvailable } = useCalculateAvailableRelease();
-  const { data: stakingTotalReleased } = useTotalReleased();
-  const { data: totalStakingAmt } = useTotalStakingAmount();
+  const { data: stakingAvailable, refetch: refetchAvailable } = useCalculateAvailableRelease();
+  const { data: stakingTotalReleased, refetch: refetchTotalReleased } = useTotalReleased();
+  const { data: totalStakingAmt, refetch: refetchTotalStakingAmt } = useTotalStakingAmount();
 
   // Read release tuples by index (0..4)
-  const { data: release0 } = useGetReleaseHook(0);
-  const { data: release1 } = useGetReleaseHook(1);
-  const { data: release2 } = useGetReleaseHook(2);
-  const { data: release3 } = useGetReleaseHook(3);
-  const { data: release4 } = useGetReleaseHook(4);
-  const { data: releasesCount } = useGetReleasesCount();
+  const { data: release0, refetch: refetchRelease0 } = useGetReleaseHook(0);
+  const { data: release1, refetch: refetchRelease1 } = useGetReleaseHook(1);
+  const { data: release2, refetch: refetchRelease2 } = useGetReleaseHook(2);
+  const { data: release3, refetch: refetchRelease3 } = useGetReleaseHook(3);
+  const { data: release4, refetch: refetchRelease4 } = useGetReleaseHook(4);
+  const { data: releasesCount, refetch: refetchReleasesCount } = useGetReleasesCount();
 
   // Derived values
   const releases = [release0, release1, release2, release3, release4];
@@ -60,10 +61,15 @@ export default function StakingManagement() {
   });
   const rewards = releases.map((r) => {
     const val = Array.isArray(r) ? r[2] : undefined;
-    return typeof val === "bigint" ? Number(val) : typeof val === "number" ? val : 0;
+    return typeof val === "bigint"
+      ? Number(val)
+      : typeof val === "number"
+      ? val
+      : 0;
   });
   const AMOUNT_PER_RELEASE =
-    (typeof totalStakingAmt === "bigint" ? Number(totalStakingAmt) / 1e18 : 0) / 10;
+    (typeof totalStakingAmt === "bigint" ? Number(totalStakingAmt) / 1e18 : 0) /
+    10;
   const nowSec = Math.floor(Date.now() / 1000);
   const nextTs = times.filter((v) => v > nowSec).sort((a, b) => a - b)[0];
   const nextReleaseIso = nextTs ? new Date(nextTs * 1000).toISOString() : "";
@@ -76,22 +82,101 @@ export default function StakingManagement() {
 
     try {
       await releaseTokens();
+      // After releasing, compute current release stage price and set pending for DB
+      const nowSecLocal = Math.floor(Date.now() / 1000);
+      const pastTimes = times.filter(
+        (t) => typeof t === "number" && t > 0 && t <= nowSecLocal
+      );
+      const currentIndex = pastTimes.length
+        ? times.indexOf(pastTimes[pastTimes.length - 1])
+        : -1;
+      if (currentIndex >= 0) {
+        const currentPrice = prices[currentIndex] ?? 0;
+        // Set pending first so the isConfirmed effect can persist right after release confirmation
+        setPendingPriceToPersist(currentPrice.toString());
+        setHasPostedPrice(false);
+        // Update ICO price to match current release stage
+        const priceUnits = ethers.parseUnits(currentPrice.toString(), 6);
+        showInfo("Price Update", "Token price update transaction submitted");
+      }
       // Success toast will be shown after confirmation
     } catch (error) {
       console.error("Failed to release tokens:", error);
       showError("Token Release Failed", "Failed to release staking tokens");
     }
-  }, [releaseTokens, showError, isConnected, address, open]);
+  }, [
+    releaseTokens,
+    prices,
+    times,
+    showInfo,
+    showError,
+    isConnected,
+    address,
+    open,
+  ]);
 
   // Show success only after the transaction is confirmed on-chain
+  const [pendingPriceToPersist, setPendingPriceToPersist] = useState<
+    string | null
+  >(null);
+  const [hasPostedPrice, setHasPostedPrice] = useState(false);
+
   useEffect(() => {
     if (isConfirmed) {
+      // Show success toast
       showSuccess(
         "Tokens Released",
         "Staking tokens have been released successfully"
       );
+      // Refetch reads to update UI with latest on-chain state
+      try {
+        refetchAvailable?.();
+        refetchTotalReleased?.();
+        refetchTotalStakingAmt?.();
+        refetchRelease0?.();
+        refetchRelease1?.();
+        refetchRelease2?.();
+        refetchRelease3?.();
+        refetchRelease4?.();
+        refetchReleasesCount?.();
+      } catch (e) {
+        console.error("Refetch after confirmation failed:", e);
+      }
     }
-  }, [isConfirmed, showSuccess]);
+  }, [
+    isConfirmed,
+    showSuccess,
+    refetchAvailable,
+    refetchTotalReleased,
+    refetchTotalStakingAmt,
+    refetchRelease0,
+    refetchRelease1,
+    refetchRelease2,
+    refetchRelease3,
+    refetchRelease4,
+    refetchReleasesCount,
+  ]);
+
+  // Persist current release price to DB only after on-chain confirmation
+  useEffect(() => {
+    const persistPriceIfConfirmed = async () => {
+      if (isConfirmed && pendingPriceToPersist && !hasPostedPrice) {
+        try {
+          await postPriceChange({
+            token: "MEM",
+            price: parseFloat(pendingPriceToPersist),
+          });
+          setHasPostedPrice(true);
+          showSuccess("Price Saved", "New price was saved to the database");
+        } catch (e) {
+          console.error("Failed to persist price change:", e);
+        } finally {
+          setPendingPriceToPersist(null);
+        }
+      }
+    };
+    void persistPriceIfConfirmed();
+  }, [isConfirmed, pendingPriceToPersist, hasPostedPrice, showSuccess]);
 
   const releaseSchedule = [
     {
@@ -273,14 +358,18 @@ export default function StakingManagement() {
 
       const timesArr = normalizedSecs.map((s) => BigInt(s));
       const pricesArr = rows.map((r, idx) => {
-        const origPrice = Array.isArray(releases[idx]) ? (releases[idx][1] as bigint) : 0n;
+        const origPrice = Array.isArray(releases[idx])
+          ? (releases[idx][1] as bigint)
+          : 0n;
         const origTs = typeof times?.[idx] === "number" ? times[idx] : 0;
         return origTs > 0 && origTs < nowSec
           ? origPrice
           : ethers.parseUnits(r.price || "0", 6);
       });
       const rewardPercentsArr = rows.map((r, idx) => {
-        const origReward = Array.isArray(releases[idx]) ? (releases[idx][2] as bigint) : 0n;
+        const origReward = Array.isArray(releases[idx])
+          ? (releases[idx][2] as bigint)
+          : 0n;
         const origTs = typeof times?.[idx] === "number" ? times[idx] : 0;
         return origTs > 0 && origTs < nowSec
           ? origReward
@@ -323,8 +412,6 @@ export default function StakingManagement() {
           <h3 className="text-lg sm:text-xl font-semibold text-white mb-4">
             Staking Contract
           </h3>
-
-          {/* Stats */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="p-4 bg-fourthBgColor rounded-lg text-center sm:text-left">
               <span className="text-white/70 block text-sm">
@@ -337,7 +424,6 @@ export default function StakingManagement() {
                 NEFE
               </span>
             </div>
-
             <div className="p-4 bg-fourthBgColor rounded-lg text-center sm:text-left">
               <span className="text-white/70 block text-sm">
                 Total Released
@@ -360,7 +446,12 @@ export default function StakingManagement() {
           </h4>
           <div className="space-y-2">
             {releaseSchedule.map((item, idx) => {
-              const ts = typeof item.ts === "number" ? item.ts : typeof item.ts === "bigint" ? Number(item.ts) : 0;
+              const ts =
+                typeof item.ts === "number"
+                  ? item.ts
+                  : typeof item.ts === "bigint"
+                  ? Number(item.ts)
+                  : 0;
               const isDone = ts > 0 && ts * 1000 < Date.now();
               const status = isDone ? "Released" : "Upcoming";
               const badgeClass = isDone
@@ -383,10 +474,13 @@ export default function StakingManagement() {
                       {status}
                     </span>
                     <span className="font-medium text-sm sm:text-base truncate text-white">
-{/* -                      Reward {item.reward}% • Price{" "}
+                      {/* -                      Reward {item.reward}% • Price{" "}
 -                      {item.price?.toFixed?.(6) ?? "-"} USDT •{" "}
 -                      {ts ? new Date(ts * 1000).toLocaleString() : "-"} */}
-+                      Reward {item.reward}% • Price {item.price?.toFixed?.(6) ?? "-"} USDT • {ts ? new Date(ts * 1000).toLocaleString() : "-"} • {AMOUNT_PER_RELEASE.toLocaleString()} NEFE
+                      + Reward {item.reward}% • Price{" "}
+                      {item.price?.toFixed?.(6) ?? "-"} USDT •{" "}
+                      {ts ? new Date(ts * 1000).toLocaleString() : "-"} •{" "}
+                      {AMOUNT_PER_RELEASE.toLocaleString()} NEFE
                     </span>
                   </div>
                 </div>
@@ -417,7 +511,7 @@ export default function StakingManagement() {
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.95 }}
           >
-            {(isPending || isConfirming) ? (
+            {isPending || isConfirming ? (
               <Loader2 className="inline mr-2 animate-spin" size={16} />
             ) : null}
             Release Tokens
@@ -436,14 +530,18 @@ export default function StakingManagement() {
                 className="grid grid-cols-1 md:grid-cols-3 gap-3 bg-fourthBgColor p-3 rounded-lg"
               >
                 {(() => {
-                  const tsOriginal = typeof times?.[idx] === "number" ? times[idx] : 0;
+                  const tsOriginal =
+                    typeof times?.[idx] === "number" ? times[idx] : 0;
                   const isPast = tsOriginal > 0 && tsOriginal < nowSec;
                   return (
                     <>
                       <div>
                         <label className="block text-xs text-white/70 mb-1">
-                          Time {isPast && (
-                            <span className="ml-1 text-amber-300">(Locked)</span>
+                          Time{" "}
+                          {isPast && (
+                            <span className="ml-1 text-amber-300">
+                              (Locked)
+                            </span>
                           )}
                         </label>
                         <input
@@ -454,7 +552,9 @@ export default function StakingManagement() {
                           }
                           disabled={isPast}
                           readOnly={isPast}
-                          className={`w-full px-3 py-2 rounded-md text-black ${isPast ? "opacity-60 cursor-not-allowed" : ""}`}
+                          className={`w-full px-3 py-2 rounded-md text-black ${
+                            isPast ? "opacity-60 cursor-not-allowed" : ""
+                          }`}
                         />
                       </div>
                       <div>
@@ -470,7 +570,9 @@ export default function StakingManagement() {
                           }
                           disabled={isPast}
                           readOnly={isPast}
-                          className={`w-full px-3 py-2 rounded-md text-black ${isPast ? "opacity-60 cursor-not-allowed" : ""}`}
+                          className={`w-full px-3 py-2 rounded-md text-black ${
+                            isPast ? "opacity-60 cursor-not-allowed" : ""
+                          }`}
                           placeholder="e.g. 0.100000"
                         />
                       </div>
@@ -487,14 +589,22 @@ export default function StakingManagement() {
                             inputMode="numeric"
                             value={rows[idx]?.rewardPercent || ""}
                             onChange={(e) =>
-                              handleRowChange(idx, "rewardPercent", e.target.value)
+                              handleRowChange(
+                                idx,
+                                "rewardPercent",
+                                e.target.value
+                              )
                             }
                             disabled={isPast}
                             readOnly={isPast}
-                            className={`w-full px-3 pr-8 py-2 rounded-md text-black ${isPast ? "opacity-60 cursor-not-allowed" : ""}`}
+                            className={`w-full px-3 pr-8 py-2 rounded-md text-black ${
+                              isPast ? "opacity-60 cursor-not-allowed" : ""
+                            }`}
                             placeholder="e.g. 10"
                           />
-                          <span className="absolute left-10 top-1/2 -translate-y-1/2 text-black/60">%</span>
+                          <span className="absolute left-10 top-1/2 -translate-y-1/2 text-black/60">
+                            %
+                          </span>
                         </div>
                       </div>
                     </>

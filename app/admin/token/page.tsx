@@ -29,8 +29,19 @@ export default function TokenManagement() {
   });
   const [loading, setLoading] = useState(false);
   // Contract hooks
-  const { useGetTokenStats, useTotalSupply, useBalanceOf, useAllowance } =
-    useTokenContract();
+  const {
+    useGetTokenStats,
+    useTotalSupply,
+    useBalanceOf,
+    useAllowance,
+    useName,
+    useSymbol,
+    useDecimals,
+    useMaxSupply,
+    useStakingAddress,
+    useTotalMinted,
+    useTotalBurned,
+  } = useTokenContract();
 
   const {
     useGgetTokenPrice,
@@ -42,16 +53,42 @@ export default function TokenManagement() {
 
   const { data: tokenStatsData } = useGetTokenStats();
   const { data: tokenPriceData } = useGgetTokenPrice();
+  // New details from ABI
+  const { data: nameData } = useName();
+  const { data: symbolData } = useSymbol();
+  const { data: decimalsData } = useDecimals();
+  const { data: maxSupplyData } = useMaxSupply();
+  const { data: stakingAddressData } = useStakingAddress();
+  const { data: totalMintedData } = useTotalMinted();
+  const { data: totalBurnedData } = useTotalBurned();
+
   // Effects
   useEffect(() => {
+    // Prefer aggregate stats if available; otherwise derive from individual reads
     if (Array.isArray(tokenStatsData) && tokenStatsData.length === 3) {
       setTokenStats({
         totalMinted: Number(tokenStatsData[0]),
         currentSupply: Number(tokenStatsData[1]) / 1e18,
         totalBurned: Number(tokenStatsData[2]),
       });
+    } else {
+      const decimals = Number(decimalsData ?? 18);
+      const minted = totalMintedData ? Number(totalMintedData) : 0;
+      const supply = maxSupplyData ? Number(maxSupplyData) : 0; // fallback; we will use totalSupply below
+      const burned = totalBurnedData ? Number(totalBurnedData) : 0;
+      setTokenStats({
+        totalMinted: minted,
+        currentSupply: supply > 0 ? supply / Math.pow(10, decimals) : 0,
+        totalBurned: burned,
+      });
     }
-  }, [tokenStatsData]);
+  }, [
+    tokenStatsData,
+    decimalsData,
+    totalMintedData,
+    maxSupplyData,
+    totalBurnedData,
+  ]);
 
   // Event handlers
   const [pendingPriceToPersist, setPendingPriceToPersist] = useState<
@@ -106,6 +143,11 @@ export default function TokenManagement() {
     showError,
   ]);
 
+  const decimalsNum = Number(decimalsData ?? 18);
+  const maxSupplyHuman = maxSupplyData
+    ? Number(maxSupplyData) / Math.pow(10, decimalsNum)
+    : 0;
+
   return (
     <div className="">
       <motion.div
@@ -120,9 +162,7 @@ export default function TokenManagement() {
 
         <div className=" bg-thirdBgColor rounded-2xl shadow-lg p-5 sm:p-8">
           <div className="space-y-6">
-            <h3 className="text-xl font-semibold">
-              Token Contract
-            </h3>
+            <h3 className="text-xl font-semibold">Token Contract</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
               <div className="p-4 bg-secondBgColor rounded-lg">
                 <span className="font-semibold block">Total Minted</span>
@@ -143,11 +183,48 @@ export default function TokenManagement() {
                 </span>
               </div>
             </div>
+            {/* New: Token Details based on ABI */}
+            <div className="pt-4 border-t border-secondBgColor" />
+            <div className="space-y-4">
+              <h4 className="text-lg font-semibold">Token Details</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+                <div className="p-4 bg-secondBgColor rounded-lg">
+                  <span className="font-semibold block">Name</span>
+                  <span className="font-bold text-xl md:text-2xl">
+                    {nameData ? String(nameData) : "—"}
+                  </span>
+                </div>
+                <div className="p-4 bg-secondBgColor rounded-lg">
+                  <span className="font-semibold block">Symbol</span>
+                  <span className="font-bold text-xl md:text-2xl">
+                    {symbolData ? String(symbolData) : "—"}
+                  </span>
+                </div>
+                <div className="p-4 bg-secondBgColor rounded-lg">
+                  <span className="font-semibold block">Decimals</span>
+                  <span className="font-bold text-xl md:text-2xl">
+                    {decimalsData !== undefined
+                      ? Number(decimalsData).toString()
+                      : "—"}
+                  </span>
+                </div>
+                <div className="p-4 bg-secondBgColor rounded-lg">
+                  <span className="font-semibold block">Max Supply</span>
+                  <span className="font-bold text-xl md:text-2xl">
+                    {maxSupplyData ? maxSupplyHuman.toLocaleString() : "—"} NEFE
+                  </span>
+                </div>
+                <div className="p-4 bg-secondBgColor rounded-lg md:col-span-2">
+                  <span className="font-semibold block">Staking Address</span>
+                  <span className="font-bold break-all">
+                    {stakingAddressData ? String(stakingAddressData) : "—"}
+                  </span>
+                </div>
+              </div>
+            </div>
             <div className="pt-4 border-t border-secondBgColor" />
             <div className="flex justify-between items-center">
-              <h4 className="text-lg font-semibold">
-                Update Token Price
-              </h4>
+              <h4 className="text-lg font-semibold">Update Token Price</h4>
               <label className="block text-sm font-medium">
                 Current Price{" "}
                 <span className="bg-gradient-to-r from-[#F4AD30] to-[#CA6C2F] bg-clip-text text-transparent font-bold text-sm">

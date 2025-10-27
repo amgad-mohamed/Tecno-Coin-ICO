@@ -15,6 +15,7 @@ export default function AdminTransactionsPage() {
     const sepoliaUrl = `https://sepolia.etherscan.io/tx/${hash}`;
     window.open(sepoliaUrl, "_blank", "noopener,noreferrer");
   };
+  console.log(transactions);
 
   useEffect(() => {
     const load = async () => {
@@ -130,8 +131,9 @@ export default function AdminTransactionsPage() {
                       <span className="text-sm text-white/60">Price:</span>
                       <span className="font-medium">
                         {transaction.currency === "ETH"
-                          ? `${Number(transaction.price).toFixed(6)} ETH`
-                          : `${Number(transaction.price).toFixed(2)} USDT`}
+                          ? `${Number(transaction.price).toFixed(6)}`
+                          : `${Number(transaction.price).toFixed(2)}`}
+                        {transaction.currency}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
@@ -210,8 +212,9 @@ export default function AdminTransactionsPage() {
                     </td>
                     <td className="px-3 lg:px-6 py-3 lg:py-4">
                       {transaction.currency === "ETH"
-                        ? `${Number(transaction.price).toFixed(6)} ETH`
-                        : `${Number(transaction.price).toFixed(2)} USDT`}
+                        ? `${Number(transaction.price).toFixed(6)} `
+                        : `${Number(transaction.price).toFixed(2)} `}
+                      {transaction.currency}
                     </td>
                     <td className="px-3 lg:px-6 py-3 lg:py-4">
                       <span className="hidden lg:inline">

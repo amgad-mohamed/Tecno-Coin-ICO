@@ -58,6 +58,17 @@
     box-shadow: none;
   }
 
+  /* Hide number input spinners across browsers */
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+
   .slider {
     background: linear-gradient(to right, rgba(245, 158, 11, 0.3), rgba(234, 179, 8, 0.3));
   }
