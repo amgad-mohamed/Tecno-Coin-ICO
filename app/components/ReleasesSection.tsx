@@ -42,7 +42,7 @@ const ReleasesSection = () => {
     return typeof val === "bigint" ? Number(val) : typeof val === "number" ? val : 0;
   });
   const AMOUNT_PER_RELEASE =
-    (typeof totalStakingAmt === "bigint" ? Number(totalStakingAmt) / 1e18 : 0) /
+    (typeof totalStakingAmt === "bigint" ? Number(totalStakingAmt) / 1e6 : 0) /
     10;
 
   const nowSec = Math.floor(Date.now() / 1000);
@@ -159,7 +159,7 @@ const ReleasesSection = () => {
                     </span>
                     <span className="inline-flex items-center gap-1 text-sm sm:text-base truncate text-white">
                       <FiTag className="w-4 h-4 text-amber-300" />
-                      <span className="font-medium">{item.price?.toFixed?.(6) ?? "-"}</span>
+                      <span className="font-medium">{item.price?.toFixed?.(3) ?? "-"}</span>
                       <span className="text-white/60">USDT</span>
                     </span>
                     <span className="text-sm sm:text-base text-white/70">

@@ -354,7 +354,7 @@ export default function ICOManagement() {
 
   const formatBalance = (
     balance: bigint | undefined,
-    decimals: number = 18
+    decimals: number = 6
   ) => {
     if (!balance) return "0";
     return (Number(balance) / 10 ** decimals).toLocaleString(undefined, {

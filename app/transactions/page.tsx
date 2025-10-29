@@ -31,12 +31,20 @@ export default function TransactionsPage() {
     useMockUSDTContract();
   const { data: usdtBalance } = useUSDTBalance(address as `0x${string}`);
   const { data: usdtDecimals } = useUSDTDecimals();
+  const USDT_BALANCE =
+    usdtBalance && usdtDecimals && typeof usdtBalance === "bigint"
+      ? formatUnits(usdtBalance, Number(usdtDecimals))
+      : "0";
 
   // Get USDC balance using the custom hook
   const { useBalanceOf: useUSDCBalance, useDecimals: useUSDCDecimals } =
     useMockUSDCContract();
   const { data: usdcBalance } = useUSDCBalance(address as `0x${string}`);
   const { data: usdcDecimals } = useUSDCDecimals();
+  const USDC_BALANCE =
+    usdcBalance && usdcDecimals && typeof usdcBalance === "bigint"
+      ? formatUnits(usdcBalance, Number(usdcDecimals))
+      : "0";
 
   const [mounted, setMounted] = useState(false);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -128,12 +136,12 @@ export default function TransactionsPage() {
    * ------------------------------- */
   return (
     <div className="min-h-screen py-12">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="max-w-6xl mx-auto"
+          className="mx-auto"
         >
           {/* Header */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
@@ -165,17 +173,17 @@ export default function TransactionsPage() {
           )}
 
           {/* Balance Display Section (harmonized with homepage card design) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 lg:gap-6 mb-8">
             {/* ETH Balance */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="bg-secondBgColor rounded-xl p-5 sm:p-6 border border-bgColor/60 text-white"
+              className="card-ticket p-5 sm:p-6 text-white border border-white/10 bg-white/5 backdrop-blur-md hover:bg-white/10 shadow-lg transition-colors h-full min-h-[140px]"
             >
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-3">
-                  <span className="p-2 rounded-xl bg-gradient-to-br from-[#F4AD30] to-[#CA6C2F]">
+                  <span className="p-2 rounded-xl bg-white/10 ring-1 ring-white/20">
                     <FiDollarSign className="w-5 h-5 text-white" />
                   </span>
                   <h3 className="text-sm md:text-base font-medium text-white/80">
@@ -183,7 +191,7 @@ export default function TransactionsPage() {
                   </h3>
                 </div>
               </div>
-              <div className="text-base sm:text-lg md:text-2xl font-bold bg-gradient-to-r from-[#F4AD30] to-[#CA6C2F] bg-clip-text text-transparent mb-1">
+              <div className="text-base sm:text-lg md:text-xl font-semibold bg-gradient-to-r from-[#F4AD30] to-[#CA6C2F] bg-clip-text text-transparent mb-1 leading-tight truncate">
                 {ethBalance
                   ? `${Number(formatEther(ethBalance.value)).toLocaleString(
                       undefined,
@@ -204,11 +212,11 @@ export default function TransactionsPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="bg-secondBgColor rounded-xl p-5 sm:p-6 border border-bgColor/60 text-white"
+              className="card-ticket p-5 sm:p-6 text-white border border-white/10 bg-white/5 backdrop-blur-md hover:bg-white/10 shadow-lg transition-colors h-full min-h-[140px]"
             >
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-3">
-                  <span className="p-2 rounded-xl bg-gradient-to-br from-[#F4AD30] to-[#CA6C2F]">
+                  <span className="p-2 rounded-xl bg-white/10 ring-1 ring-white/20">
                     <FiCreditCard className="w-5 h-5 text-white" />
                   </span>
                   <h3 className="text-sm md:text-base font-medium text-white/80">
@@ -216,15 +224,8 @@ export default function TransactionsPage() {
                   </h3>
                 </div>
               </div>
-              <div className="text-base sm:text-lg md:text-2xl font-bold bg-gradient-to-r from-[#F4AD30] to-[#CA6C2F] bg-clip-text text-transparent mb-1">
-                {usdtBalance && usdtDecimals && typeof usdtBalance === "bigint"
-                  ? `${Number(
-                      formatUnits(usdtBalance, Number(usdtDecimals))
-                    ).toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 6,
-                    })}`
-                  : "0.00"}
+              <div className="text-base sm:text-lg md:text-xl font-semibold bg-gradient-to-r from-[#F4AD30] to-[#CA6C2F] bg-clip-text text-transparent mb-1 leading-tight ">
+                {USDT_BALANCE}
               </div>
               <div className="text-white/70 text-xs sm:text-sm">USDT</div>
             </motion.div>
@@ -234,11 +235,11 @@ export default function TransactionsPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="bg-secondBgColor rounded-xl p-5 sm:p-6 border border-bgColor/60 text-white"
+              className="card-ticket p-5 sm:p-6 text-white border border-white/10 bg-white/5 backdrop-blur-md hover:bg-white/10 shadow-lg transition-colors h-full min-h-[140px]"
             >
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-3">
-                  <span className="p-2 rounded-xl bg-gradient-to-br from-[#F4AD30] to-[#CA6C2F]">
+                  <span className="p-2 rounded-xl bg-white/10 ring-1 ring-white/20">
                     <FiCreditCard className="w-5 h-5 text-white" />
                   </span>
                   <h3 className="text-sm md:text-base font-medium text-white/80">
@@ -246,15 +247,8 @@ export default function TransactionsPage() {
                   </h3>
                 </div>
               </div>
-              <div className="text-base sm:text-lg md:text-2xl font-bold bg-gradient-to-r from-[#F4AD30] to-[#CA6C2F] bg-clip-text text-transparent mb-1">
-                {usdcBalance && usdcDecimals && typeof usdcBalance === "bigint"
-                  ? `${Number(
-                      formatUnits(usdcBalance, Number(usdcDecimals))
-                    ).toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 6,
-                    })}`
-                  : "0.00"}
+              <div className="text-base sm:text-lg md:text-xl font-semibold bg-gradient-to-r from-[#F4AD30] to-[#CA6C2F] bg-clip-text text-transparent mb-1 leading-tight ">
+                {USDC_BALANCE}
               </div>
               <div className="text-white/70 text-xs sm:text-sm">USDC</div>
             </motion.div>
@@ -312,9 +306,7 @@ export default function TransactionsPage() {
                             {transaction.type}
                           </span>
                         </td>
-                        <td className="px-6 py-4">
-                          {transaction.amount} NEFE
-                        </td>
+                        <td className="px-6 py-4">{transaction.amount} NEFE</td>
                         <td className="px-6 py-4">
                           {transaction.currency === "ETH"
                             ? `${Number(transaction.price).toFixed(6)} `

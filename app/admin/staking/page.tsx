@@ -421,7 +421,7 @@ export default function StakingManagement() {
               <span className="font-semibold text-base sm:text-lg text-white">
                 {typeof stakingAvailable === "bigint"
                   ? ethers.formatUnits(stakingAvailable, 6)
-                  : "0"}{" "}
+                  : "0"}
                 NEFE
               </span>
             </div>

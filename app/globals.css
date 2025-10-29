@@ -232,6 +232,38 @@
     @apply bg-white/5 backdrop-blur-xl border border-white/10;
   }
 
+  /* Cut-corner utility for card shapes */
+  .card-cut {
+    --cut: 14px;
+    clip-path: polygon(
+      0% var(--cut),
+      var(--cut) 0%,
+      calc(100% - var(--cut)) 0%,
+      100% var(--cut),
+      100% calc(100% - var(--cut)),
+      calc(100% - var(--cut)) 100%,
+      var(--cut) 100%,
+      0% calc(100% - var(--cut))
+    );
+  }
+
+  /* Ticket-style shape with side notches */
+  .card-ticket {
+    --notch: 14px;
+    border-radius: 18px;
+    overflow: hidden;
+    -webkit-mask: radial-gradient(var(--notch) at left 50%, #0000 99%, #000 101%) left,
+      radial-gradient(var(--notch) at right 50%, #0000 99%, #000 101%) right,
+      linear-gradient(#000 0 0);
+    -webkit-mask-size: 50% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask: radial-gradient(var(--notch) at left 50%, #0000 99%, #000 101%) left,
+      radial-gradient(var(--notch) at right 50%, #0000 99%, #000 101%) right,
+      linear-gradient(#000 0 0);
+    mask-size: 50% 100%;
+    mask-repeat: no-repeat;
+  }
+
   .gradient-text {
     @apply bg-gradient-to-r from-amber-400 to-yellow-500 bg-clip-text text-transparent;
   }
