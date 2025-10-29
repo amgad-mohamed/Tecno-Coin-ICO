@@ -37,7 +37,11 @@ import { useTimers } from "../hooks/useTimers";
 import { useToastContext } from "../context/ToastContext";
 import CircuitBreakerGuide from "./CircuitBreakerGuide";
 // import { useTokenStakingContract } from "../services/useTokenStakingContract";
-import { calculateTokenAmount, toWei, fromWei } from "../../utils/erc20Calculations";
+import {
+  calculateTokenAmount,
+  toWei,
+  fromWei,
+} from "../../utils/erc20Calculations";
 
 // Constants
 
@@ -72,7 +76,17 @@ const Hero = () => {
   const [usdSelection, setUsdSelection] = useState<number | null>(null);
   const [usdError, setUsdError] = useState<string | null>(null);
   const USD_OPTIONS = [
-    MIN_USD, 200, 300, 400, 500, 1000, 1500, 2000, 3000, 5000, MAX_USD,
+    MIN_USD,
+    200,
+    300,
+    400,
+    500,
+    1000,
+    1500,
+    2000,
+    3000,
+    5000,
+    MAX_USD,
   ];
 
   const router = useRouter();
@@ -131,7 +145,7 @@ const Hero = () => {
 
   const { data: totalSupply } = useTotalSupply();
   const { data: totalTokensSold } = useGetTotalTokensSold();
-  
+
   // Wallet balances (only meaningful when connected)
   const { data: usdtBalance } = useBalance({
     address,
@@ -162,9 +176,7 @@ const Hero = () => {
 
   // Precise progress using basis points (BigInt)
   const SALE_PROGRESS_BPS =
-    totalSupplySmall > 0n
-      ? (tokensSoldSmall * 10000n) / totalSupplySmall
-      : 0n;
+    totalSupplySmall > 0n ? (tokensSoldSmall * 10000n) / totalSupplySmall : 0n;
   const SALE_PROGRESS = Number(SALE_PROGRESS_BPS) / 100;
 
   console.log("TOTAL_SUPPLY", TOTAL_SUPPLY_STR);
@@ -177,9 +189,10 @@ const Hero = () => {
   const usdAmount = Number.isFinite(usdSelection ?? NaN)
     ? (usdSelection as number)
     : 0;
-  const safeUsdForUnits = Number.isFinite(usdSelection ?? NaN) && (usdSelection as number) > 0
-    ? (usdSelection as number)
-    : 0;
+  const safeUsdForUnits =
+    Number.isFinite(usdSelection ?? NaN) && (usdSelection as number) > 0
+      ? (usdSelection as number)
+      : 0;
   const requiredUsdtUnits = parseUnits(safeUsdForUnits.toFixed(6), 6);
   const requiredUsdcUnits = parseUnits(safeUsdForUnits.toFixed(6), 6);
 
@@ -194,36 +207,37 @@ const Hero = () => {
   // Precise NEFE calculations (up to 18 decimals)
   const tokenAmountPrecise =
     Number.isFinite(usdSelection ?? NaN) && TOKEN_PRICE_USD > 0
-      ? (usdAmount / TOKEN_PRICE_USD)
+      ? usdAmount / TOKEN_PRICE_USD
       : 0;
   const rewardsNEFEPrecise =
     tokenAmountPrecise * (((currentRewardPercent ?? 0) as number) / 100);
   const totalNEFEPrecise = tokenAmountPrecise + rewardsNEFEPrecise;
 
   // NEFE small-unit calculations (BigInt, 18 decimals) using viem units
-  const tokenPriceUnits: bigint = typeof tokenPrice === "bigint" ? tokenPrice : 0n;
+  const tokenPriceUnits: bigint =
+    typeof tokenPrice === "bigint" ? tokenPrice : 0n;
   const usdSelectionUnits: bigint = parseUnits(safeUsdForUnits.toFixed(6), 6);
-  const nefeAmountSmall: bigint = tokenPriceUnits > 0n
-    ? (usdSelectionUnits * (10n ** 6n)) / tokenPriceUnits
-    : 0n;
+  const nefeAmountSmall: bigint =
+    tokenPriceUnits > 0n
+      ? (usdSelectionUnits * 10n ** 6n) / tokenPriceUnits
+      : 0n;
   const rewardsSmall: bigint = parseUnits(rewardsNEFEPrecise.toFixed(6), 6);
   const totalNefeSmall: bigint = nefeAmountSmall + rewardsSmall;
-  
+
   // حساب جديد باستخدام معادلة ERC-20 بدقة 18 منزلة عشرية
   const erc20Calculation = (() => {
     if (!Number.isFinite(usdSelection ?? NaN) || TOKEN_PRICE_USD <= 0) {
       return { integerERC20: 0n, humanReadable: "0" };
     }
-    
+
     // تحويل المدخلات إلى سلاسل نصية لتجنب فقدان الدقة
     const amount = usdAmount.toString();
     const rate = TOKEN_PRICE_USD.toString();
     const multiplier = ((currentRewardPercent ?? 0) / 100).toString();
-    
+
     // تطبيق المعادلة: result = amount ÷ rate + (amount ÷ rate) × multiplier
     return calculateTokenAmount(amount, rate, multiplier);
   })();
-
 
   const hasSufficientUsdt = Boolean(
     isConnected &&
@@ -813,7 +827,7 @@ const Hero = () => {
                       {TOTAL_SUPPLY_STR}
                     </span>
                   </div>
-                  <div className="">
+                  <div className="col-span-2 md:col-span-1">
                     <span className="block text-xs sm:text-sm md:text-base mb-1">
                       Sold
                     </span>
@@ -965,9 +979,11 @@ const Hero = () => {
                       </label>
                     </div>
                     <span className="text-sm sm:text-base md:text-lg font-bold text-amber-400">
-                      {typeof usdSelection === "number" && Number.isFinite(usdSelection)
+                      {typeof usdSelection === "number" &&
+                      Number.isFinite(usdSelection)
                         ? usdSelection.toLocaleString()
-                        : "-"} {selectedCurrency}
+                        : "-"}{" "}
+                      {selectedCurrency}
                     </span>
                   </div>
 
@@ -1019,11 +1035,22 @@ const Hero = () => {
                   <div className="flex items-center gap-2 mb-1">
                     <FiAward className="text-amber-500 text-base sm:text-lg" />
                     <h3 className="text-white text-xs sm:text-sm font-semibold">
-                      Bonus Rewards: {typeof currentRewardPercent === "number" ? currentRewardPercent : 0}% extra NEFE
+                      Bonus Rewards:{" "}
+                      {typeof currentRewardPercent === "number"
+                        ? currentRewardPercent
+                        : 0}
+                      % extra NEFE
                     </h3>
                   </div>
                   <p className="text-white/80 text-xs sm:text-sm">
-                    You earn <span className="text-amber-400 font-bold">{Number(smallUnitsToNefe(rewardsSmall)).toLocaleString(undefined, { maximumFractionDigits: 2 })}</span> NEFE bonus on this purchase.
+                    You earn{" "}
+                    <span className="text-amber-400 font-bold">
+                      {Number(smallUnitsToNefe(rewardsSmall)).toLocaleString(
+                        undefined,
+                        { maximumFractionDigits: 2 }
+                      )}
+                    </span>{" "}
+                    NEFE bonus on this purchase.
                   </p>
                 </div>
 
