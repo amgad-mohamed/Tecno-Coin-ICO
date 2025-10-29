@@ -33,6 +33,7 @@ export default function ICOManagement() {
   // State management
   const [tokenPrice, setTokenPrice] = useState("0.1");
   const [isPaused, setIsPaused] = useState(false);
+  const [newReceiver, setNewReceiver] = useState("");
   const [loading, setLoading] = useState({
     priceUpdate: false,
     pauseToggle: false,
@@ -60,6 +61,10 @@ export default function ICOManagement() {
     useGetUSDTBalance,
     useGetTokenBalanceOf,
     usePriceDecimals,
+    useGetReceivers,
+    addReceiver,
+    removeReceiver,
+    clearReceivers,
     error: updateTokenPriceError,
     isPending: updateTokenPending,
     isConfirmed: ICOConfirmed,
@@ -77,6 +82,7 @@ export default function ICOManagement() {
   const { data: icoUSDCBal, refetch: refetchUSDCBalance } =
     useGetTokenBalanceOf(CONTRACT_ADDRESS.MOCK_USDC as `0x${string}`);
   const { data: priceDecimalsData } = usePriceDecimals();
+  const { data: receiversData, refetch: refetchReceivers } = useGetReceivers();
 
   const PRICE_DECIMALS =
     priceDecimalsData !== undefined ? Number(priceDecimalsData as number) : 6;
@@ -131,6 +137,13 @@ export default function ICOManagement() {
     }
   }, [ICOConfirmed, showSuccess, showWarning]);
 
+  // Refetch all relevant data when any transaction confirms
+  useEffect(() => {
+    if (ICOConfirmed) {
+      void refreshAllData();
+    }
+  }, [ICOConfirmed]);
+
   const [pendingPriceToPersist, setPendingPriceToPersist] = useState<
     string | null
   >(null);
@@ -165,6 +178,7 @@ export default function ICOManagement() {
         refetchTokenBalance(),
         refetchUSDTBalance(),
         refetchUSDCBalance(),
+        refetchReceivers(),
       ]);
       showSuccess("Data Refreshed", "All data has been updated");
     } catch (error) {
@@ -179,6 +193,7 @@ export default function ICOManagement() {
     refetchTokenBalance,
     refetchUSDTBalance,
     refetchUSDCBalance,
+    refetchReceivers,
     showSuccess,
     showError,
   ]);
@@ -347,6 +362,83 @@ export default function ICOManagement() {
       maximumFractionDigits: decimals === 6 ? 2 : 4,
     });
   };
+
+  const receivers: string[] = Array.isArray(receiversData)
+    ? (receiversData as string[])
+    : [];
+
+  const handleAddReceiver = useCallback(async () => {
+    if (!isConnected || !address) {
+      open();
+      return;
+    }
+    if (!newReceiver || !ethers.isAddress(newReceiver)) {
+      showWarning("Invalid Address", "Please enter a valid receiver address.");
+      return;
+    }
+    // Prevent duplicates: normalize input and compare ignoring case
+    try {
+      const normalized = ethers.getAddress(newReceiver);
+      const exists = receivers.some(
+        (r) => r.toLowerCase() === normalized.toLowerCase()
+      );
+      if (exists) {
+        showWarning("Receiver Exists", "Address already added as receiver.");
+        return;
+      }
+    } catch {
+      showWarning("Invalid Address", "Please enter a valid receiver address.");
+      return;
+    }
+    setLoading((prev) => ({ ...prev, refreshing: true }));
+    try {
+      await addReceiver(newReceiver as `0x${string}`);
+      showInfo("Add Receiver", "Transaction submitted to add receiver");
+      setNewReceiver("");
+    } catch (error) {
+      console.error("Failed to add receiver:", error);
+      showError("Add Receiver Failed", "Could not add receiver");
+    } finally {
+      setLoading((prev) => ({ ...prev, refreshing: false }));
+    }
+  }, [isConnected, address, newReceiver, addReceiver, open, showInfo, showError, showWarning]);
+
+  const handleRemoveReceiver = useCallback(
+    async (idx: number) => {
+      if (!isConnected || !address) {
+        open();
+        return;
+      }
+      setLoading((prev) => ({ ...prev, refreshing: true }));
+      try {
+        await removeReceiver(BigInt(idx));
+        showInfo("Remove Receiver", "Transaction submitted to remove receiver");
+      } catch (error) {
+        console.error("Failed to remove receiver:", error);
+        showError("Remove Receiver Failed", "Could not remove receiver");
+      } finally {
+        setLoading((prev) => ({ ...prev, refreshing: false }));
+      }
+    },
+    [isConnected, address, removeReceiver, open, showInfo, showError]
+  );
+
+  const handleClearReceivers = useCallback(async () => {
+    if (!isConnected || !address) {
+      open();
+      return;
+    }
+    setLoading((prev) => ({ ...prev, refreshing: true }));
+    try {
+      await clearReceivers();
+      showInfo("Clear Receivers", "Transaction submitted to clear receivers");
+    } catch (error) {
+      console.error("Failed to clear receivers:", error);
+      showError("Clear Receivers Failed", "Could not clear receivers");
+    } finally {
+      setLoading((prev) => ({ ...prev, refreshing: false }));
+    }
+  }, [isConnected, address, clearReceivers, open, showInfo, showError]);
 
   const priceChangePercentage =
     priceHistory.length > 1
@@ -569,6 +661,77 @@ export default function ICOManagement() {
                 </div>
               </div>
             </div>
+                        {/* Receivers Management Card */}
+            <div className="bg-secondBgColor rounded-xl shadow-md p-4 sm:p-6 border border-bgColor/60">
+              <h3 className="text-lg sm:text-xl font-semibold text-white mb-4">
+                Receivers
+              </h3>
+
+              <div className="space-y-3">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={newReceiver}
+                    onChange={(e) => setNewReceiver(e.target.value)}
+                    placeholder="0x... receiver address"
+                    className="flex-1 px-3 py-2.5 border border-bgColor/60 rounded-lg bg-fourthBgColor text-white text-sm min-h-[44px]"
+                  />
+                  <motion.button
+                    onClick={handleAddReceiver}
+                    // onTouchStart={handleAddReceiver}
+                    className="px-3 py-2.5 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors text-sm min-h-[44px] touch-manipulation"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Add
+                  </motion.button>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-white/70 text-sm">
+                    Total: {receivers.length}
+                  </span>
+                  <motion.button
+                    onClick={handleClearReceivers}
+                    onTouchStart={handleClearReceivers}
+                    disabled={receivers.length === 0}
+                    className="px-3 py-2.5 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors text-sm min-h-[44px] disabled:opacity-50"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Clear All
+                  </motion.button>
+                </div>
+
+                {receivers.length === 0 ? (
+                  <div className="p-3 bg-fourthBgColor rounded-lg text-white/60 text-sm">
+                    No receivers added.
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {receivers.map((addr, idx) => (
+                      <div
+                        key={`${addr}-${idx}`}
+                        className="flex items-center justify-between p-3 bg-fourthBgColor rounded-lg"
+                      >
+                        <span className="font-mono text-sm text-white/90 break-all">
+                          {addr}
+                        </span>
+                        <motion.button
+                          onClick={() => handleRemoveReceiver(idx)}
+                          onTouchStart={() => handleRemoveReceiver(idx)}
+                          className="px-3 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 text-xs"
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          Remove
+                        </motion.button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
 
           {/* Right column - Balances */}
@@ -617,6 +780,7 @@ export default function ICOManagement() {
                 </div>
               </div>
             </div>
+
             <div className="bg-secondBgColor rounded-xl shadow-md p-4 sm:p-6 border border-bgColor/60">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
                 <h3 className="text-lg sm:text-xl font-semibold text-white">

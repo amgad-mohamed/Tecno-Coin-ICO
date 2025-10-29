@@ -62,6 +62,9 @@ export default function TokenManagement() {
   const { data: totalMintedData } = useTotalMinted();
   const { data: totalBurnedData } = useTotalBurned();
 
+  console.log(totalMintedData, totalBurnedData);
+  
+
   // Effects
   useEffect(() => {
     // Prefer aggregate stats if available; otherwise derive from individual reads
@@ -161,8 +164,8 @@ export default function TokenManagement() {
         </h1>
 
         <div className=" bg-thirdBgColor rounded-2xl shadow-lg p-5 sm:p-8">
-          <div className="space-y-6">
-            <h3 className="text-xl font-semibold">Token Contract</h3>
+          <div className="flex flex-col gap-6">
+            {/* <h3 className="text-xl font-semibold">Token Contract</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
               <div className="p-4 bg-secondBgColor rounded-lg">
                 <span className="font-semibold block">Total Minted</span>
@@ -182,9 +185,9 @@ export default function TokenManagement() {
                   {tokenStats.totalBurned.toLocaleString()} NEFE
                 </span>
               </div>
-            </div>
+            </div> */}
             {/* New: Token Details based on ABI */}
-            <div className="pt-4 border-t border-secondBgColor" />
+            <div className="border-t border-secondBgColor" />
             <div className="space-y-4">
               <h4 className="text-lg font-semibold">Token Details</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
@@ -210,16 +213,29 @@ export default function TokenManagement() {
                 </div>
                 <div className="p-4 bg-secondBgColor rounded-lg">
                   <span className="font-semibold block">Max Supply</span>
-                  <span className="font-bold text-xl md:text-2xl">
+                  <span className="font-bold break-all bg-gradient-to-r from-[#F4AD30] to-[#CA6C2F] bg-clip-text text-transparent">
                     {maxSupplyData ? maxSupplyHuman.toLocaleString() : "—"} NEFE
                   </span>
                 </div>
-                <div className="p-4 bg-secondBgColor rounded-lg md:col-span-2">
-                  <span className="font-semibold block">Staking Address</span>
-                  <span className="font-bold break-all">
-                    {stakingAddressData ? String(stakingAddressData) : "—"}
+                <div className="p-4 bg-secondBgColor rounded-lg">
+                 <span className="font-semibold block">Total Minted</span>
+                  <span className="font-bold break-all bg-gradient-to-r from-[#F4AD30] to-[#CA6C2F] bg-clip-text text-transparent">
+                    {tokenStats.totalMinted.toLocaleString()} NEFE
                   </span>
                 </div>
+                <div className="p-4 bg-secondBgColor rounded-lg">
+                 <span className="font-semibold block">Total Burned</span>
+                  <span className="font-bold break-all bg-gradient-to-r from-[#F4AD30] to-[#CA6C2F] bg-clip-text text-transparent">
+                    {tokenStats.totalBurned.toLocaleString()} NEFE  
+                  </span>
+                </div>
+
+                {/* <div className="p-4 bg-secondBgColor rounded-lg md:col-span-2">
+                  <span className="font-semibold block">Total Minted</span>
+                  <span className="font-bold break-all bg-gradient-to-r from-[#F4AD30] to-[#CA6C2F] bg-clip-text text-transparent">
+                    {tokenStats.totalMinted.toLocaleString()} NEFE
+                  </span>
+                </div> */}
               </div>
             </div>
             <div className="pt-4 border-t border-secondBgColor" />

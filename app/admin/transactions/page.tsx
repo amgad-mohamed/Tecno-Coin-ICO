@@ -5,12 +5,15 @@ import { motion } from "framer-motion";
 import { getTransactions, getPrices, getAllTransactions } from "@/lib/api";
 
 export default function AdminTransactionsPage() {
+  const ITEMS_PER_PAGE = 10;
   const [prices, setPrices] = useState<any[]>([]);
   const [selectedPriceId, setSelectedPriceId] = useState<string | undefined>();
   const [transactions, setTransactions] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalTransactions, setTotalTransactions] = useState(0);
   const viewOnSepolia = (hash: string) => {
     const sepoliaUrl = `https://sepolia.etherscan.io/tx/${hash}`;
     window.open(sepoliaUrl, "_blank", "noopener,noreferrer");
@@ -31,16 +34,22 @@ export default function AdminTransactionsPage() {
     const loadTx = async () => {
       setLoading(true);
       try {
-        const result = await getTransactions(1, 50, selectedPriceId);
+        const result = await getTransactions(
+          currentPage,
+          ITEMS_PER_PAGE,
+          selectedPriceId
+        );
         setTransactions(result.transactions || []);
+        setTotalTransactions(result.total || 0);
       } catch {
         setTransactions([]);
+        setTotalTransactions(0);
       } finally {
         setLoading(false);
       }
     };
     void loadTx();
-  }, [selectedPriceId]);
+  }, [selectedPriceId, currentPage]);
 
   return (
     <div>
@@ -52,7 +61,10 @@ export default function AdminTransactionsPage() {
           <label className="text-sm text-white/70">Filter by Price</label>
           <select
             value={selectedPriceId || ""}
-            onChange={(e) => setSelectedPriceId(e.target.value || undefined)}
+            onChange={(e) => {
+              setSelectedPriceId(e.target.value || undefined);
+              setCurrentPage(1);
+            }}
             className="px-3 py-2 border border-bgColor/60 rounded-lg bg-fourthBgColor text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent"
           >
             <option value="">All Prices</option>
@@ -124,7 +136,7 @@ export default function AdminTransactionsPage() {
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-white/60">Amount:</span>
                       <span className="font-medium">
-                        {transaction.amount.toLocaleString()} NEFE
+                        {transaction.amount} NEFE
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
@@ -208,7 +220,7 @@ export default function AdminTransactionsPage() {
                       </span>
                     </td>
                     <td className="px-3 lg:px-6 py-3 lg:py-4">
-                      {transaction.amount.toLocaleString()} NEFE
+                      {transaction.amount} NEFE
                     </td>
                     <td className="px-3 lg:px-6 py-3 lg:py-4">
                       {transaction.currency === "ETH"
@@ -254,6 +266,35 @@ export default function AdminTransactionsPage() {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination */}
+        {Math.ceil(totalTransactions / ITEMS_PER_PAGE) > 1 && (
+          <div className="flex justify-center mt-6 gap-2">
+            <button
+              onClick={() =>
+                setCurrentPage((prev) => Math.max(prev - 1, 1))
+              }
+              disabled={currentPage === 1}
+              className="px-4 py-2 rounded-lg bg-fourthBgColor text-white hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Previous
+            </button>
+            <span className="px-4 py-2 text-white/70">
+              Page {currentPage} of {Math.ceil(totalTransactions / ITEMS_PER_PAGE)}
+            </span>
+            <button
+              onClick={() =>
+                setCurrentPage((prev) =>
+                  Math.min(prev + 1, Math.ceil(totalTransactions / ITEMS_PER_PAGE))
+                )
+              }
+              disabled={currentPage === Math.ceil(totalTransactions / ITEMS_PER_PAGE)}
+              className="px-4 py-2 rounded-lg bg-fourthBgColor text-white hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Confirm Download Dialog */}

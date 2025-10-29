@@ -46,6 +46,18 @@ export function useICOContract() {
   const useGetTotalTokensSold = () =>
     useReadContract({ abi, address, functionName: "totalTokensSold", chainId });
 
+  // Receivers management (reads)
+  const useGetReceivers = () =>
+    useReadContract({ abi, address, functionName: "getReceivers", chainId });
+
+  const useCurrentReceiverIndex = () =>
+    useReadContract({
+      abi,
+      address,
+      functionName: "currentReceiverIndex",
+      chainId,
+    });
+
   const useIsPaymentTokenAllowed = (tokenAddr: `0x${string}`) =>
     useReadContract({
       abi,
@@ -100,6 +112,16 @@ export function useICOContract() {
   const removePaymentToken = (tokenAddr: `0x${string}`) =>
     writeContract({ abi, address, functionName: "removePaymentToken", args: [tokenAddr] });
 
+  // Receivers management (writes)
+  const addReceiver = (receiver: `0x${string}`) =>
+    writeContract({ abi, address, functionName: "addReceiver", args: [receiver] });
+
+  const removeReceiver = (index: bigint) =>
+    writeContract({ abi, address, functionName: "removeReceiver", args: [index] });
+
+  const clearReceivers = () =>
+    writeContract({ abi, address, functionName: "clearReceivers" });
+
   // Reward and staking integration (admin)
   const setRewardPercent = (percent: bigint) =>
     writeContract({ abi, address, functionName: "setRewardPercent", args: [percent] });
@@ -124,6 +146,8 @@ export function useICOContract() {
     useIsPaymentTokenAllowed,
     useRewardPercent,
     usePriceDecimals,
+    useGetReceivers,
+    useCurrentReceiverIndex,
 
     // writes
     buyTokens,
@@ -133,6 +157,9 @@ export function useICOContract() {
     emergencyWithdraw,
     addPaymentToken,
     removePaymentToken,
+    addReceiver,
+    removeReceiver,
+    clearReceivers,
     setRewardPercent,
     setRewardPercentFromStaking,
     setStakingContract,

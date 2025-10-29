@@ -21,6 +21,7 @@ import { SiTether } from "react-icons/si";
 import { useICOContract } from "../services/useICOContract";
 import { useTokenContract } from "../services/useTokenContract";
 import { parseEther, parseUnits, formatEther, formatUnits } from "viem";
+import { nefeToSmallUnits, smallUnitsToNefe } from "../../utils/nefeUnits";
 import { useAccount, useConnect, useDisconnect, useBalance } from "wagmi";
 import { injected } from "wagmi/connectors";
 import { CONTRACT_ADDRESS } from "../utils/web3intraction/constants/contract_address";
@@ -35,7 +36,8 @@ import {
 import { useTimers } from "../hooks/useTimers";
 import { useToastContext } from "../context/ToastContext";
 import CircuitBreakerGuide from "./CircuitBreakerGuide";
-import { useTokenStakingContract } from "../services/useTokenStakingContract";
+// import { useTokenStakingContract } from "../services/useTokenStakingContract";
+import { calculateTokenAmount, toWei, fromWei } from "../../utils/erc20Calculations";
 
 // Constants
 
@@ -95,6 +97,7 @@ const Hero = () => {
     buyTokens,
     useGgetTokenPrice,
     useGetTotalTokensSold,
+    useRewardPercent,
     isPending: isICOPending,
     isConfirmed,
     isConfirming,
@@ -107,6 +110,7 @@ const Hero = () => {
     useTotalSupply,
     useBalanceOf,
     useAllowance,
+    useDecimals,
     isPending: isTokenPending,
     isConfirmed: isTokenConfirmed,
     error: tokenError,
@@ -127,6 +131,7 @@ const Hero = () => {
 
   const { data: totalSupply } = useTotalSupply();
   const { data: totalTokensSold } = useGetTotalTokensSold();
+  
   // Wallet balances (only meaningful when connected)
   const { data: usdtBalance } = useBalance({
     address,
@@ -137,18 +142,34 @@ const Hero = () => {
     token: CONTRACT_ADDRESS.MOCK_USDC as `0x${string}`,
   });
 
-  // Calculate derived values
-  const TOTAL_SUPPLY = Number(
-    typeof totalSupply === "bigint" ? formatEther(totalSupply) : 0
+  // Calculate derived values (use token decimals and BigInt for precision)
+  const { data: tokenDecimalsData } = useDecimals();
+  const tokenDecimals =
+    typeof tokenDecimalsData === "bigint" ? Number(tokenDecimalsData) : 6;
+
+  const totalSupplySmall: bigint =
+    typeof totalSupply === "bigint" ? totalSupply : 0n;
+  const tokensSoldSmall: bigint =
+    typeof totalTokensSold === "bigint" ? totalTokensSold : 0n;
+
+  // Display strings to avoid scientific notation
+  const TOTAL_SUPPLY_STR = formatUnits(totalSupplySmall, tokenDecimals);
+  const SOLD_TOKENS_STR = formatUnits(tokensSoldSmall, tokenDecimals);
+  const AVAILABLE_TOKENS_STR = formatUnits(
+    totalSupplySmall - tokensSoldSmall,
+    tokenDecimals
   );
 
-  const SOLD_TOKENS = Number(
-    typeof totalTokensSold === "bigint" ? formatEther(totalTokensSold) : 0
-  );
+  // Precise progress using basis points (BigInt)
+  const SALE_PROGRESS_BPS =
+    totalSupplySmall > 0n
+      ? (tokensSoldSmall * 10000n) / totalSupplySmall
+      : 0n;
+  const SALE_PROGRESS = Number(SALE_PROGRESS_BPS) / 100;
 
-  const AVAILABLE_TOKENS = TOTAL_SUPPLY - SOLD_TOKENS;
-  const SALE_PROGRESS =
-    TOTAL_SUPPLY > 0 ? (SOLD_TOKENS / TOTAL_SUPPLY) * 100 : 0;
+  console.log("TOTAL_SUPPLY", TOTAL_SUPPLY_STR);
+  console.log("SOLD_TOKENS", SOLD_TOKENS_STR);
+  console.log("AVAILABLE_TOKENS", AVAILABLE_TOKENS_STR);
 
   const endDateString = timers[0]?.endTime;
 
@@ -162,41 +183,47 @@ const Hero = () => {
   const requiredUsdtUnits = parseUnits(safeUsdForUnits.toFixed(6), 6);
   const requiredUsdcUnits = parseUnits(safeUsdForUnits.toFixed(6), 6);
 
-  const { useGetRelease } = useTokenStakingContract();
-  const { data: release0 } = useGetRelease(0);
-  const { data: release1 } = useGetRelease(1);
-  const { data: release2 } = useGetRelease(2);
-  const { data: release3 } = useGetRelease(3);
-  const { data: release4 } = useGetRelease(4);
-  const releases = [release0, release1, release2, release3, release4];
-  const times = releases.map((r) => {
-    const val = Array.isArray(r) ? r[0] : undefined;
-    return typeof val === "bigint"
-      ? Number(val)
-      : typeof val === "number"
-      ? val
+  // Use ICO contract's global rewardPercent instead of releases
+  const { data: rewardPercentData } = useRewardPercent();
+  const currentRewardPercent = (() => {
+    const val = rewardPercentData;
+    if (typeof val === "bigint") return Number(val);
+    if (typeof val === "number") return val;
+    return 0;
+  })();
+  // Precise NEFE calculations (up to 18 decimals)
+  const tokenAmountPrecise =
+    Number.isFinite(usdSelection ?? NaN) && TOKEN_PRICE_USD > 0
+      ? (usdAmount / TOKEN_PRICE_USD)
       : 0;
-  });
-  const rewardsPercents = releases.map((r) => {
-    const val = Array.isArray(r) ? r[2] : undefined;
-    return typeof val === "bigint"
-      ? Number(val)
-      : typeof val === "number"
-      ? val
-      : 0;
-  });
-  const nowSec = Math.floor(Date.now() / 1000);
-  const nextTs = times.filter((v) => v > nowSec).sort((a, b) => a - b)[0];
-  const nextIndex = typeof nextTs === "number" ? times.indexOf(nextTs) - 1 : -1;
-  const currentRewardPercent =
-    nextIndex >= 0 ? rewardsPercents[nextIndex] : undefined;
-  const rewardsNEFE = tokenAmount * ((currentRewardPercent ?? 1) / 100);
-  const totalNEFE = tokenAmount + rewardsNEFE;
-  const totalNEFERounded = Math.round(totalNEFE);
+  const rewardsNEFEPrecise =
+    tokenAmountPrecise * (((currentRewardPercent ?? 0) as number) / 100);
+  const totalNEFEPrecise = tokenAmountPrecise + rewardsNEFEPrecise;
 
-  // console.log(previousReleaseData);
-  console.log("//////////////");
-  console.log(currentRewardPercent);
+  // NEFE small-unit calculations (BigInt, 18 decimals) using viem units
+  const tokenPriceUnits: bigint = typeof tokenPrice === "bigint" ? tokenPrice : 0n;
+  const usdSelectionUnits: bigint = parseUnits(safeUsdForUnits.toFixed(6), 6);
+  const nefeAmountSmall: bigint = tokenPriceUnits > 0n
+    ? (usdSelectionUnits * (10n ** 6n)) / tokenPriceUnits
+    : 0n;
+  const rewardsSmall: bigint = parseUnits(rewardsNEFEPrecise.toFixed(6), 6);
+  const totalNefeSmall: bigint = nefeAmountSmall + rewardsSmall;
+  
+  // حساب جديد باستخدام معادلة ERC-20 بدقة 18 منزلة عشرية
+  const erc20Calculation = (() => {
+    if (!Number.isFinite(usdSelection ?? NaN) || TOKEN_PRICE_USD <= 0) {
+      return { integerERC20: 0n, humanReadable: "0" };
+    }
+    
+    // تحويل المدخلات إلى سلاسل نصية لتجنب فقدان الدقة
+    const amount = usdAmount.toString();
+    const rate = TOKEN_PRICE_USD.toString();
+    const multiplier = ((currentRewardPercent ?? 0) / 100).toString();
+    
+    // تطبيق المعادلة: result = amount ÷ rate + (amount ÷ rate) × multiplier
+    return calculateTokenAmount(amount, rate, multiplier);
+  })();
+
 
   const hasSufficientUsdt = Boolean(
     isConnected &&
@@ -312,43 +339,7 @@ const Hero = () => {
     return Number.isFinite(val) ? (val as number).toFixed(2) : "0.00";
   }, [usdSelection]);
 
-  // Helpers to ensure total NEFE becomes an integer based on reward percent
-  const gcd = (a: number, b: number): number =>
-    b === 0 ? Math.abs(a) : gcd(b, a % b);
-  const getWholeTotalStep = (percent: number): number => {
-    const a = 100 + Math.round(percent);
-    const g = gcd(a, 100);
-    return 100 / g; // token multiple required to make total integer
-  };
-
-  const snapUsdToWholeTotal = useCallback(
-    (usdAmt: number) => {
-      const p =
-        typeof currentRewardPercent === "number" ? currentRewardPercent : 0;
-      if (!Number.isFinite(usdAmt) || TOKEN_PRICE_USD <= 0) {
-        return { tokensInt: 0, roundedUsd: 0, totalInt: 0 };
-      }
-      const step = getWholeTotalStep(p);
-      const tokensFloat = usdAmt / TOKEN_PRICE_USD;
-      const roundedTokens = Math.round(tokensFloat / step) * step;
-
-      // Ensure snapped result respects USD min/max by clamping in token space
-      const minTokens = Math.ceil((MIN_USD / TOKEN_PRICE_USD) / step) * step;
-      const maxTokens = Math.floor((MAX_USD / TOKEN_PRICE_USD) / step) * step;
-
-      let tokensInt = Math.max(0, roundedTokens);
-      if (tokensInt * TOKEN_PRICE_USD < MIN_USD) {
-        tokensInt = Math.max(0, minTokens);
-      } else if (tokensInt * TOKEN_PRICE_USD > MAX_USD) {
-        tokensInt = Math.max(0, maxTokens);
-      }
-
-      const roundedUsd = tokensInt * TOKEN_PRICE_USD;
-      const totalInt = Math.round((tokensInt * (100 + Math.round(p))) / 100);
-      return { tokensInt, roundedUsd, totalInt };
-    },
-    [TOKEN_PRICE_USD, currentRewardPercent]
-  );
+  // ألغينا أى منطق لإجبار المجموع الكلى من NEFE أن يكون عددًا صحيحًا.
 
   const handleUsdInputChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -363,21 +354,13 @@ const Hero = () => {
         setUsdError("The value is not a valid number");
         return;
       }
-
-      // Real-time snapping when input is within valid range
-      if (raw >= MIN_USD && raw <= MAX_USD) {
-        const { tokensInt, roundedUsd } = snapUsdToWholeTotal(raw);
-        setTokenAmount(tokensInt);
-        setUsdSelection(Number(roundedUsd.toFixed(6)));
-        setUsdError(null);
-        return;
-      }
-
-      // Otherwise allow free typing (below MIN or above MAX), avoid snapping now
+      // بدون أى تقريب لعدد صحيح: اسمح بالإدخال الحر، وحدث المشتقّات مباشرة
       setUsdSelection(raw);
+      const derived = TOKEN_PRICE_USD > 0 ? raw / TOKEN_PRICE_USD : 0;
+      setTokenAmount(Number.isFinite(derived) ? derived : 0);
       setUsdError(null);
     },
-    [snapUsdToWholeTotal]
+    [TOKEN_PRICE_USD]
   );
 
   const handleUsdInputBlur = useCallback(() => {
@@ -395,17 +378,16 @@ const Hero = () => {
       return;
     }
 
-    const { tokensInt, roundedUsd } = snapUsdToWholeTotal(value);
-    setTokenAmount(tokensInt);
-    setUsdSelection(Number(roundedUsd.toFixed(6)));
+    // لا تقرّب إلى عدد صحيح عند فقدان التركيز؛ فقط ثبّت إلى 6 منازل
+    const clamped = Number((value as number).toFixed(6));
+    setUsdSelection(clamped);
+    const derived = TOKEN_PRICE_USD > 0 ? clamped / TOKEN_PRICE_USD : 0;
+    setTokenAmount(Number.isFinite(derived) ? derived : 0);
     setUsdError(null);
-  }, [usdSelection, snapUsdToWholeTotal]);
+  }, [usdSelection, TOKEN_PRICE_USD]);
 
-  // Keep tokenAmount snapped to the nearest valid multiple only for valid amounts (>= MIN_USD)
+  // اجعل tokenAmount يساوى القيمة المشتقة بدون تقريبات صحيحة
   useEffect(() => {
-    const p =
-      typeof currentRewardPercent === "number" ? currentRewardPercent : 0;
-    const step = getWholeTotalStep(p);
     const val = usdSelection ?? NaN;
 
     if (!Number.isFinite(val) || val < MIN_USD || val > MAX_USD) {
@@ -418,10 +400,8 @@ const Hero = () => {
       setTokenAmount(0);
       return;
     }
-
-    const tokensInt = Math.max(0, Math.round(derived / step) * step);
-    setTokenAmount(tokensInt);
-  }, [usdSelection, TOKEN_PRICE_USD, currentRewardPercent]);
+    setTokenAmount(Math.max(0, derived));
+  }, [usdSelection, TOKEN_PRICE_USD]);
 
   const handleBuyTokens = useCallback(async () => {
     if (!isConnected || !address) {
@@ -465,14 +445,7 @@ const Hero = () => {
         return;
       }
 
-      // Snap to nearest valid amount to keep Total NEFE integer
-      const { tokensInt, roundedUsd } = snapUsdToWholeTotal(usdSelection as number);
-      const snappedUsd = Number(roundedUsd.toFixed(6));
-      if (Math.abs(snappedUsd - (usdSelection as number)) > 1e-6) {
-        setUsdSelection(snappedUsd);
-        setTokenAmount(tokensInt);
-        showInfo("Amount Adjusted", "We aligned the value for reward calculation");
-      }
+      // لا تقرّب إلى عدد صحيح؛ سنستخدم القيمة المدخلة مباشرة مع تثبيت إلى 6 منازل عند التحويل لسلسلة وحدات أصغر
 
       if (selectedCurrency === "USDT") {
         await handleUSDTPurchase();
@@ -510,14 +483,10 @@ const Hero = () => {
     tokenAmount,
     selectedCurrency,
     usdSelection,
-    snapUsdToWholeTotal,
   ]);
 
   const handleUSDTPurchase = async () => {
-    const { tokensInt, roundedUsd } = snapUsdToWholeTotal(usdSelection as number);
-    setTokenAmount(tokensInt);
-    setUsdSelection(Number(roundedUsd.toFixed(6)));
-    const usdtAmount = roundedUsd;
+    const usdtAmount = usdAmount;
 
     // Validate calculation
     if (isNaN(usdtAmount) || usdtAmount <= 0) {
@@ -565,10 +534,7 @@ const Hero = () => {
   } = useMockUSDCContract();
 
   const handleUSDCPurchase = async () => {
-    const { tokensInt, roundedUsd } = snapUsdToWholeTotal(usdSelection as number);
-    setTokenAmount(tokensInt);
-    setUsdSelection(Number(roundedUsd.toFixed(6)));
-    const usdcAmount = roundedUsd;
+    const usdcAmount = usdAmount;
 
     if (isNaN(usdcAmount) || usdcAmount <= 0) {
       throw new Error("Invalid calculation. Please check your input.");
@@ -647,8 +613,8 @@ const Hero = () => {
 
           setQueuedTxBody({
             type: "BUY",
-            amount: totalNEFERounded,
-            price: Number(tokenAmount * TOKEN_PRICE_USD),
+            amount: Number(erc20Calculation.humanReadable),
+            price: usdAmount,
             currency: "USDT",
             status: "COMPLETED",
             date: new Date().toISOString(),
@@ -709,8 +675,8 @@ const Hero = () => {
 
           setQueuedTxBody({
             type: "BUY",
-            amount: totalNEFERounded,
-            price: Number(tokenAmount * TOKEN_PRICE_USD),
+            amount: Number(smallUnitsToNefe(totalNefeSmall)),
+            price: usdAmount,
             currency: "USDC",
             status: "COMPLETED",
             date: new Date().toISOString(),
@@ -838,21 +804,21 @@ const Hero = () => {
                     Token Analysis
                   </h3>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-0">
-                  <div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-0">
+                  <div className=" col-span-2">
                     <span className="block text-xs sm:text-sm md:text-base mb-1">
                       Total Supply
                     </span>
                     <span className="text-amber font-extrabold text-2xl md:text-3xl text-primary">
-                      {TOTAL_SUPPLY.toLocaleString()}
+                      {TOTAL_SUPPLY_STR}
                     </span>
                   </div>
-                  <div className="pl-0 sm:pl-10">
+                  <div className="">
                     <span className="block text-xs sm:text-sm md:text-base mb-1">
                       Sold
                     </span>
                     <span className="text-amber font-extrabold text-2xl md:text-3xl text-primary">
-                      {SOLD_TOKENS.toLocaleString()}
+                      {SOLD_TOKENS_STR}
                     </span>
                   </div>
                   <div>
@@ -860,7 +826,7 @@ const Hero = () => {
                       Available
                     </span>
                     <span className="text-amber font-extrabold text-2xl md:text-3xl text-primary">
-                      {AVAILABLE_TOKENS.toLocaleString()}
+                      {AVAILABLE_TOKENS_STR}
                     </span>
                   </div>
                 </div>
@@ -1014,7 +980,7 @@ const Hero = () => {
                           onChange={handleUsdInputChange}
                           onBlur={handleUsdInputBlur}
                           inputMode="decimal"
-                          step={TOKEN_PRICE_USD}
+                          step={0.000000000000000001}
                           placeholder="Enter amount"
                           max={MAX_USD}
                           className="flex-1 w-full bg-neutral-900 text-white rounded-md px-3 py-2 border border-bgColor/60 focus:outline-none focus:ring-2 focus:ring-amber-600"
@@ -1057,7 +1023,7 @@ const Hero = () => {
                     </h3>
                   </div>
                   <p className="text-white/80 text-xs sm:text-sm">
-                    You earn <span className="text-amber-400 font-bold">{rewardsNEFE.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span> NEFE bonus on this purchase.
+                    You earn <span className="text-amber-400 font-bold">{Number(smallUnitsToNefe(rewardsSmall)).toLocaleString(undefined, { maximumFractionDigits: 2 })}</span> NEFE bonus on this purchase.
                   </p>
                 </div>
 
@@ -1082,18 +1048,15 @@ const Hero = () => {
                       Amount of NEFE
                     </span>
                     <span className="text-amber-400 text-xs sm:text-sm md:text-base font-bold">
-                      {tokenAmount.toLocaleString()} NEFE
+                      {smallUnitsToNefe(nefeAmountSmall)} NEFE
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-white/70 text-xs sm:text-sm font-medium">
+                    <span className="text-white/70 text-xs font-medium">
                       Rewards (ascription {currentRewardPercent}%)
                     </span>
                     <span className="text-amber-400 text-xs sm:text-sm md:text-base font-bold">
-                      {rewardsNEFE.toLocaleString(undefined, {
-                        maximumFractionDigits: 2,
-                      })}{" "}
-                      NEFE
+                      {smallUnitsToNefe(rewardsSmall)} NEFE
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
@@ -1101,7 +1064,7 @@ const Hero = () => {
                       Total NEFE
                     </span>
                     <span className="text-amber-400 text-xs sm:text-sm md:text-base font-bold">
-                      {totalNEFERounded.toLocaleString()} NEFE
+                      {erc20Calculation.humanReadable} NEFE
                     </span>
                   </div>
                   <div className="flex justify-between items-center">

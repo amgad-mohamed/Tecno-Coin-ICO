@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-3.0
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
 contract AdminManager {
@@ -16,10 +16,10 @@ contract AdminManager {
         adminList.push(msg.sender);
     }
 
-    modifier onlySuperAdmin() {
-        require(msg.sender == superAdmin, "Only super admin can perform this operation");
-        _;
-    }
+    // modifier onlySuperAdmin() {
+    //     require(msg.sender == superAdmin, "Only super admin can perform this operation");
+    //     _;
+    // }
 
     modifier onlyAdmin() {
         require(isAdmin[msg.sender], "Only admin can perform this operation");
@@ -40,7 +40,6 @@ contract AdminManager {
         require(_admin != superAdmin, "Cannot remove super admin directly");
 
         isAdmin[_admin] = false;
-
         for (uint i = 0; i < adminList.length; i++) {
             if (adminList[i] == _admin) {
                 adminList[i] = adminList[adminList.length - 1];
@@ -51,18 +50,17 @@ contract AdminManager {
         emit AdminRemoved(_admin);
     }
 
-    function removeSuperAdmin(address _newSuperAdmin) external onlySuperAdmin {
-        require(_newSuperAdmin != address(0), "Invalid new super admin");
-        require(isAdmin[_newSuperAdmin], "New super admin must already be admin");
+    // function removeSuperAdmin(address _newSuperAdmin) external onlySuperAdmin {
+    //     require(_newSuperAdmin != address(0), "Invalid new super admin");
+    //     require(isAdmin[_newSuperAdmin], "New super admin must already be admin");
 
-        address old = superAdmin;
+    //     address old = superAdmin;
+    //     isAdmin[superAdmin] = false;
+    //     superAdmin = _newSuperAdmin;
+    //     isAdmin[_newSuperAdmin] = true;
 
-        isAdmin[superAdmin] = false;
-        superAdmin = _newSuperAdmin;
-        isAdmin[_newSuperAdmin] = true;
-
-        emit SuperAdminChanged(old, _newSuperAdmin);
-    }
+    //     emit SuperAdminChanged(old, _newSuperAdmin);
+    // }
 
     function addressExists(address _address) external view returns (bool) {
         return isAdmin[_address];

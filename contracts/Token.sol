@@ -16,16 +16,22 @@ contract Token {
     uint8 public decimals;
     uint256 public maxSupply;
 
+    address public stakingAddress;
+    address private _owner;
+
     mapping(address => uint256) private _balances;
     mapping(address => mapping(address => uint256)) private _allowances;
     uint256 private _totalSupply;
-    uint256 private _totalMinted;
-    uint256 private _totalBurned;
-    address private _owner;
+
+    // 🆕 تتبع إجمالي Mint و Burn
+    uint256 public totalMinted;
+    uint256 public totalBurned;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
+    event StakingAddressSet(address indexed staking);
     event Burn(address indexed burner, uint256 amount);
+    event Mint(address indexed to, uint256 amount);
 
     modifier onlyOwner() {
         require(msg.sender == _owner, "Only owner");
@@ -36,7 +42,6 @@ contract Token {
         string memory _name,
         string memory _symbol,
         uint8 _decimals,
-        uint256 initialSupply,
         uint256 _maxSupply
     ) {
         name = _name;
@@ -44,7 +49,12 @@ contract Token {
         decimals = _decimals;
         maxSupply = _maxSupply;
         _owner = msg.sender;
-        _mint(msg.sender, initialSupply);
+    }
+
+    function setStakingAddress(address _staking) external onlyOwner {
+        require(_staking != address(0), "Invalid address");
+        stakingAddress = _staking;
+        emit StakingAddressSet(_staking);
     }
 
     function _mint(address account, uint256 amount) internal {
@@ -52,17 +62,27 @@ contract Token {
         require(_totalSupply + amount <= maxSupply, "Exceeds cap");
         _totalSupply += amount;
         _balances[account] += amount;
+
+        // ✅ تتبع إجمالي الـ mint
+        totalMinted += amount;
+
+        emit Mint(account, amount);
         emit Transfer(address(0), account, amount);
     }
 
     function mint(uint256 amount) external onlyOwner {
-        _mint(msg.sender, amount);
+        require(stakingAddress != address(0), "Staking not set");
+        _mint(stakingAddress, amount);
     }
 
     function _burn(address account, uint256 amount) internal {
         require(_balances[account] >= amount, "Balance low");
         _balances[account] -= amount;
         _totalSupply -= amount;
+
+        // ✅ تتبع إجمالي الـ burn
+        totalBurned += amount;
+
         emit Burn(account, amount);
         emit Transfer(account, address(0), amount);
     }
@@ -71,6 +91,7 @@ contract Token {
         _burn(msg.sender, amount);
     }
 
+    // 📊 إرجاع القيم الحالية
     function totalSupply() external view returns (uint256) { return _totalSupply; }
     function balanceOf(address account) external view returns (uint256) { return _balances[account]; }
 
@@ -102,9 +123,13 @@ contract Token {
         _transfer(sender, recipient, amount);
         return true;
     }
-        function getTokenStats() external view returns (uint256 minted, uint256 currentSupply, uint256 burned) {
-        minted = _totalMinted;
-        currentSupply = _totalSupply;
-        burned = _totalBurned;
+
+    // 🆕 دوال عرض إضافية
+    function getTotalMinted() external view returns (uint256) {
+        return totalMinted;
+    }
+
+    function getTotalBurned() external view returns (uint256) {
+        return totalBurned;
     }
 }

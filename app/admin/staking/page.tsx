@@ -67,9 +67,10 @@ export default function StakingManagement() {
       ? val
       : 0;
   });
-  const AMOUNT_PER_RELEASE =
-    (typeof totalStakingAmt === "bigint" ? Number(totalStakingAmt) / 1e18 : 0) /
-    10;
+  const AMOUNT_PER_RELEASE_STR =
+    typeof totalStakingAmt === "bigint"
+      ? ethers.formatUnits(totalStakingAmt / 10n, 6)
+      : "0";
   const nowSec = Math.floor(Date.now() / 1000);
   const nextTs = times.filter((v) => v > nowSec).sort((a, b) => a - b)[0];
   const nextReleaseIso = nextTs ? new Date(nextTs * 1000).toISOString() : "";
@@ -419,7 +420,7 @@ export default function StakingManagement() {
               </span>
               <span className="font-semibold text-base sm:text-lg text-white">
                 {typeof stakingAvailable === "bigint"
-                  ? (Number(stakingAvailable) / 1e18).toLocaleString()
+                  ? ethers.formatUnits(stakingAvailable, 6)
                   : "0"}{" "}
                 NEFE
               </span>
@@ -430,7 +431,7 @@ export default function StakingManagement() {
               </span>
               <span className="font-semibold text-base sm:text-lg text-white">
                 {typeof stakingTotalReleased === "bigint"
-                  ? (Number(stakingTotalReleased) / 1e18).toLocaleString()
+                  ? ethers.formatUnits(stakingTotalReleased, 6)
                   : "0"}{" "}
                 NEFE
               </span>
@@ -480,7 +481,7 @@ export default function StakingManagement() {
                       + Reward {item.reward}% • Price{" "}
                       {item.price?.toFixed?.(6) ?? "-"} USDT •{" "}
                       {ts ? new Date(ts * 1000).toLocaleString() : "-"} •{" "}
-                      {AMOUNT_PER_RELEASE.toLocaleString()} NEFE
+                      {AMOUNT_PER_RELEASE_STR} NEFE
                     </span>
                   </div>
                 </div>

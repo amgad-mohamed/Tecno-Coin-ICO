@@ -313,7 +313,7 @@ export default function TransactionsPage() {
                           </span>
                         </td>
                         <td className="px-6 py-4">
-                          {transaction.amount.toLocaleString()} NEFE
+                          {transaction.amount} NEFE
                         </td>
                         <td className="px-6 py-4">
                           {transaction.currency === "ETH"
